@@ -1,0 +1,10 @@
+<br /><br />
+<div id="view-content">
+	<p>View script for controller <b>Exams</b> and script/action name <b>courses</b></p>
+    <? 
+        $this->form->setAction($this->url(
+            array('controller'=>'exams',
+                  'action'=>'search')));
+        echo $this->form;
+    ?>
+</div>

@@ -1,0 +1,27 @@
+<br /><br />
+<div id="view-content">
+	<p>View script for controller <b>Exams</b> and script/action name <b>search</b></p>
+        <?php foreach ($this->exams as $entry): ?>
+        <hr>
+    <dt><?php echo $this->escape($entry->id) ?></dt>
+    <dd><?php 
+        foreach($entry->course as $course)
+        {
+            echo $this->escape("- ".$course);
+            echo '<br>';
+        }
+        echo $this->escape($entry->semester);
+        echo '<br>';
+        foreach($entry->Lecturer as $course)
+        {
+            echo $this->escape("- ".$course);
+            echo '<br>';
+        }
+
+        echo $this->escape($entry->Type);
+        echo '<br>';
+        echo $this->escape($entry->SubType);
+    ?></dd>
+    <?php endforeach ?>
+    <hr>
+</div>
