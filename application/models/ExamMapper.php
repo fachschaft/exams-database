@@ -37,15 +37,15 @@ class Application_Model_ExamMapper
               ->join(array('sem' => 'semester'),
                      'sem.idsemester = x.semester_idsemester')
               ->join(array('ext' => 'exam_type'),
-                     'ext.idexam_type = x.exame_type_idexame_type')
+                     'ext.idexam_type = x.exam_type_idexam_type')
               ->join(array('est' => 'exam_sub_type'),
-                     'est.idexam_sub_type = x.exame_sub_type_idexame_sub_type')
+                     'est.idexam_sub_type = x.exam_sub_type_idexam_sub_type')
               ->join(array('ehcg' => 'exam_has_course_group'),
                      'ehcg.exam_idexam = x.idexam')
               ->join(array('cog' => 'course_group'),
                      'cog.idcourse_group = ehcg.course_group_idcourse_group')
               ->join(array('cor' => 'course'),
-                     'cor.courses_group_idcourses_group = cog.idcourse_group')
+                     'cor.course_group_idcourse_group = cog.idcourse_group')
               ->group('idexam');
 
         if(!empty($courseIds) && $courseIds != -1 && !in_array(-1, $courseIds))
@@ -75,7 +75,7 @@ class Application_Model_ExamMapper
               ->join(array('cog' => 'course_group'),
                      'cog.idcourse_group = ehcg.course_group_idcourse_group')
               ->join(array('cor' => 'course'),
-                     'cor.courses_group_idcourses_group = cog.idcourse_group')
+                     'cor.course_group_idcourse_group = cog.idcourse_group')
               ->where('idexam = ?', $row['idexam']);
               $resultSetCourses = $this->getDbTable()->getAdapter()->fetchAll($selectCourse);
             $courses = array();
