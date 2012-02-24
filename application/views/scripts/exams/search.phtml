@@ -1,6 +1,8 @@
 <br /><br />
 <div id="view-content">
 	<p>View script for controller <b>Exams</b> and script/action name <b>search</b></p>
+        <? if($this->form != null): echo $this->form; ?>
+        <? else: ?>
         <?php foreach ($this->exams as $entry): ?>
         <hr>
     <dt><?php echo $this->escape($entry->id) ?></dt>
@@ -24,4 +26,6 @@
     ?></dd>
     <?php endforeach ?>
     <hr>
+    <? endif; ?>
+    
 </div>
