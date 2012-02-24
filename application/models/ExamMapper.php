@@ -25,7 +25,7 @@ class Application_Model_ExamMapper
     }
     
     // this function takes single integer or arrays
-    public function fetch($courseIds, $lecturerIds, $semesterIds, $examTypeIds)
+    public function fetch($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree)
     {
         $select = $this->getDbTable()->getAdapter()->select()
               ->from(array('x' => 'exam'),
@@ -49,7 +49,16 @@ class Application_Model_ExamMapper
               ->group('idexam');
 
         if(!empty($courseIds) && $courseIds != -1 && !in_array(-1, $courseIds))
+        {
             $select->where('cor.idcourse IN (?)', $courseIds);
+        } else {
+            // if there is no corse id set, we select by degree
+            $select->join(array('dhc' => 'degree_has_course'),
+                                'cor.idcourse = dhc.course_idcourse')
+                    ->join(array('deg' => 'degree'),
+                                'dhc.degree_iddegree = deg.iddegree')
+                    ->where('deg.iddegree IN (?)', $degree);
+        }
         if(!empty($lecturerIds) && $lecturerIds != -1 && !in_array(-1, $lecturerIds))
             $select->where('lec.idlecturer IN (?)', $lecturerIds);
         if(!empty($semesterIds) && $semesterIds != -1 && !in_array(-1, $semesterIds))

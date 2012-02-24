@@ -6,14 +6,13 @@ class Application_Form_ExamDegrees extends Zend_Form
 
     public function init()
     {
-       // Set the method for the display form to POST
         $this->setMethod('post');
+         $this->setAction('/exams/courses');
  
+        //
         $this->_elementSelect = new Zend_Form_Element_Select('degree');
-        
-        $this->_elementSelect->setAttrib('size', '4');
-        $this->_elementSelect->addValidator('NotEmpty', false);
-        
+        $this->_elementSelect->setAttrib('size', '4')
+                             ->setRequired(true);
         $this->addElement($this->_elementSelect);
         
         // Add the submit button
@@ -23,9 +22,25 @@ class Application_Form_ExamDegrees extends Zend_Form
         ));
     }
     
-    public function setMultiOptions(array $options)
+    public function setMultiOptions($group)
     {
+        $degrees = new Application_Model_DegreeMapper();
+        $entries = $degrees->fetchByGroup($group);  
+        $options = array(); 
+        
+        foreach($entries as $gr)
+        {
+            $options[$gr->getId()] = $gr->getName();
+        }
+
         $this->_elementSelect->setMultiOptions($options);
+    }
+    
+    public function setGroup($id)
+    {
+        $this->addElement('hidden', 'group', array(
+            'value' => $id,
+        ));
     }
 
 }
