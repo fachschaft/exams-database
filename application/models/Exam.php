@@ -23,7 +23,7 @@ class Application_Model_Exam
     {
         $method = 'set' . $name;
         if (('mapper' == $name) || !method_exists($this, $method)) {
-            throw new Exception('Invalid guestbook property');
+            throw new Exception('Invalid property in the following model: Exam');
         }
         $this->$method($value);
     }
@@ -32,7 +32,7 @@ class Application_Model_Exam
     {
         $method = 'get' . $name;
         if (('mapper' == $name) || !method_exists($this, $method)) {
-            throw new Exception('Invalid guestbook property');
+            throw new Exception('Invalid property in the following model: Exam');
         }
         return $this->$method();
     }
