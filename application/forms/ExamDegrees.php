@@ -7,7 +7,7 @@ class Application_Form_ExamDegrees extends Zend_Form
     public function init()
     {
         $this->setMethod('post');
-         $this->setAction('/exams/courses');
+         $this->setAction('/exams/degrees');
  
         //
         $this->_elementSelect = new Zend_Form_Element_Select('degree');

@@ -12,7 +12,7 @@ class Application_Form_ExamCourses extends Zend_Form
     public function init()
     {
         $this->setMethod('post');
-        $this->setAction('/exams/search');
+        $this->setAction('/exams/courses');
  
         //
         $this->_elementCourse = new Zend_Form_Element_Multiselect('course');
@@ -127,6 +127,13 @@ class Application_Form_ExamCourses extends Zend_Form
     public function setDegree($id)
     {
         $this->addElement('hidden', 'degree', array(
+            'value' => $id,
+        ));
+    }
+    
+        public function setGroup($id)
+    {
+        $this->addElement('hidden', 'group', array(
             'value' => $id,
         ));
     }

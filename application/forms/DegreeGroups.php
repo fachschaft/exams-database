@@ -7,7 +7,7 @@ class Application_Form_DegreeGroups extends Zend_Form
     public function init()
     {
         $this->setMethod('post');
-        $this->setAction('/exams/degrees');
+        $this->setAction('/exams/groups');
  
         $this->_elementSelect = new Zend_Form_Element_Select('group');
         

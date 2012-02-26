@@ -48,7 +48,7 @@ class Application_Model_ExamMapper
                      'cor.course_group_idcourse_group = cog.idcourse_group')
               ->group('idexam');
 
-        if(!empty($courseIds) && $courseIds != -1 && !in_array(-1, $courseIds))
+        if((!is_array($courseIds) && $courseIds != -1) || (is_array($courseIds) && !in_array(-1, $courseIds)))
         {
             $select->where('cor.idcourse IN (?)', $courseIds);
         } else {
@@ -59,11 +59,11 @@ class Application_Model_ExamMapper
                                 'dhc.degree_iddegree = deg.iddegree')
                     ->where('deg.iddegree IN (?)', $degree);
         }
-        if(!empty($lecturerIds) && $lecturerIds != -1 && !in_array(-1, $lecturerIds))
+        if((!is_array($lecturerIds) && $lecturerIds != -1) || (is_array($lecturerIds) && !in_array(-1, $lecturerIds)))
             $select->where('lec.idlecturer IN (?)', $lecturerIds);
-        if(!empty($semesterIds) && $semesterIds != -1 && !in_array(-1, $semesterIds))
+        if((!is_array($semesterIds) && $semesterIds != -1) || (is_array($semesterIds) && !in_array(-1, $semesterIds)))
             $select->where('sem.idsemester IN (?)', $semesterIds);
-        if(!empty($examTypeIds) && $examTypeIds != -1 && !in_array(-1, $examTypeIds))
+        if((!is_array($examTypeIds) && $examTypeIds != -1) || (is_array($examTypeIds) && !in_array(-1, $examTypeIds)))
             $select->where('ext.idexam_type IN (?)', $examTypeIds);
               
         
@@ -107,7 +107,7 @@ class Application_Model_ExamMapper
             
             foreach($resultSetLecturer as $id => $lect)
             {
-                $lecturers[$id] = $lect['name'];
+                $lecturers[$id] = $lect['name'] .', '. $lect['degree'] . ' ' . $lect['first_name'];
             }
             
             

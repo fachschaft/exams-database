@@ -5,24 +5,24 @@
         <? else: ?>
         <?php foreach ($this->exams as $entry): ?>
         <hr>
-    <dt><?php echo $this->escape($entry->id) ?></dt>
+    <dt><?php echo $entry->id ?></dt>
     <dd><?php 
         foreach($entry->course as $course)
         {
-            echo $this->escape("- ".$course);
+            echo "- ".$course;
             echo '<br>';
         }
-        echo $this->escape($entry->semester);
+        echo $entry->semester;
         echo '<br>';
-        foreach($entry->Lecturer as $course)
+        foreach($entry->Lecturer as $lecturer)
         {
-            echo $this->escape("- ".$course);
+            echo "- ".$lecturer;
             echo '<br>';
         }
 
-        echo $this->escape($entry->Type);
+        echo $entry->Type;
         echo '<br>';
-        echo $this->escape($entry->SubType);
+        echo $entry->SubType;
     ?></dd>
     <?php endforeach ?>
     <hr>
