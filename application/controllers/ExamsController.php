@@ -39,13 +39,13 @@ class ExamsController extends Zend_Controller_Action
                 $post = $this->getRequest()->getPost();
                 if (isset($post['submit']))
                     unset($post['submit']);
+                if (isset($post['group']))
+                    unset($post['group']);
                 return $this->_helper->Redirector->setGotoSimple('courses', null, null, $post);
             }
         }
         
         if(isset($this->getRequest()->group)) {
-        
-            //ToDo(aritas1): check if the group is valid, e.g. if somebody manipulated the url
 
             $form->setMultiOptions($this->getRequest()->group);
             $form->setGroup($this->getRequest()->group);
@@ -59,26 +59,17 @@ class ExamsController extends Zend_Controller_Action
     {
         $form = new Application_Form_ExamCourses();
 
-        // back to start (groups)
-        if(!isset($this->getRequest()->group)) {
+        // go back to group
+        if(!isset($this->getRequest()->degree)) {
             return $this->_helper->redirector('groups');
         } else {
-            //ToDo(aritas1): check if the group is valid (db check)
-        }
-        
-        // go back to degree
-        if(!isset($this->getRequest()->degree)) {
-            return $this->_helper->Redirector->setGotoSimple('degrees', null, null, array('group' => $this->getRequest()->group));
-        } else {
             //ToDo(aritas1): check if the degree is valid (db check)
-            // check also if the combination of degree / group is valid
         }
         
         //setup the form
         $form->setCourseOptions($this->getRequest()->degree);
         $form->setLecturerOptions($this->getRequest()->degree);
         $form->setDegree($this->getRequest()->degree);
-        $form->setGroup($this->getRequest()->group);
         
         
         if ($this->getRequest()->isPost()) {
@@ -109,15 +100,9 @@ class ExamsController extends Zend_Controller_Action
         $request = $this->getRequest();
         $this->view->exams = array();
      
-        
-        if(!isset($this->getRequest()->group)) {
-            return $this->_helper->redirector('groups');
-        } else {
-            //ToDo(aritas1): check if the group is valid (db check)
-        }
-                // go back to degree
+        // go back to degree
         if(!isset($this->getRequest()->degree)) {
-            return $this->_helper->Redirector->setGotoSimple('degrees', null, null, array('group' => $this->getRequest()->group));
+            return $this->_helper->redirector('groups');
         } else {
             //ToDo(aritas1): check if the degree is valid (db check)
             // check also if the combination of degree / group is valid

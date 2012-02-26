@@ -130,13 +130,5 @@ class Application_Form_ExamCourses extends Zend_Form
             'value' => $id,
         ));
     }
-    
-        public function setGroup($id)
-    {
-        $this->addElement('hidden', 'group', array(
-            'value' => $id,
-        ));
-    }
-
 }
 
