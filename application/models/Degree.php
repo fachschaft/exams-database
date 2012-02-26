@@ -17,7 +17,7 @@ class Application_Model_Degree
     {
         $method = 'set' . $name;
         if (('mapper' == $name) || !method_exists($this, $method)) {
-            throw new Exception('Invalid guestbook property');
+            throw new Exception('Invalid property in the following model: Degree');
         }
         $this->$method($value);
     }
@@ -26,7 +26,7 @@ class Application_Model_Degree
     {
         $method = 'get' . $name;
         if (('mapper' == $name) || !method_exists($this, $method)) {
-            throw new Exception('Invalid guestbook property');
+            throw new Exception('Invalid property in the following model: Degree');
         }
         return $this->$method();
     }
