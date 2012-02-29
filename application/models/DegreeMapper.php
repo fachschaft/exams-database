@@ -40,7 +40,7 @@ class Application_Model_DegreeMapper
                                         );*/
         //$resultSet = $this->getDbTable()->fetchAll();
         //$select = 
-        
+
         $entries   = array();
         foreach ($resultSet as $row) {
             $entry = new Application_Model_Degree();

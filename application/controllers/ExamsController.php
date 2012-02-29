@@ -150,12 +150,4 @@ class ExamsController extends Zend_Controller_Action
         }
     }
 
-
 }
-
-
-
-
-
-
-

@@ -40,7 +40,6 @@ class Application_Model_CourseMapper
                                                    
         
         //var_dump($profiler);
-
          
         $entries   = array();
         foreach ($resultSet as $row) {

@@ -27,7 +27,7 @@ class Application_Model_ExamMapper
     // this function takes single integer or arrays
     public function fetch($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree)
     {  
-        
+
         $select = $this->getDbTable()->getAdapter()->select()
               ->from(array('x' => 'exam'),
                      array('idexam', 'comment', 'sem.name as semester_name', 'GROUP_CONCAT(lec.idlecturer) as lecturer', 'ext.name as type_name', 'est.name as sub_typ_name', 'GROUP_CONCAT(cor.idcourse) as courses'))
