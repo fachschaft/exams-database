@@ -1,0 +1,39 @@
+<br /><br />
+<div id="view-content">
+	<p>View script for controller <b>Exams</b> and script/action name <b>search</b></p>
+        <? if($this->form != null): echo $this->form; ?>
+        <? else: ?>
+        <?php foreach ($this->exams as $entry): ?>
+        <hr>
+    <dt><?php echo $entry->id ?> - 
+    <a href="<?php echo $this->url(
+            array('controller'=>'exams',
+                  'action'=>'download',
+                  'id'=>$entry->id),
+            'default',
+            true) ?>">Download</a>
+
+    </dt>
+    <dd><?php 
+        foreach($entry->course as $course)
+        {
+            echo "- ".$course;
+            echo '<br>';
+        }
+        echo $entry->semester;
+        echo '<br>';
+        foreach($entry->Lecturer as $lecturer)
+        {
+            echo "- ".$lecturer;
+            echo '<br>';
+        }
+
+        echo $entry->Type;
+        echo '<br>';
+        echo $entry->SubType;
+    ?></dd>
+    <?php endforeach ?>
+    <hr>
+    <? endif; ?>
+    
+</div>

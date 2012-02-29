@@ -1,0 +1,10 @@
+<?php
+
+class Application_Model_DbTable_Semester extends Zend_Db_Table_Abstract
+{
+
+    protected $_name = 'semester';
+
+
+}
+
