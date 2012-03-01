@@ -25,26 +25,21 @@ class Application_Model_CourseMapper
     }
     
     public function fetchByDegree($degreeId)
-    {   
-        $table = new Application_Model_DbTable_Course();
+    {    
+        $degree = new Application_Model_DbTable_Degree();
+
+        //$profiler = new Zend_Db_Profiler();
+        //$profiler->setEnabled(true);
+        //$degree->getAdapter()->setProfiler($profiler);
+
         
-        $table->getAdapter();
+        $resultSet = $degree->find($degreeId)->current()
+                            ->findManyToManyRowset('Application_Model_DbTable_Course',
+                                                   'Application_Model_DbTable_DegreeHasCourse',
+                                                   'Degree', 'Course');
+                                                   
         
-        $select = $table->getAdapter()->select()
-              ->from(array('c' => 'course'),
-                     array('idcourse', 'name'))
-              ->join(array('dhc' => 'degree_has_course'),
-                     'dhc.course_idcourse = c.idcourse')
-              ->where('dhc.degree_iddegree = ?', $degreeId);
-        
-        
-        /*$select = $table->getAdapter()->select(Zend_Db_Table::SELECT_WITH_FROM_PART);
-        $select->join('degree_has_course', 'degree_has_course.course_idcourse = courses_group_idcourses_group')
-               ->where('degree_has_course.degree_iddegree = ?', $degreeId);*/
-        
-        // for a joint select ists importetn to fecht the select with ->getAdapter()
-        
-        $resultSet = $this->getDbTable()->getAdapter()->fetchAll($select);
+        //var_dump($profiler);
          
         $entries   = array();
         foreach ($resultSet as $row) {

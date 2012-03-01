@@ -133,9 +133,21 @@ class ExamsController extends Zend_Controller_Action
                         $this->getRequest()->degree
                         );
     }
+
+    public function downloadAction()
+    {
+        if(isset($this->getRequest()->id)) 
+        {        
+            $x = new Application_Model_DocumentMapper();
+            $entries = $x->fetch($this->getRequest()->id);
+            
+            header('Content-Type: application/octet-stream');
+            header("Content-Disposition: attachment; filename=".date('YmdHis').$entries->getExtention());
+            echo $entries->getData();//readfile ($path);
+            exit;
+        } else {
+            throw new Exception('Invalid document called', 500);
+        }
+    }
+
 }
-
-
-
-
-

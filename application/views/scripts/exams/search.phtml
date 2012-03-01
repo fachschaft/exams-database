@@ -5,7 +5,15 @@
         <? else: ?>
         <?php foreach ($this->exams as $entry): ?>
         <hr>
-    <dt><?php echo $entry->id ?></dt>
+    <dt><?php echo $entry->id ?> - 
+    <a href="<?php echo $this->url(
+            array('controller'=>'exams',
+                  'action'=>'download',
+                  'id'=>$entry->id),
+            'default',
+            true) ?>">Download</a>
+
+    </dt>
     <dd><?php 
         foreach($entry->course as $course)
         {

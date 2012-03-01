@@ -18,6 +18,7 @@
           <actionMethod actionName="degrees"/>
           <actionMethod actionName="courses"/>
           <actionMethod actionName="search"/>
+          <actionMethod actionName="download"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -39,6 +40,10 @@
           <dbTableFile dbTableName="Semester"/>
           <dbTableFile dbTableName="ExamType"/>
           <dbTableFile dbTableName="Exam"/>
+          <dbTableFile dbTableName="CourseGroup"/>
+          <dbTableFile dbTableName="ExamHasCourseGroup"/>
+          <dbTableFile dbTableName="DegreeHasCourse"/>
+          <dbTableFile dbTableName="Document"/>
         </dbTableDirectory>
         <modelFile modelName="DegreeGroup"/>
         <modelFile modelName="DegreeGroupMapper"/>
@@ -54,6 +59,8 @@
         <modelFile modelName="ExamTypeMapper"/>
         <modelFile modelName="Exam"/>
         <modelFile modelName="ExamMapper"/>
+        <modelFile modelName="Document"/>
+        <modelFile modelName="DocumentMapper"/>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
       <viewsDirectory>
@@ -78,6 +85,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Exams">
             <viewScriptFile forActionName="search"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Exams">
+            <viewScriptFile forActionName="download"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
