@@ -9,14 +9,19 @@
 <body>
 <div id="header" style="background-color: #EEEEEE; height: 30px;">
     <div id="header-logo" style="float: left">
-        <b>Zend Framework Exam Database</b>
+        <b>Exam Database</b>
     </div>
     <div id="header-navigation" style="float: right">
         <a href="<?php echo $this->url(
             array('controller'=>'exams',
                   'action'=>'groups'),
             'default',
-            true) ?>">Exams</a>
+            true) ?>">Exams Search</a>
+        <a href="<?php echo $this->url(
+            array('controller'=>'exams',
+                  'action'=>'upload'),
+            'default',
+            true) ?>">Exams Upload</a>
     </div>
 </div>
  

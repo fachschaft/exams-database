@@ -159,7 +159,10 @@ class ExamsController extends Zend_Controller_Action
        
         if(isset($this->getRequest()->degree)) {
                 $step = 2;
-                $form = "form2";
+                $form = new Application_Form_UploadDetail();
+                $form->setCourseOptions($this->getRequest()->degree);
+                $form->setLecturerOptions($this->getRequest()->degree);
+                $form->setDegree($this->getRequest()->degree);
         }
         
         if ($this->getRequest()->isPost()) {
@@ -180,10 +183,19 @@ class ExamsController extends Zend_Controller_Action
                     }
                     break;
                 case 2:
-                    $form = "form2";
+                    $form = new Application_Form_UploadDetail();
+                    $form->setCourseOptions($this->getRequest()->degree);
+                    $form->setLecturerOptions($this->getRequest()->degree);
+                    $form->setDegree($this->getRequest()->degree);
+                    //if($form->isValid($this->getRequest()->getPost())) {
+                        $post = $this->getRequest()->getPost();
+                        unset($post['submit']);
+                        unset($post['step']);
+                        $this->_helper->Redirector->setGotoSimple('upload', null, null, $post);
+                    //}
                     break;
                 default:
-                1+1;
+               
             }
             
         

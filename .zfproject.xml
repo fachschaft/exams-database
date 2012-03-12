@@ -27,6 +27,7 @@
         <formFile formName="ExamCourses"/>
         <formFile formName="DegreeGroups"/>
         <formFile formName="UploadDegrees"/>
+        <formFile formName="UploadDetail"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -46,6 +47,7 @@
           <dbTableFile dbTableName="ExamHasCourseGroup"/>
           <dbTableFile dbTableName="DegreeHasCourse"/>
           <dbTableFile dbTableName="Document"/>
+          <dbTableFile dbTableName="ExamSubType"/>
         </dbTableDirectory>
         <modelFile modelName="DegreeGroup"/>
         <modelFile modelName="DegreeGroupMapper"/>
@@ -63,6 +65,8 @@
         <modelFile modelName="ExamMapper"/>
         <modelFile modelName="Document"/>
         <modelFile modelName="DocumentMapper"/>
+        <modelFile modelName="ExamSubType"/>
+        <modelFile modelName="ExamSubTypeMapper"/>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
       <viewsDirectory>
