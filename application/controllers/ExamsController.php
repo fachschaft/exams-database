@@ -150,4 +150,51 @@ class ExamsController extends Zend_Controller_Action
         }
     }
 
+    public function uploadAction()
+    {
+        
+        $form = null;
+        $step = 1;
+        
+       
+        if(isset($this->getRequest()->degree)) {
+                $step = 2;
+                $form = "form2";
+        }
+        
+        if ($this->getRequest()->isPost()) {
+            
+            if(isset($this->getRequest()->step)) {
+                $step = $this->getRequest()->step;
+            }
+            
+            switch($step)
+            {
+                case 1:
+                    $form = new Application_Form_UploadDegrees();
+                    if($form->isValid($this->getRequest()->getPost())) {
+                        $post = $this->getRequest()->getPost();
+                        unset($post['submit']);
+                        unset($post['step']);
+                        $this->_helper->Redirector->setGotoSimple('upload', null, null, $post);
+                    }
+                    break;
+                case 2:
+                    $form = "form2";
+                    break;
+                default:
+                1+1;
+            }
+            
+        
+        
+        } else {
+            if($form == null) $form = new Application_Form_UploadDegrees();
+        }
+        
+        $this->view->form = $form;
+    }
+
+
 }
+

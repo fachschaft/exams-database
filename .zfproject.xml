@@ -19,12 +19,14 @@
           <actionMethod actionName="courses"/>
           <actionMethod actionName="search"/>
           <actionMethod actionName="download"/>
+          <actionMethod actionName="upload"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
         <formFile formName="ExamDegrees"/>
         <formFile formName="ExamCourses"/>
         <formFile formName="DegreeGroups"/>
+        <formFile formName="UploadDegrees"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -88,6 +90,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Exams">
             <viewScriptFile forActionName="download"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Exams">
+            <viewScriptFile forActionName="upload"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
