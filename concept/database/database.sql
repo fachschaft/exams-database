@@ -488,11 +488,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `exams-database`;
-INSERT INTO `exams-database`.`document` (`iddocument`, `extention`, `submit_file_name`, `data`, `deleted`, `exam_idexam`) VALUES (1, '.pdf', 'zusammenfassung.pdf', NULL, \func false, NULL);
-INSERT INTO `exams-database`.`document` (`iddocument`, `extention`, `submit_file_name`, `data`, `deleted`, `exam_idexam`) VALUES (2, '.pdf', '1.pdf', NULL, \func false, NULL);
-INSERT INTO `exams-database`.`document` (`iddocument`, `extention`, `submit_file_name`, `data`, `deleted`, `exam_idexam`) VALUES (3, '.zip', 'exam.zip', NULL, \func false, NULL);
-INSERT INTO `exams-database`.`document` (`iddocument`, `extention`, `submit_file_name`, `data`, `deleted`, `exam_idexam`) VALUES (4, '.pdf', '012930.pdf', NULL, \func false, NULL);
-INSERT INTO `exams-database`.`document` (`iddocument`, `extention`, `submit_file_name`, `data`, `deleted`, `exam_idexam`) VALUES (5, '.tar.gz', 'w12.tar.gz', NULL, \func false, NULL);
+INSERT INTO `exams-database`.`document` (`iddocument`, `extention`, `submit_file_name`, `data`, `deleted`, `exam_idexam`) VALUES (1, '.pdf', 'zusammenfassung.pdf', NULL, 0, 1);
+INSERT INTO `exams-database`.`document` (`iddocument`, `extention`, `submit_file_name`, `data`, `deleted`, `exam_idexam`) VALUES (2, '.pdf', '1.pdf', NULL, 0, 2);
+INSERT INTO `exams-database`.`document` (`iddocument`, `extention`, `submit_file_name`, `data`, `deleted`, `exam_idexam`) VALUES (3, '.zip', 'exam.zip', NULL, 0, 3);
+INSERT INTO `exams-database`.`document` (`iddocument`, `extention`, `submit_file_name`, `data`, `deleted`, `exam_idexam`) VALUES (4, '.pdf', '012930.pdf', NULL, 0, 4);
+INSERT INTO `exams-database`.`document` (`iddocument`, `extention`, `submit_file_name`, `data`, `deleted`, `exam_idexam`) VALUES (5, '.tar.gz', 'w12.tar.gz', NULL, 0, 5);
 
 COMMIT;
 
