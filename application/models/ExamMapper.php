@@ -77,7 +77,7 @@ class Application_Model_ExamMapper
             // collect the courses
             $selectCourse = $this->getDbTable()->getAdapter()->select()
                             ->from(array('x' => 'exam'),
-                     array('idexam', 'cor.name as name'))
+                     array('idexam', 'cor.name as name', 'cor.idcourse as idcourse'))
               ->join(array('ehcg' => 'exam_has_course'),
                      'ehcg.exam_idexam = x.idexam')
               ->join(array('cor' => 'course'),
@@ -85,13 +85,30 @@ class Application_Model_ExamMapper
               ->where('idexam = ?', $row['idexam']);
               $resultSetCourses = $this->getDbTable()->getAdapter()->fetchAll($selectCourse);
             $courses = array();
+            $coursesIds = array();
             foreach($resultSetCourses as $id => $cours)
             {
-                $courses[$id] = $cours['name'];
+                $courses[$cours['idcourse']] = $cours['name'];
+                $coursesIds[] = $cours['idcourse'];
             }
             
             // collect all related courses
-            //ToDo:
+            // EXAMPLE Select
+            // SELECT * FROM `course_has_course` as chc JOIN `course` WHERE 
+            // (chc.course_idcourse = 4 AND course.idcourse = chc.course_idcourse1) OR 
+            // (chc.course_idcourse1 = 4 AND course.idcourse = chc.course_idcourse)
+            $selectRelatedCourse = $this->getDbTable()->getAdapter()->select()
+              ->from(array('chc' => 'course_has_course'),
+                     array('cor.idcourse as idcourse', 'cor.name as name'))
+              ->join(array('cor' => 'course'),'')
+              ->where('(chc.course_idcourse IN (?) AND cor.idcourse = chc.course_idcourse1) OR
+                        (chc.course_idcourse1 IN (?) AND cor.idcourse = chc.course_idcourse)', $coursesIds);
+            $resultRelatedCourse = $this->getDbTable()->getAdapter()->fetchAll($selectRelatedCourse);
+             foreach($resultRelatedCourse as $id => $cours)
+            {
+                $courses[$cours['idcourse']] = $cours['name'];
+            }
+            
             
             // collect the lecturer
             $selectLecturer = $this->getDbTable()->getAdapter()->select()
