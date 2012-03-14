@@ -41,17 +41,18 @@ class Application_Model_ExamMapper
                      'ext.idexam_type = x.exam_type_idexam_type')
               ->join(array('est' => 'exam_sub_type'),
                      'est.idexam_sub_type = x.exam_sub_type_idexam_sub_type')
-              ->join(array('ehcg' => 'exam_has_course_group'),
+              ->join(array('ehcg' => 'exam_has_course'),
                      'ehcg.exam_idexam = x.idexam')
-              ->join(array('cog' => 'course_group'),
-                     'cog.idcourse_group = ehcg.course_group_idcourse_group')
               ->join(array('cor' => 'course'),
-                     'cor.course_group_idcourse_group = cog.idcourse_group')
+                     'cor.idcourse = ehcg.course_idcourse')
+              ->join(array('chc' => 'course_has_course'),'')
+              ->where('(cor.idcourse = chc.course_idcourse1) OR
+                        (cor.idcourse = chc.course_idcourse)')
               ->group('idexam');
 
         if((!is_array($courseIds) && $courseIds != -1) || (is_array($courseIds) && !in_array(-1, $courseIds)))
         {
-            $select->where('cor.idcourse IN (?)', $courseIds);
+            $select->where('chc.course_idcourse1 IN (?) OR chc.course_idcourse in (?)', $courseIds);
         } else {
             // if there is no corse id set, we select by degree
             $select->join(array('dhc' => 'degree_has_course'),
@@ -79,20 +80,38 @@ class Application_Model_ExamMapper
             // collect the courses
             $selectCourse = $this->getDbTable()->getAdapter()->select()
                             ->from(array('x' => 'exam'),
-                     array('idexam', 'cor.name as name'))
-              ->join(array('ehcg' => 'exam_has_course_group'),
+                     array('idexam', 'cor.name as name', 'cor.idcourse as idcourse'))
+              ->join(array('ehcg' => 'exam_has_course'),
                      'ehcg.exam_idexam = x.idexam')
-              ->join(array('cog' => 'course_group'),
-                     'cog.idcourse_group = ehcg.course_group_idcourse_group')
               ->join(array('cor' => 'course'),
-                     'cor.course_group_idcourse_group = cog.idcourse_group')
+                     'cor.idcourse = ehcg.course_idcourse')
               ->where('idexam = ?', $row['idexam']);
               $resultSetCourses = $this->getDbTable()->getAdapter()->fetchAll($selectCourse);
             $courses = array();
+            $coursesIds = array();
             foreach($resultSetCourses as $id => $cours)
             {
-                $courses[$id] = $cours['name'];
+                $courses[$cours['idcourse']] = $cours['name'];
+                $coursesIds[] = $cours['idcourse'];
             }
+            
+            // collect all related courses
+            // EXAMPLE Select
+            // SELECT * FROM `course_has_course` as chc JOIN `course` WHERE 
+            // (chc.course_idcourse = 4 AND course.idcourse = chc.course_idcourse1) OR 
+            // (chc.course_idcourse1 = 4 AND course.idcourse = chc.course_idcourse)
+            $selectRelatedCourse = $this->getDbTable()->getAdapter()->select()
+              ->from(array('chc' => 'course_has_course'),
+                     array('cor.idcourse as idcourse', 'cor.name as name'))
+              ->join(array('cor' => 'course'),'')
+              ->where('(chc.course_idcourse IN (?) AND cor.idcourse = chc.course_idcourse1) OR
+                        (chc.course_idcourse1 IN (?) AND cor.idcourse = chc.course_idcourse)', $coursesIds);
+            $resultRelatedCourse = $this->getDbTable()->getAdapter()->fetchAll($selectRelatedCourse);
+             foreach($resultRelatedCourse as $id => $cours)
+            {
+                $courses[$cours['idcourse']] = $cours['name'];
+            }
+            
             
             // collect the lecturer
             $selectLecturer = $this->getDbTable()->getAdapter()->select()
