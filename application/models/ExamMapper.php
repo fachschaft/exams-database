@@ -45,11 +45,14 @@ class Application_Model_ExamMapper
                      'ehcg.exam_idexam = x.idexam')
               ->join(array('cor' => 'course'),
                      'cor.idcourse = ehcg.course_idcourse')
+              ->join(array('chc' => 'course_has_course'),'')
+              ->where('(cor.idcourse = chc.course_idcourse1) OR
+                        (cor.idcourse = chc.course_idcourse)')
               ->group('idexam');
 
         if((!is_array($courseIds) && $courseIds != -1) || (is_array($courseIds) && !in_array(-1, $courseIds)))
         {
-            $select->where('cor.idcourse IN (?)', $courseIds);
+            $select->where('chc.course_idcourse1 IN (?) OR chc.course_idcourse in (?)', $courseIds);
         } else {
             // if there is no corse id set, we select by degree
             $select->join(array('dhc' => 'degree_has_course'),
