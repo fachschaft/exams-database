@@ -1,4 +1,4 @@
-You have to load Zend Framework 1.11.11 Released in here.
+If it isn't installed globally, i.e. in PATH, you have to load Zend Framework 1.11.11 in here.
 
 e.g.:
 # Symlink:
