@@ -41,12 +41,10 @@ class Application_Model_ExamMapper
                      'ext.idexam_type = x.exam_type_idexam_type')
               ->join(array('est' => 'exam_sub_type'),
                      'est.idexam_sub_type = x.exam_sub_type_idexam_sub_type')
-              ->join(array('ehcg' => 'exam_has_course_group'),
+              ->join(array('ehcg' => 'exam_has_course'),
                      'ehcg.exam_idexam = x.idexam')
-              ->join(array('cog' => 'course_group'),
-                     'cog.idcourse_group = ehcg.course_group_idcourse_group')
               ->join(array('cor' => 'course'),
-                     'cor.course_group_idcourse_group = cog.idcourse_group')
+                     'cor.idcourse = ehcg.course_idcourse')
               ->group('idexam');
 
         if((!is_array($courseIds) && $courseIds != -1) || (is_array($courseIds) && !in_array(-1, $courseIds)))
@@ -80,12 +78,10 @@ class Application_Model_ExamMapper
             $selectCourse = $this->getDbTable()->getAdapter()->select()
                             ->from(array('x' => 'exam'),
                      array('idexam', 'cor.name as name'))
-              ->join(array('ehcg' => 'exam_has_course_group'),
+              ->join(array('ehcg' => 'exam_has_course'),
                      'ehcg.exam_idexam = x.idexam')
-              ->join(array('cog' => 'course_group'),
-                     'cog.idcourse_group = ehcg.course_group_idcourse_group')
               ->join(array('cor' => 'course'),
-                     'cor.course_group_idcourse_group = cog.idcourse_group')
+                     'cor.idcourse = ehcg.course_idcourse')
               ->where('idexam = ?', $row['idexam']);
               $resultSetCourses = $this->getDbTable()->getAdapter()->fetchAll($selectCourse);
             $courses = array();
@@ -93,6 +89,9 @@ class Application_Model_ExamMapper
             {
                 $courses[$id] = $cours['name'];
             }
+            
+            // collect all related courses
+            //ToDo:
             
             // collect the lecturer
             $selectLecturer = $this->getDbTable()->getAdapter()->select()
