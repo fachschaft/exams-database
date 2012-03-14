@@ -2,6 +2,7 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
 
+DROP SCHEMA IF EXISTS `exams-database` ;
 CREATE SCHEMA IF NOT EXISTS `exams-database` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci ;
 USE `exams-database` ;
 
@@ -177,17 +178,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `exams-database`.`course_group`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `exams-database`.`course_group` ;
-
-CREATE  TABLE IF NOT EXISTS `exams-database`.`course_group` (
-  `idcourse_group` INT NOT NULL AUTO_INCREMENT ,
-  PRIMARY KEY (`idcourse_group`) )
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `exams-database`.`lecturer`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `exams-database`.`lecturer` ;
@@ -266,11 +256,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `exams-database`.`exam_has_course_group`
+-- Table `exams-database`.`exam_has_course`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `exams-database`.`exam_has_course_group` ;
+DROP TABLE IF EXISTS `exams-database`.`exam_has_course` ;
 
-CREATE  TABLE IF NOT EXISTS `exams-database`.`exam_has_course_group` (
+CREATE  TABLE IF NOT EXISTS `exams-database`.`exam_has_course` (
   `exam_idexam` INT NOT NULL ,
   `course_idcourse` INT NOT NULL ,
   PRIMARY KEY (`exam_idexam`, `course_idcourse`) ,
@@ -481,20 +471,6 @@ INSERT INTO `exams-database`.`exam` (`idexam`, `semester_idsemester`, `exam_type
 COMMIT;
 
 -- -----------------------------------------------------
--- Data for table `exams-database`.`course_group`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `exams-database`;
-INSERT INTO `exams-database`.`course_group` (`idcourse_group`) VALUES (1);
-INSERT INTO `exams-database`.`course_group` (`idcourse_group`) VALUES (2);
-INSERT INTO `exams-database`.`course_group` (`idcourse_group`) VALUES (3);
-INSERT INTO `exams-database`.`course_group` (`idcourse_group`) VALUES (4);
-INSERT INTO `exams-database`.`course_group` (`idcourse_group`) VALUES (5);
-INSERT INTO `exams-database`.`course_group` (`idcourse_group`) VALUES (6);
-
-COMMIT;
-
--- -----------------------------------------------------
 -- Data for table `exams-database`.`lecturer`
 -- -----------------------------------------------------
 START TRANSACTION;
@@ -541,15 +517,15 @@ INSERT INTO `exams-database`.`degree_has_course` (`degree_iddegree`, `course_idc
 COMMIT;
 
 -- -----------------------------------------------------
--- Data for table `exams-database`.`exam_has_course_group`
+-- Data for table `exams-database`.`exam_has_course`
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `exams-database`;
-INSERT INTO `exams-database`.`exam_has_course_group` (`exam_idexam`, `course_idcourse`) VALUES (1, 1);
-INSERT INTO `exams-database`.`exam_has_course_group` (`exam_idexam`, `course_idcourse`) VALUES (2, 3);
-INSERT INTO `exams-database`.`exam_has_course_group` (`exam_idexam`, `course_idcourse`) VALUES (3, 5);
-INSERT INTO `exams-database`.`exam_has_course_group` (`exam_idexam`, `course_idcourse`) VALUES (4, 7);
-INSERT INTO `exams-database`.`exam_has_course_group` (`exam_idexam`, `course_idcourse`) VALUES (5, 2);
+INSERT INTO `exams-database`.`exam_has_course` (`exam_idexam`, `course_idcourse`) VALUES (1, 1);
+INSERT INTO `exams-database`.`exam_has_course` (`exam_idexam`, `course_idcourse`) VALUES (2, 3);
+INSERT INTO `exams-database`.`exam_has_course` (`exam_idexam`, `course_idcourse`) VALUES (3, 5);
+INSERT INTO `exams-database`.`exam_has_course` (`exam_idexam`, `course_idcourse`) VALUES (4, 7);
+INSERT INTO `exams-database`.`exam_has_course` (`exam_idexam`, `course_idcourse`) VALUES (5, 2);
 
 COMMIT;
 
