@@ -187,12 +187,22 @@ class ExamsController extends Zend_Controller_Action
                     $form->setCourseOptions($this->getRequest()->degree);
                     $form->setLecturerOptions($this->getRequest()->degree);
                     $form->setDegree($this->getRequest()->degree);
-                    //if($form->isValid($this->getRequest()->getPost())) {
+                    if($form->isValid($this->getRequest()->getPost())) {
                         $post = $this->getRequest()->getPost();
                         unset($post['submit']);
                         unset($post['step']);
-                        $this->_helper->Redirector->setGotoSimple('upload', null, null, $post);
-                    //}
+                        //$this->_helper->Redirector->setGotoSimple('upload', null, null, $post);
+                        $form = new Application_Form_UploadFile();
+                    }
+                    break;
+                case 3:
+                    $form = new Application_Form_UploadFile();
+                    if($form->isValid($this->getRequest()->getPost())) {
+                        $form->exam_file->receive();
+                        echo $form->exam_file->getFileName();
+                        
+                        $this->_helper->Redirector->setGotoSimple('upload_final');
+                    }
                     break;
                 default:
                
@@ -207,6 +217,13 @@ class ExamsController extends Zend_Controller_Action
         $this->view->form = $form;
     }
 
+    public function uploadfinalAction()
+    {
+        // action body
+    }
+
 
 }
+
+
 

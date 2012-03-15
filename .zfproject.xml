@@ -20,6 +20,7 @@
           <actionMethod actionName="search"/>
           <actionMethod actionName="download"/>
           <actionMethod actionName="upload"/>
+          <actionMethod actionName="uploadfinal"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -28,6 +29,7 @@
         <formFile formName="DegreeGroups"/>
         <formFile formName="UploadDegrees"/>
         <formFile formName="UploadDetail"/>
+        <formFile formName="UploadFile"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -48,6 +50,8 @@
           <dbTableFile dbTableName="DegreeHasCourse"/>
           <dbTableFile dbTableName="Document"/>
           <dbTableFile dbTableName="ExamSubType"/>
+          <dbTableFile dbTableName="ExamDegree"/>
+          <dbTableFile dbTableName="ExamUniversity"/>
         </dbTableDirectory>
         <modelFile modelName="DegreeGroup"/>
         <modelFile modelName="DegreeGroupMapper"/>
@@ -67,6 +71,10 @@
         <modelFile modelName="DocumentMapper"/>
         <modelFile modelName="ExamSubType"/>
         <modelFile modelName="ExamSubTypeMapper"/>
+        <modelFile modelName="ExamDegree"/>
+        <modelFile modelName="ExamDegreeMapper"/>
+        <modelFile modelName="ExamUniversity"/>
+        <modelFile modelName="ExamUniversityMapper"/>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
       <viewsDirectory>
@@ -97,6 +105,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Exams">
             <viewScriptFile forActionName="upload"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Exams">
+            <viewScriptFile forActionName="upload-final"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

@@ -59,7 +59,7 @@ class Application_Form_UploadDetail extends Zend_Form
         $this->_elementDegree = new Zend_Form_Element_Select('degree_exam');
         $this->_elementDegree->setRequired(true)
                                ->setLabel('Degree');
-        //$this->setExamDegree();
+        $this->setExamDegreeOptions();
         $this->addElement($this->_elementDegree);
         
         //
@@ -73,7 +73,7 @@ class Application_Form_UploadDetail extends Zend_Form
         $this->_elementUniversity = new Zend_Form_Element_Select('university');
         $this->_elementUniversity->setRequired(true)
                                ->setLabel('University');
-        //$this->setExamDegree();
+        $this->setExamUniversityOptions();
         $this->addElement($this->_elementUniversity);
         
         $this->addElement('textarea', 'comment', array(
@@ -181,6 +181,38 @@ class Application_Form_UploadDetail extends Zend_Form
         foreach($options as $id => $o) { $opt[$id] = $o; }
         if($opt != null) $this->_elementLecturer->setMultiOptions($opt);
         //$this->_elementLecturer->setValue(array('-1'));
+    }
+    
+    public function setExamDegreeOptions()
+    {
+        $options = array();
+        $courses = new Application_Model_ExamDegreeMapper();
+        $entries = $courses->fetchAll();
+
+        foreach($entries as $group)
+        {
+            $options[$group->getId()] = $group->getName();
+        } 
+    
+        $opt = array();
+        foreach($options as $id => $o) { $opt[$id] = $o; }
+        $this->_elementDegree->setMultiOptions($opt);
+    }
+    
+    public function setExamUniversityOptions()
+    {
+        $options = array();
+        $courses = new Application_Model_ExamUniversityMapper();
+        $entries = $courses->fetchAll();
+  
+        foreach($entries as $group)
+        {
+            $options[$group->getId()] = $group->getName();
+        }
+    
+        $opt = array();
+        foreach($options as $id => $o) { $opt[$id] = $o; }
+        $this->_elementUniversity->setMultiOptions($opt);
     }
     
     public function setDegree($id)
