@@ -8,6 +8,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $view = $this->getResource('view');
         $view->doctype('XHTML1_STRICT');
     }
+    
+    public function _initExams()
+    {
+        $examsConfig = $this->getOption('exams');
+        Zend_Registry::set('examDBConfig', $examsConfig);
+    }
 
 }
 

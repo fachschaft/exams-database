@@ -130,6 +130,10 @@ class Application_Model_ExamMapper
                 $lecturers[$id] = $lect['name'] .', '. $lect['degree'] . ' ' . $lect['first_name'];
             }
             
+            // collect documents
+            $documentsMapper = new Application_Model_DocumentMapper();
+            $documents = $documentsMapper->fetchByExamId($row['idexam']);
+            
             
             $entry->setId($row['idexam'])
                   ->setSemester($row['semester_name'])
@@ -137,12 +141,79 @@ class Application_Model_ExamMapper
                   ->setType($row['type_name'])
                   ->setSubType($row['sub_typ_name'])
                   ->setCourse($courses)
+                  ->setDocuments($documents)
                   ;
             $entries[] = $entry;
+            
+            
+            
+            
         }
 
         return $entries;
     }
 
+    public function saveAsNewExam($exam) {
+        if($this->validateNewExam($exam)) {
+            
+            $data = array(
+                    'semester_idsemester'           => $exam->semester,
+                    'exam_type_idexam_type'         => $exam->type,
+                    'exam_sub_type_idexam_sub_type' => $exam->subType,
+                    // autor is missing in db, fix this ;)
+                    'exam_status_idexam_status'     => 4,
+                    'exam_degree_idexam_degree'     => $exam->degree,
+                    'university_iduniversity'       => $exam->university,
+                    'comment'                       => $exam->comment
+                );
+            
+            
+            $insert = $this->getDbTable()->insert($data);
+            
+            // insert the connection to the corse
+            foreach ($exam->course as $course) {
+                $this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_has_course` (`exam_idexam` ,`course_idcourse`)
+                                                         VALUES ('".$insert."',  '".$course."')");
+
+            }
+            
+            // insert the connection to the lecturer
+            foreach ($exam->lecturer as $lecturer) {
+                $this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_has_lecturer` (`exam_idexam` ,`lecturer_idlecturer`)
+                                                         VALUES ('".$insert."',  '".$lecturer."')");
+
+            }
+
+        } else {
+            // handle fail
+        }
+        
+        return $insert;
+    }
+    
+    // return true if the exam is valid, (has no id and no proboerty has a wrong value)
+    private function validateNewExam($exam) {
+        /*
+        protected $_id;
+        protected $_semester;
+        protected $_type;
+        protected $_subType;
+        protected $_lecturer;
+        protected $_document;
+        protected $_course;
+        protected $_comment;
+        protected $_degree;
+        protected $_university;
+        protected $_autor;
+        */
+        
+        if($exam->Id != "") {
+            return false;
+        }
+        if($exam->Semester == "" || !is_int((int)$exam->Semester)) {
+            return false;
+        }
+        return true;
+    }
 }
 

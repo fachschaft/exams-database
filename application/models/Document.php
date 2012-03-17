@@ -2,9 +2,14 @@
 
 class Application_Model_Document
 {
-    protected $_data;
     protected $_extention;
     protected $_id;
+    protected $_examId;
+    protected $_uploadDate;
+    protected $_deleted;
+    protected $_fileName;
+    protected $_mimeType;
+    protected $_submitFileName;
     
     public function __construct(array $options = null)
     {
@@ -17,7 +22,7 @@ class Application_Model_Document
     {
         $method = 'set' . $name;
         if (('mapper' == $name) || !method_exists($this, $method)) {
-            throw new Exception('Invalid property in the following model: Degree');
+            throw new Exception('Invalid property in the following model: Document');
         }
         $this->$method($value);
     }
@@ -26,7 +31,7 @@ class Application_Model_Document
     {
         $method = 'get' . $name;
         if (('mapper' == $name) || !method_exists($this, $method)) {
-            throw new Exception('Invalid property in the following model: Degree');
+            throw new Exception('Invalid property in the following model: Document');
         }
         return $this->$method();
     }
@@ -74,6 +79,72 @@ class Application_Model_Document
     public function getId()
     {
         return $this->_id;
+    }
+    
+    public function setExamId($id)
+    {
+        $this->_examId = (int) $id;
+        return $this;
+    }
+ 
+    public function getExamId()
+    {
+        return $this->_examId;
+    }
+    
+    public function setUploadDate($date)
+    {
+        $this->_uploadDate = (int) $date;
+        return $this;
+    }
+ 
+    public function getUploadDate()
+    {
+        return $this->_uploadDate;
+    }
+    
+    public function setDeleteState($delet)
+    {
+        $this->_deleted = (bool) $delet;
+        return $this;
+    }
+ 
+    public function getDeleteState()
+    {
+        return $this->_deleted;
+    }
+    
+    public function setFileName($fileName)
+    {
+        $this->_fileName = (string) $fileName;
+        return $this;
+    }
+ 
+    public function getFileName()
+    {
+        return $this->_fileName;
+    }
+    
+    public function setMimeType($type)
+    {
+        $this->_mimeType = (string) $type;
+        return $this;
+    }
+ 
+    public function getMimeType()
+    {
+        return $this->_mimeType;
+    } 
+    
+    public function setSubmitFileName($name)
+    {
+        $this->_submitFileName = (string) $name;
+        return $this;
+    }
+ 
+    public function getSubmitFileName()
+    {
+        return $this->_submitFileName;
     }
 
 }

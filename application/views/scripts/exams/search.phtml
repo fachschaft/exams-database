@@ -6,12 +6,14 @@
         <?php foreach ($this->exams as $entry): ?>
         <hr>
     <dt><?php echo $entry->id ?> - 
+    <? foreach ($entry->documents as $document): ?>
     <a href="<?php echo $this->url(
             array('controller'=>'exams',
                   'action'=>'download',
-                  'id'=>$entry->id),
+                  'id'=>$document->id),
             'default',
-            true) ?>">Download</a>
+            true) ?>">Download</a><br \>
+         <?php endforeach ?>   
 
     </dt>
     <dd><?php 

@@ -33,7 +33,7 @@ class Application_Form_UploadDetail extends Zend_Form
         $this->addElement($this->_elementLecturer);
         
         //
-        $this->_elementSemester = new Zend_Form_Element_Multiselect('semester');
+        $this->_elementSemester = new Zend_Form_Element_Select('semester');
         $this->_elementSemester->setAttrib('size', '10')
                                ->setRequired(true)
                                ->setLabel('Semester');
@@ -41,7 +41,7 @@ class Application_Form_UploadDetail extends Zend_Form
         $this->addElement($this->_elementSemester);
         
         //
-        $this->_elementExamType = new Zend_Form_Element_Multiselect('examType');
+        $this->_elementExamType = new Zend_Form_Element_Select('type');
         $this->_elementExamType->setAttrib('size', '5')
                                ->setRequired(true)
                                ->setLabel('Typ');

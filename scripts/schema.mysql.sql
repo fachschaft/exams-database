@@ -1,10 +1,7 @@
--- scripts/schema.mysql.sql
---
--- You will need load your database schema with this SQL.
- 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+
 
 -- -----------------------------------------------------
 -- Table `degree_group`
@@ -137,6 +134,9 @@ CREATE  TABLE IF NOT EXISTS `exam` (
   `exam_degree_idexam_degree` INT NOT NULL ,
   `university_iduniversity` INT NOT NULL ,
   `comment` TEXT NULL ,
+  `autor` TEXT NULL ,
+  `create_date` TIMESTAMP NULL ,
+  `modified_last_date` TIMESTAMP NULL ,
   PRIMARY KEY (`idexam`) ,
   INDEX `fk_exame_semester` (`semester_idsemester` ASC) ,
   INDEX `fk_exame_exame_type` (`exam_type_idexam_type` ASC) ,
@@ -198,11 +198,13 @@ DROP TABLE IF EXISTS `document` ;
 
 CREATE  TABLE IF NOT EXISTS `document` (
   `iddocument` INT NOT NULL AUTO_INCREMENT ,
+  `exam_idexam` INT NOT NULL ,
   `extention` VARCHAR(10) NULL ,
   `submit_file_name` VARCHAR(255) NULL ,
-  `data` LONGBLOB NULL ,
-  `deleted` TINYINT(1)  NULL DEFAULT false ,
-  `exam_idexam` INT NOT NULL ,
+  `mime_type` VARCHAR(255) NULL ,
+  `file_name` VARCHAR(255) NULL ,
+  `deleted` TINYINT(1) NULL DEFAULT false ,
+  `upload_date` TIMESTAMP NULL ,
   PRIMARY KEY (`iddocument`) ,
   INDEX `fk_document_exam1` (`exam_idexam` ASC) ,
   CONSTRAINT `fk_document_exam1`
@@ -347,6 +349,7 @@ CREATE  TABLE IF NOT EXISTS `course_has_course` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

@@ -8,9 +8,12 @@ class Application_Model_Exam
     protected $_type;
     protected $_subType;
     protected $_lecturer;
-    protected $_document;
+    protected $_documents;
     protected $_course;
     protected $_comment;
+    protected $_degree;
+    protected $_university;
+    protected $_autor;
     
     public function __construct(array $options = null)
     {
@@ -134,6 +137,51 @@ class Application_Model_Exam
     {
         return $this->_course;
     }
-
+    
+    public function setDegree($text)
+    {
+        $this->_degree = (string) $text;
+        return $this;
+    }
+ 
+    public function getDegree()
+    {
+        return $this->_degree;
+    }
+    
+    public function setUniversity($text)
+    {
+        $this->_university = (string) $text;
+        return $this;
+    }
+ 
+    public function getUniversity()
+    {
+        return $this->_university;
+    }
+    
+    public function setAutor($text)
+    {
+        $this->_autor = (string) $text;
+        return $this;
+    }
+ 
+    public function getAutor()
+    {
+        return $this->_autor;
+    }
+    
+    public function setDocuments($documents)
+    {
+        $this->_documents = $documents;
+        return $this;
+    }
+ 
+    public function getDocuments()
+    {
+        return $this->_documents;
+    }
+    
+    
 }
 
