@@ -108,7 +108,7 @@ class Application_Form_UploadDetail extends Zend_Form
             } 
         }
     
-        $opt = array('-1'=>'- other -');
+        $opt = array();
         foreach($options as $id => $o) { $opt[$id] = $o; }
         $this->_elementCourse->setMultiOptions($opt);
     }
@@ -124,7 +124,7 @@ class Application_Form_UploadDetail extends Zend_Form
            $options[$group->getId()] = $group->getName();
         }
   
-        $opt = array('-1'=>'- other -');
+        //$opt = array('-1'=>'- other -');
         foreach($options as $id => $o) { $opt[$id] = $o; }
         $this->_elementSemester->setMultiOptions($opt);
         //$this->_elementSemester->setValue(array('-1'));
@@ -161,7 +161,7 @@ class Application_Form_UploadDetail extends Zend_Form
         //$opt = array('-1'=>'- all -');
         foreach($options as $id => $o) { $opt[$id] = $o; }
         $this->_elementExamSubType->setMultiOptions($opt);
-        $this->_elementExamSubType->setValue(array('-1'));
+        //$this->_elementExamSubType->setValue(array('-1'));
     }
     
     public function setLecturerOptions($degree)
@@ -177,7 +177,7 @@ class Application_Form_UploadDetail extends Zend_Form
             }
         }
     
-        $opt = array('-1'=>'- other -');
+        //$opt = array('-1'=>'- other -');
         foreach($options as $id => $o) { $opt[$id] = $o; }
         if($opt != null) $this->_elementLecturer->setMultiOptions($opt);
         //$this->_elementLecturer->setValue(array('-1'));

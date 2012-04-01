@@ -152,35 +152,62 @@ class Application_Model_ExamMapper
 
         return $entries;
     }
+	
+	public function find($id)
+    {
+        $result = $this->getDbTable()->find($id);
+        if (0 == count($result)) {
+            return;
+        }
+        $row = $result->current();
+		$exam = new Application_Model_Exam();
+        $exam->setId($row->idexam)
+             ->setComment($row->comment)
+             ->setSemester($row->semester_idsemester)
+             ->setType($row->exam_type_idexam_type)
+			 ->setSubType($row->exam_sub_type_idexam_sub_type)
+			 ->setDegree($row->exam_degree_idexam_degree)
+			 ->setUniversity($row->university_iduniversity)
+			 ->setAutor($row->autor)
+			 ->setStatus($row->exam_status_idexam_status);
+				  
+		return $exam;
+    }
 
     public function saveAsNewExam($exam) {
         if($this->validateNewExam($exam)) {
-            
             $data = array(
                     'semester_idsemester'           => $exam->semester,
                     'exam_type_idexam_type'         => $exam->type,
                     'exam_sub_type_idexam_sub_type' => $exam->subType,
                     // autor is missing in db, fix this ;)
-                    'exam_status_idexam_status'     => 4,
+                    'exam_status_idexam_status'     => 1,
                     'exam_degree_idexam_degree'     => $exam->degree,
                     'university_iduniversity'       => $exam->university,
-                    'comment'                       => $exam->comment
+                    'comment'                       => $exam->comment,
+					'create_date'					=> new Zend_Db_Expr('NOW()'),
+					'modified_last_date'			=> new Zend_Db_Expr('NOW()')
                 );
+			
             
             
             $insert = $this->getDbTable()->insert($data);
             
             // insert the connection to the corse
             foreach ($exam->course as $course) {
-                $this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_has_course` (`exam_idexam` ,`course_idcourse`)
-                                                         VALUES ('".$insert."',  '".$course."')");
+				if($course != "-1") {
+					$this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_has_course` (`exam_idexam` ,`course_idcourse`)
+															  VALUES ('".$insert."',  '".$course."')");
+				}
 
             }
             
             // insert the connection to the lecturer
             foreach ($exam->lecturer as $lecturer) {
+				if($lecturer != "-1") {
                 $this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_has_lecturer` (`exam_idexam` ,`lecturer_idlecturer`)
                                                          VALUES ('".$insert."',  '".$lecturer."')");
+				}
 
             }
 
@@ -189,6 +216,12 @@ class Application_Model_ExamMapper
         }
         
         return $insert;
+    }
+	
+	public function updateExamStatusToUnchecked($examId) {
+ 
+        $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '2', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
+
     }
     
     // return true if the exam is valid, (has no id and no proboerty has a wrong value)

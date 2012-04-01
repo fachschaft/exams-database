@@ -14,6 +14,7 @@ class Application_Model_Exam
     protected $_degree;
     protected $_university;
     protected $_autor;
+	protected $_status;
     
     public function __construct(array $options = null)
     {
@@ -182,6 +183,16 @@ class Application_Model_Exam
         return $this->_documents;
     }
     
+	public function setStatus($status)
+    {
+        $this->_status = $status;
+        return $this;
+    }
+ 
+    public function getStatus()
+    {
+        return $this->_status;
+    }
     
 }
 

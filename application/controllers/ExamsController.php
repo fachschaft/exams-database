@@ -143,7 +143,6 @@ class ExamsController extends Zend_Controller_Action
             
             header('Content-Type: application/octet-stream');
             header("Content-Disposition: attachment; filename=".date('YmdHis').".".$entries->getExtention());
-            //echo $entries->getFileName();//readfile ($path);
             $config = Zend_Registry::get('examDBConfig');
             $path = $config['storagepath'];
             readfile ($path . $entries->getFileName() . "." . $entries->getextention());
@@ -167,8 +166,14 @@ class ExamsController extends Zend_Controller_Action
                 $form->setLecturerOptions($this->getRequest()->degree);
                 $form->setDegree($this->getRequest()->degree);
         }
+		
+		if(isset($this->getRequest()->exam)) {
+                $step = 3;
+                $form = new Application_Form_UploadFile();
+				$form->setExamId($this->getRequest()->exam);
+        }
         
-        if ($this->getRequest()->isPost()) {
+        if ($this->getRequest()->isPost() || $step == 3) {
             
             if(isset($this->getRequest()->step)) {
                 $step = $this->getRequest()->step;
@@ -203,54 +208,80 @@ class ExamsController extends Zend_Controller_Action
                         
                         $examId = $examMapper->saveAsNewExam($exam);
                         $exam->setId($examId);
-
-                        
-                        //unset($post['submit']);
-                        //unset($post['step']);
-                        //$this->_helper->Redirector->setGotoSimple('upload', null, null, $post);
-                        $form = new Application_Form_UploadFile();
-                        
-                        $form->setExamId($examId);
+						
+						$data = array();
+						$data['exam'] = $examId;
+						$this->_helper->Redirector->setGotoSimple('upload', null, null, $data);
                     }
                     break;
                 case 3:
-                    //toDo(aritas1): abstract this
+					$examMapper = new Application_Model_ExamMapper();
+					if (!$this->getRequest()->isPost()) {
+						$exam = $examMapper->find($this->getRequest()->exam);
+						if($exam->id != $this->getRequest()->exam) {
+							throw new Zend_Exception ("Sorry, no exam found.");
+						}
+						else if($exam->status != 1) {
+							throw new Zend_Exception ("Sorry, you can't upload twice!");
+						}
+					}
+					
                     $config = Zend_Registry::get('examDBConfig');
                     $dir = $config['storagepath'];
                     $form = new Application_Form_UploadFile();
-                    if($form->isValid($this->getRequest()->getPost())) {
-                        $post = $this->getRequest()->getPost();
-                        if($form->exam_file->receive()) {
-                        $location = $form->exam_file->getFileName();
-                        $mime = $form->exam_file->getMimeType();
-                        $ex_names = preg_split('/\./', $location, -1);
-                        $extention = $ex_names[count($ex_names)-1];
-                        if(!is_writable($dir)) {
-                            unlink($location);
-                            throw new Zend_Exception ("Cannot write in directory (".$dir.")");
-                        }
-                        //ToDo(aritas1): Handle all errors!
-                        //ToDo(aritas1): handel if the file exists
-                        $new_file_name = md5(time());
-                        rename($location, $dir.$new_file_name.".".$extention);
-                        } else {
-                            break;
-                        }
-                        
-                        // save the file name to database (crate a document) and link this to the exam
-                        $document = new Application_Model_Document();
+					$form->setExamId($this->getRequest()->exam);
+                    
+					if ($this->getRequest()->isPost()) {
+						if($form->isValid($this->getRequest()->getPost())) {
+							$post = $this->getRequest()->getPost();
+							
+							$exam = $examMapper->find($post['examId']);
+							if($exam->id != $post['examId'] || $exam->status != 1) {
+								throw new Zend_Exception ("Sorry, you can't upload twice!");
+							}
 
-                        $document->ExamId = $post['examId'];
-                        $document->extention = $extention;
-                        $file_names = preg_split('/\//', $location, -1);
-                        $document->submitFileName = $file_names[count($file_names)-1];
-                        $document->fileName = $new_file_name;
-                        $document->mimeType = $mime;
-                        
-                        $documentMapper = new Application_Model_DocumentMapper();
-                        $documentMapper->saveNew($document);
-                        
-                        $this->_helper->Redirector->setGotoSimple('upload_final');
+							if($form->exam_file->receive()) {
+							$location = $form->exam_file->getFileName();
+							$mime = $form->exam_file->getMimeType();
+							$ex_names = preg_split('/\./', $location, -1);
+							$extention = $ex_names[count($ex_names)-1];
+							
+							if(!is_writable($dir)) {
+								unlink($location);
+								throw new Zend_Exception ("Cannot write in directory (".$dir.")");
+							}
+							//ToDo(aritas1): Handle all errors!
+							$new_file_name = md5(time());
+							$count = 0;
+							while(file_exists($dir.$new_file_name.".".$extention))
+							{
+								$new_file_name = md5(time());
+								$count++;
+								if($count > 100) { throw new Zend_Exception ("Cannot find a free filname, please contact the admin!"); }
+							}
+							rename($location, $dir.$new_file_name.".".$extention);
+							} else {
+								break;
+							}
+							
+							// save the file name to database (crate a document) and link this to the exam
+							$document = new Application_Model_Document();
+
+							$document->ExamId = $post['examId'];
+							$document->extention = $extention;
+							$file_names = preg_split('/\//', $location, -1);
+							$document->submitFileName = $file_names[count($file_names)-1];
+							$document->fileName = $new_file_name;
+							$document->mimeType = $mime;
+							
+							$documentMapper = new Application_Model_DocumentMapper();
+							$documentMapper->saveNew($document);
+							
+							
+							$examMapper->updateExamStatusToUnchecked($document->ExamId);
+							
+							$this->_helper->Redirector->setGotoSimple('upload_final');
+						}
                     }
                     break;
                 default:
