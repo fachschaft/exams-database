@@ -49,6 +49,23 @@ class Application_Model_LecturerMapper
         
         return $entries;
     }
+	
+	public function fetchAll()
+    {    
+        $resultSet = $this->GetDbTable()->fetchAll();
+
+        $entries = array();
+        foreach ($resultSet as $row) {
+            $entry = new Application_Model_Lecturer();
+            $entry->setId($row['idlecturer'])
+                  ->setFirstName($row['first_name'])
+                  ->setDegree($row['degree'])
+                  ->setName($row['name']);
+            $entries[] = $entry;
+        }
+        
+        return $entries;
+    }
 
 }
 

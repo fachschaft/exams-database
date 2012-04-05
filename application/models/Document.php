@@ -10,6 +10,7 @@ class Application_Model_Document
     protected $_fileName;
     protected $_mimeType;
     protected $_submitFileName;
+	protected $_checkSum;
     
     public function __construct(array $options = null)
     {
@@ -145,6 +146,17 @@ class Application_Model_Document
     public function getSubmitFileName()
     {
         return $this->_submitFileName;
+    }
+	
+	public function setCheckSum($sum)
+    {
+        $this->_checkSum = (string) $sum;
+        return $this;
+    }
+ 
+    public function getCheckSum()
+    {
+        return $this->_checkSum;
     }
 
 }

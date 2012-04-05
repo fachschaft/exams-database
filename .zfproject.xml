@@ -22,6 +22,11 @@
           <actionMethod actionName="upload"/>
           <actionMethod actionName="uploadfinal"/>
         </controllerFile>
+        <controllerFile controllerName="ExamsAdmin">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="overview"/>
+          <actionMethod actionName="editdetails"/>
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory>
         <formFile formName="ExamDegrees"/>
@@ -30,6 +35,7 @@
         <formFile formName="UploadDegrees"/>
         <formFile formName="UploadDetail"/>
         <formFile formName="UploadFile"/>
+        <formFile formName="AdminDetail"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -108,6 +114,15 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Exams">
             <viewScriptFile forActionName="upload-final"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
+            <viewScriptFile forActionName="overview"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
+            <viewScriptFile forActionName="editdetails"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

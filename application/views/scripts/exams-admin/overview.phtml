@@ -40,8 +40,8 @@
 }
 </style>
 <div id="view-content">
-	<p>View script for controller <b>Exams</b> and script/action name <b>search</b></p>
-<? if($this->form != null): echo $this->form; ?>
+	<p>View script for controller <b>ExamsAdmin</b> and script/action name <b>overview</b></p>
+	<? if($this->form != null): echo $this->form; ?>
         <? else: ?>
         
     <table id="gradient-style">
@@ -52,9 +52,9 @@
 		<th>Semester</th>
 		<th>Lecturer</th>
 		<th>Type</th>
-		<th>Comment</th>
 		<th>Files</th>
-		<th></th>
+		<th>Comment</th>
+		<th>Options</th>
 	</tr>
  	
 	<?php foreach ($this->exams as $entry): ?>
@@ -95,18 +95,11 @@
         echo $entry->Type;
         echo '<br>';
         echo $entry->SubType;
-		//echo '<br>';
-        //echo $entry->university;
+		echo '<br>';
+        echo $entry->university;
 		echo '<br>';
         echo $entry->Autor;
-    ?></dd>
-    </div>
-	</td>
-	<td>
-	<div id="exam-comment" style="max-width:150px;">    
-	<?
-        echo $entry->comment;
-    ?></dd>
+    ?>
     </div>
 	</td>
 	<td>
@@ -117,31 +110,59 @@
                   'action'=>'download',
                   'id'=>$document->id),
             'default',
-            true) ?>">File <? echo $id+1; ?></a><br \>
+            true) ?>">File <? echo $id+1; ?></a> [<? echo $document->mimeType; ?>]<br \>
          <?php endforeach ?>   
 	</div>
 	</td>
 	<td>
-	<a href="<?php echo $this->url(
+	<div id="exam-comment" style="max-width:150px;">    
+	<?
+        echo $entry->comment;
+    ?>
+    </div>
+	</td>
+	<td>
+		<div id="exam-control">
+		<a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'overview',
-				  'do'=>'disapprove',
+                  'do'=>'delete',
                   'id'=>$entry->id),
             'default',
-            true) ?>">disapprove</a><br \>
-	<a href="<?php echo $this->url(
-            array('controller'=>'exams',
-                  'action'=>'report',
+            true) ?>">delete</a><br>
+		<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'overview',
+                  'do'=>'edit',
                   'id'=>$entry->id),
             'default',
-            true) ?>">report</a><br \>
+            true) ?>">edit</a><br>
+		<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'overview',
+                  'do'=>'edit-files',
+                  'id'=>$entry->id),
+            'default',
+            true) ?>">edit files</a><br>
+		<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'overview',
+                  'do'=>'approve',
+                  'id'=>$entry->id),
+            'default',
+            true) ?>">approve</a><br>
+		<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'overview',
+                  'do'=>'log',
+                  'id'=>$entry->id),
+            'default',
+            true) ?>">log</a><br>
+		</div>
 	</td>
 	</tr>
 	<?php endforeach ?>
 	</table>
     
     <? endif; ?>
-	
-	<p>* - connected to the origin Exam(s)</p>
-    
 </div>

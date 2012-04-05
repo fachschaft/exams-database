@@ -4,6 +4,7 @@ class Application_Model_Exam
 {
     
     protected $_id;
+	protected $_degreeId; // not the text degree
     protected $_semester;
     protected $_type;
     protected $_subType;
@@ -63,6 +64,19 @@ class Application_Model_Exam
     {
         return $this->_id;
     }
+	
+	public function setDegreeId($id)
+    {
+        $this->_degreeId = (int) $id;
+        return $this;
+    }
+ 
+    public function getDegreeId()
+    {
+        return $this->_degreeId;
+    }
+	
+	
     
     public function setComment($comment)
     {

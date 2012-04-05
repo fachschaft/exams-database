@@ -130,7 +130,8 @@ class ExamsController extends Zend_Controller_Action
                         $this->getRequest()->lecturer,
                         $this->getRequest()->semester,
                         $this->getRequest()->examType, 
-                        $this->getRequest()->degree
+                        $this->getRequest()->degree,
+						"3"	// 3 means public state
                         );
     }
 
@@ -140,6 +141,8 @@ class ExamsController extends Zend_Controller_Action
         {        
             $x = new Application_Model_DocumentMapper();
             $entries = $x->fetch($this->getRequest()->id);
+			
+			$x->updateDownloadCounter($entries->id);
             
             header('Content-Type: application/octet-stream');
             header("Content-Disposition: attachment; filename=".date('YmdHis').".".$entries->getExtention());
@@ -205,6 +208,7 @@ class ExamsController extends Zend_Controller_Action
                         $exam->setOptions($post);
                         $exam->setDegree(null);
                         $exam->setDegree($post['degree_exam']);
+						$exam->setDegreeId($post['degree']);
                         
                         $examId = $examMapper->saveAsNewExam($exam);
                         $exam->setId($examId);
@@ -242,7 +246,7 @@ class ExamsController extends Zend_Controller_Action
 
 							if($form->exam_file->receive()) {
 							$location = $form->exam_file->getFileName();
-							$mime = $form->exam_file->getMimeType();
+							//$mime = $form->exam_file->getMimeType();
 							$ex_names = preg_split('/\./', $location, -1);
 							$extention = $ex_names[count($ex_names)-1];
 							
@@ -259,6 +263,17 @@ class ExamsController extends Zend_Controller_Action
 								$count++;
 								if($count > 100) { throw new Zend_Exception ("Cannot find a free filname, please contact the admin!"); }
 							}
+							$sum = md5_file($location);
+							
+							// for php >= 5.3
+							/*$finfo = new finfo(FILEINFO_MIME, "/usr/share/misc/magic"); // return mime type ala mimetype extension
+
+							if (!$finfo) {
+								throw new Zend_Exception ("Cannot open the mime type Database, please contact the admin!");
+							}
+							$mime = $finfo->file($location);*/
+							$mime = mime_content_type($location);
+							
 							rename($location, $dir.$new_file_name.".".$extention);
 							} else {
 								break;
@@ -273,6 +288,7 @@ class ExamsController extends Zend_Controller_Action
 							$document->submitFileName = $file_names[count($file_names)-1];
 							$document->fileName = $new_file_name;
 							$document->mimeType = $mime;
+							$document->checkSum = $sum;
 							
 							$documentMapper = new Application_Model_DocumentMapper();
 							$documentMapper->saveNew($document);

@@ -62,6 +62,11 @@ class Application_Model_DocumentMapper
         }
         return $entries;
     }
+	
+	public function updateDownloadCounter($documentId)
+	{
+		$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `downloads` =  `downloads`+1 WHERE `iddocument` =".$documentId.";");
+	}
 
     
     public function saveNew($document)
@@ -72,7 +77,8 @@ class Application_Model_DocumentMapper
                     'file_name'         => $document->fileName,
                     'mime_type'         => $document->mimeType,
                     'upload_date'       => new Zend_Db_Expr('NOW()'),
-                    'exam_idexam'       => $document->ExamId
+                    'exam_idexam'       => $document->ExamId,
+					'md5_sum'			=> $document->CheckSum
                 );
             
             

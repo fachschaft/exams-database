@@ -51,6 +51,21 @@ class Application_Model_CourseMapper
         
         return $entries;
     }
+	
+	public function fetchAll()
+    {    
+        $resultSet = $this->GetDbTable()->fetchAll();
+
+        $entries = array();
+        foreach ($resultSet as $row) {
+            $entry = new Application_Model_Course();
+            $entry->setId($row['idcourse'])
+                  ->setName($row['name']);
+            $entries[] = $entry;
+        }
+        
+        return $entries;
+    }
 
 }
 

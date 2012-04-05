@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Zend Framework Exam Database</title>
+  <title>Exam Database</title>
   <?php echo $this->headLink()->appendStylesheet('/css/global.css') ?>
 </head>
 <body>
@@ -16,12 +16,17 @@
             array('controller'=>'exams',
                   'action'=>'groups'),
             'default',
-            true) ?>">Exams Search</a>
+            true) ?>">Search</a>
         <a href="<?php echo $this->url(
             array('controller'=>'exams',
                   'action'=>'upload'),
             'default',
-            true) ?>">Exams Upload</a>
+            true) ?>">Upload</a>
+		<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'index'),
+            'default',
+            true) ?>">Admin</a>
     </div>
 </div>
  

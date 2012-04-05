@@ -127,6 +127,7 @@ DROP TABLE IF EXISTS `exam` ;
 
 CREATE  TABLE IF NOT EXISTS `exam` (
   `idexam` INT NOT NULL AUTO_INCREMENT ,
+  `degree_iddegree` INT NOT NULL ,
   `semester_idsemester` INT NOT NULL ,
   `exam_type_idexam_type` INT NOT NULL ,
   `exam_sub_type_idexam_sub_type` INT NOT NULL ,
@@ -144,6 +145,7 @@ CREATE  TABLE IF NOT EXISTS `exam` (
   INDEX `fk_exam_exam_status` (`exam_status_idexam_status` ASC) ,
   INDEX `fk_exam_exam_degree1` (`exam_degree_idexam_degree` ASC) ,
   INDEX `fk_exam_university1` (`university_iduniversity` ASC) ,
+  INDEX `fk_exam_degree1` (`degree_iddegree` ASC) ,
   CONSTRAINT `fk_exame_semester`
     FOREIGN KEY (`semester_idsemester` )
     REFERENCES `semester` (`idsemester` )
@@ -172,6 +174,11 @@ CREATE  TABLE IF NOT EXISTS `exam` (
   CONSTRAINT `fk_exam_university1`
     FOREIGN KEY (`university_iduniversity` )
     REFERENCES `university` (`iduniversity` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_exam_degree1`
+    FOREIGN KEY (`degree_iddegree` )
+    REFERENCES `degree` (`iddegree` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -203,8 +210,11 @@ CREATE  TABLE IF NOT EXISTS `document` (
   `submit_file_name` VARCHAR(255) NULL ,
   `mime_type` VARCHAR(255) NULL ,
   `file_name` VARCHAR(255) NULL ,
-  `deleted` TINYINT(1) NULL DEFAULT false ,
+  `deleted` TINYINT(1) NOT NULL DEFAULT 0 ,
+  `reviewed` TINYINT(1) NOT NULL DEFAULT 0 ,
+  `downloads` INT NOT NULL DEFAULT 0 ,
   `upload_date` TIMESTAMP NULL ,
+  `md5_sum` VARCHAR(32) NULL ,
   PRIMARY KEY (`iddocument`) ,
   INDEX `fk_document_exam1` (`exam_idexam` ASC) ,
   CONSTRAINT `fk_document_exam1`
@@ -247,6 +257,7 @@ CREATE  TABLE IF NOT EXISTS `exam_log` (
   `idexam_log` INT NOT NULL AUTO_INCREMENT ,
   `exam_idexam` INT NOT NULL ,
   `message` TEXT NULL ,
+  `date` TIMESTAMP NULL DEFAULT NOW() ,
   PRIMARY KEY (`idexam_log`) ,
   INDEX `fk_exam_log_exam` (`exam_idexam` ASC) ,
   CONSTRAINT `fk_exam_log_exam`
