@@ -118,8 +118,21 @@ class ExamsAdminController extends Zend_Controller_Action
 		}
     }
 
+    public function logAction()
+    {
+        // action body
+		if(!isset($this->getRequest()->id)) {
+		} else {
+			$logMapper = new Application_Model_LogMapper();
+			$log = $logMapper->fetchByExam($this->getRequest()->id);
+			$this->view->log = $log->logMessages;
+		}
+    }
+
 
 }
+
+
 
 
 

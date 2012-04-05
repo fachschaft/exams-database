@@ -1,0 +1,10 @@
+<br /><br />
+<div id="view-content">
+	<p>View script for controller <b>ExamsAdmin</b> and script/action name <b>log</b></p>
+	<? if($this->log == null): echo "<h1>No log available</h1>"; ?>
+        <? else: ?>
+	<?php foreach ($this->log as $entry): ?>
+	<? echo $entry ."<br>"; ?>
+	<?php endforeach ?>
+	<? endif; ?>
+</div>

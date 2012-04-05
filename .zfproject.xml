@@ -26,6 +26,7 @@
           <actionMethod actionName="index"/>
           <actionMethod actionName="overview"/>
           <actionMethod actionName="editdetails"/>
+          <actionMethod actionName="log"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -58,6 +59,7 @@
           <dbTableFile dbTableName="ExamSubType"/>
           <dbTableFile dbTableName="ExamDegree"/>
           <dbTableFile dbTableName="ExamUniversity"/>
+          <dbTableFile dbTableName="ExamLog"/>
         </dbTableDirectory>
         <modelFile modelName="DegreeGroup"/>
         <modelFile modelName="DegreeGroupMapper"/>
@@ -81,6 +83,8 @@
         <modelFile modelName="ExamDegreeMapper"/>
         <modelFile modelName="ExamUniversity"/>
         <modelFile modelName="ExamUniversityMapper"/>
+        <modelFile modelName="Log"/>
+        <modelFile modelName="LogMapper"/>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
       <viewsDirectory>
@@ -123,6 +127,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
             <viewScriptFile forActionName="editdetails"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
+            <viewScriptFile forActionName="log"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>
