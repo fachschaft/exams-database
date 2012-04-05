@@ -27,6 +27,19 @@
                   'action'=>'index'),
             'default',
             true) ?>">Admin</a>
+		<? if(!Zend_Auth::getInstance()->hasIdentity()): ?>
+		<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'login'),
+            'default',
+            true) ?>">Login</a>
+		<? else: ?>	
+		<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'logout'),
+            'default',
+            true) ?>">Logout</a>
+			<? endif; ?>
     </div>
 </div>
  

@@ -5,7 +5,20 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function init()
     {
-        /* Initialize action controller here */
+        // check if a login exists for admin controller
+		if(!Zend_Auth::getInstance()->hasIdentity() && $this->getRequest()->getActionName() != "login") {
+			//var_dump($this->getRequest());
+			$data = $this->getRequest()->getParams();
+			//var_dump($data); // array(5) { ["controller"]=> string(11) "exams-admin" ["action"]=> string(8) "overview" ["do"]=> string(10) "disapprove" ["id"]=> string(2) "10" ["module"]=> string(7) "default" } 
+			if(isset($data['rcontroller']) || isset($data['raction'])) { } else {
+				$data['rcontroller'] = $data['controller'];
+				$data['raction'] = $data['action'];
+			}
+			unset($data['controller']);
+			unset($data['action']);
+			$this->_helper->Redirector->setGotoSimple('login', null, null, $data);
+			//$this->_helper->redirector('login');
+		}
     }
 
     public function indexAction()
@@ -129,8 +142,76 @@ class ExamsAdminController extends Zend_Controller_Action
 		}
     }
 
+    public function loginAction()
+    {
+		$request = $this->getRequest();
+
+        // Check if we have a POST request
+        if ($request->isPost()) {
+			// Get our form and validate it
+			$form = $this->getLoginForm();
+			if (!$form->isValid($request->getPost())) {
+				// Invalid entries
+				$this->view->form = $form;
+				return $this->render('login'); // re-render the login form
+			}
+
+			// Get our authentication adapter and check credentials
+			$adapter = $this->getAuthAdapter($form->getValues());
+			$auth    = Zend_Auth::getInstance();
+			$result  = $auth->authenticate($adapter);
+			if (!$result->isValid()) {
+				// Invalid credentials
+				$form->setDescription('Invalid credentials provided');
+				$this->view->form = $form;
+				return $this->render('login'); // re-render the login form
+			}
+
+			// We're authenticated! Redirect to the home page
+			$data = $this->getRequest()->getParams();
+			
+			// reconstruct the old parameter
+			unset($data['username']);
+			unset($data['password']);
+			unset($data['login']);
+			
+			if(!isset($data['raction'])) { $data['action'] = "index"; } else {  $data['action'] = $data['raction']; unset($data['raction']); }
+			if(!isset($data['rcontroller'])) { $data['controller'] = null; } else {  $data['controller'] = $data['rcontroller']; unset($data['rcontroller']); }
+			
+			$this->_helper->Redirector->setGotoSimple($data['action'], $data['controller'], null, $data);
+			//$this->_helper->redirector('index', 'exams-admin');
+		}
+		
+		$this->view->form = $this->getLoginForm();
+    }
+
+    private function getLoginForm()
+    {
+		return new Application_Form_AdminLogin(array(
+							'action' => '',
+							'method' => 'post',
+						));
+    }
+
+    private function getAuthAdapter(array $params)
+    {
+		// Set up the authentication adapter
+		$config = Zend_Registry::get('authenticate');
+		return new Zend_Auth_Adapter_Digest($config['filename'], $config['realm'], $params['username'], $params['password']);
+    }
+
+    public function logoutAction()
+    {
+        Zend_Auth::getInstance()->clearIdentity();
+        $this->_helper->redirector('login'); // back to login page
+    }
+
 
 }
+
+
+
+
 
 
 

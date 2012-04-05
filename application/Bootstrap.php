@@ -13,6 +13,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
         $examsConfig = $this->getOption('exams');
         Zend_Registry::set('examDBConfig', $examsConfig);
+		
+		$authenticateConfig = $this->getOption('authenticate');
+        Zend_Registry::set('authenticate', $authenticateConfig);
     }
 
 }
