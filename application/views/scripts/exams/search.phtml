@@ -122,13 +122,15 @@
 	</div>
 	</td>
 	<td>
-	<a href="<?php echo $this->url(
+	<? if(Zend_Auth::getInstance()->hasIdentity()): ?>
+		<a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'overview',
 				  'do'=>'disapprove',
                   'id'=>$entry->id),
             'default',
             true) ?>">disapprove</a><br \>
+			<? endif; ?>
 	<a href="<?php echo $this->url(
             array('controller'=>'exams',
                   'action'=>'report',

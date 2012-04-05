@@ -7,9 +7,8 @@ class ExamsAdminController extends Zend_Controller_Action
     {
         // check if a login exists for admin controller
 		if(!Zend_Auth::getInstance()->hasIdentity() && $this->getRequest()->getActionName() != "login") {
-			//var_dump($this->getRequest());
 			$data = $this->getRequest()->getParams();
-			//var_dump($data); // array(5) { ["controller"]=> string(11) "exams-admin" ["action"]=> string(8) "overview" ["do"]=> string(10) "disapprove" ["id"]=> string(2) "10" ["module"]=> string(7) "default" } 
+			// save the old controller and action to redirect the user after the login
 			if(isset($data['rcontroller']) || isset($data['raction'])) { } else {
 				$data['rcontroller'] = $data['controller'];
 				$data['raction'] = $data['action'];
@@ -17,7 +16,6 @@ class ExamsAdminController extends Zend_Controller_Action
 			unset($data['controller']);
 			unset($data['action']);
 			$this->_helper->Redirector->setGotoSimple('login', null, null, $data);
-			//$this->_helper->redirector('login');
 		}
     }
 
@@ -160,6 +158,7 @@ class ExamsAdminController extends Zend_Controller_Action
 			$adapter = $this->getAuthAdapter($form->getValues());
 			$auth    = Zend_Auth::getInstance();
 			$result  = $auth->authenticate($adapter);
+			
 			if (!$result->isValid()) {
 				// Invalid credentials
 				$form->setDescription('Invalid credentials provided');
@@ -167,7 +166,7 @@ class ExamsAdminController extends Zend_Controller_Action
 				return $this->render('login'); // re-render the login form
 			}
 
-			// We're authenticated! Redirect to the home page
+			// We're authenticated! Redirect to the page the user likeed to be or go to index page
 			$data = $this->getRequest()->getParams();
 			
 			// reconstruct the old parameter
@@ -179,7 +178,6 @@ class ExamsAdminController extends Zend_Controller_Action
 			if(!isset($data['rcontroller'])) { $data['controller'] = null; } else {  $data['controller'] = $data['rcontroller']; unset($data['rcontroller']); }
 			
 			$this->_helper->Redirector->setGotoSimple($data['action'], $data['controller'], null, $data);
-			//$this->_helper->redirector('index', 'exams-admin');
 		}
 		
 		$this->view->form = $this->getLoginForm();
