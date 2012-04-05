@@ -351,8 +351,10 @@ class Application_Model_ExamMapper
 												`autor` =  '".$exam->autor."',
 												`modified_last_date` = NOW()
 												WHERE  `idexam` =".$exam->id.";");
+												
 		
-		
+		$this->addLogMessage($exam->id, 'Exam details updated by %user%.');	
+
 	}
 	
 	public function updateExamStatusToUnchecked($examId) 

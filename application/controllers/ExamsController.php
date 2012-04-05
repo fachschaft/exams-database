@@ -190,6 +190,19 @@ class ExamsController extends Zend_Controller_Action
                 $step = 3;
                 $form = new Application_Form_UploadFile();
 				$form->setExamId($this->getRequest()->exam);
+				
+				$config = Zend_Registry::get('examDBConfig');
+				$this->view->exam = $this->getRequest()->exam;
+				$this->view->files = 3;
+				
+				if(isset($this->getRequest()->files)) {
+					if($this->getRequest()->files + 3 > $config['max_upload_files']) {
+						$this->view->files = $config['max_upload_files'];
+					} else {
+						$this->view->files = $this->getRequest()->files + 3;
+					}
+				}
+				
         }
         
         if ($this->getRequest()->isPost() || $step == 3) {
@@ -250,6 +263,9 @@ class ExamsController extends Zend_Controller_Action
                     $dir = $config['storagepath'];
                     $form = new Application_Form_UploadFile();
 					$form->setExamId($this->getRequest()->exam);
+					$form->setAction('/exams/upload/exam/'.$this->getRequest()->exam);
+					if(isset($this->getRequest()->files)) { $form->setAction('/exams/upload/exam/'.$this->getRequest()->exam.'/files/'.$this->getRequest()->files); }
+					$form->setMultiFile($this->getRequest()->files);
                     
 					if ($this->getRequest()->isPost()) {
 						if($form->isValid($this->getRequest()->getPost())) {
@@ -261,55 +277,64 @@ class ExamsController extends Zend_Controller_Action
 							}
 
 							if($form->exam_file->receive()) {
-							$location = $form->exam_file->getFileName();
-							//$mime = $form->exam_file->getMimeType();
-							$ex_names = preg_split('/\./', $location, -1);
-							$extention = $ex_names[count($ex_names)-1];
-							
-							if(!is_writable($dir)) {
-								unlink($location);
-								throw new Zend_Exception ("Cannot write in directory (".$dir.")");
+							$locations = $form->exam_file->getFileName();
+							if(!is_array($locations)) {
+								$locations = array($locations);
 							}
-							//ToDo(aritas1): Handle all errors!
-							$new_file_name = md5(time());
-							$count = 0;
-							while(file_exists($dir.$new_file_name.".".$extention))
-							{
-								$new_file_name = md5(time());
-								$count++;
-								if($count > 100) { throw new Zend_Exception ("Cannot find a free filname, please contact the admin!"); }
-							}
-							$sum = md5_file($location);
 							
-							// for php >= 5.3
-							/*$finfo = new finfo(FILEINFO_MIME, "/usr/share/misc/magic"); // return mime type ala mimetype extension
+							foreach($locations as $location) {
+							
+								//var_dump($form->exam_file->getFileName());
+								//exit();
+								//$location = $form->exam_file->getFileName();
+								//$mime = $form->exam_file->getMimeType();
+								$ex_names = preg_split('/\./', $location, -1);
+								$extention = $ex_names[count($ex_names)-1];
+								
+								if(!is_writable($dir)) {
+									unlink($location);
+									throw new Zend_Exception ("Cannot write in directory (".$dir.")");
+								}
+								//ToDo(aritas1): Handle all errors!
+								$new_file_name = md5(time()+rand());
+								$count = 0;
+								while(file_exists($dir.$new_file_name.".".$extention))
+								{
+									$new_file_name = md5(time()+rand());
+									$count++;
+									if($count > 1000) { throw new Zend_Exception ("Cannot find a free filname, please contact the admin!"); }
+								}
+								$sum = md5_file($location);
+								
+								// for php >= 5.3
+								/*$finfo = new finfo(FILEINFO_MIME, "/usr/share/misc/magic"); // return mime type ala mimetype extension
 
-							if (!$finfo) {
-								throw new Zend_Exception ("Cannot open the mime type Database, please contact the admin!");
+								if (!$finfo) {
+									throw new Zend_Exception ("Cannot open the mime type Database, please contact the admin!");
+								}
+								$mime = $finfo->file($location);*/
+								$mime = mime_content_type($location);
+								
+								rename($location, $dir.$new_file_name.".".$extention);
+								
+								// save the file name to database (crate a document) and link this to the exam
+								$document = new Application_Model_Document();
+
+								$document->ExamId = $post['examId'];
+								$document->extention = $extention;
+								$file_names = preg_split('/\//', $location, -1);
+								$document->submitFileName = $file_names[count($file_names)-1];
+								$document->fileName = $new_file_name;
+								$document->mimeType = $mime;
+								$document->checkSum = $sum;
+								
+								$documentMapper = new Application_Model_DocumentMapper();
+								$documentMapper->saveNew($document);
 							}
-							$mime = $finfo->file($location);*/
-							$mime = mime_content_type($location);
-							
-							rename($location, $dir.$new_file_name.".".$extention);
 							} else {
 								break;
 							}
-							
-							// save the file name to database (crate a document) and link this to the exam
-							$document = new Application_Model_Document();
 
-							$document->ExamId = $post['examId'];
-							$document->extention = $extention;
-							$file_names = preg_split('/\//', $location, -1);
-							$document->submitFileName = $file_names[count($file_names)-1];
-							$document->fileName = $new_file_name;
-							$document->mimeType = $mime;
-							$document->checkSum = $sum;
-							
-							$documentMapper = new Application_Model_DocumentMapper();
-							$documentMapper->saveNew($document);
-							
-							
 							$examMapper->updateExamStatusToUnchecked($document->ExamId);
 							
 							$this->_helper->Redirector->setGotoSimple('upload_final');

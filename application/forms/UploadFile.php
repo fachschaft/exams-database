@@ -2,7 +2,8 @@
 
 class Application_Form_UploadFile extends Zend_Form
 {
-
+	protected $_file;
+	
     public function init()
     {
     
@@ -11,14 +12,17 @@ class Application_Form_UploadFile extends Zend_Form
         
         // go on with http://framework.zend.com/manual/de/zend.form.standardElements.html
         
-        $file = new Zend_Form_Element_File('exam_file');
+        $this->_file = new Zend_Form_Element_File('exam_file');
         $config = Zend_Registry::get('examDBConfig');
-        $file->setLabel('Uplaod Exam File:')
-                ->addValidator('Count', false, $config['max_upload_files'])
+        $this->_file->setLabel('Uplaod Exam File:')
+                ->addValidator('Count', false, array('min' => 1, 'max' => $config['max_upload_files']))
                 ->addValidator('Size', false, $config['max_file_size'])
+				->setMaxFileSize($config['max_file_size'])
                 ->addValidator('Extension', false, $config['allowed_extentions'])
                 ->setAttrib('enctype', 'multipart/form-data');
-        $this->addElement($file, 'exam_file');
+        $this->addElement($this->_file, 'exam_file');
+		
+		$this->setMultiFile($config['default_upload_files_count']);
         
         //
         $this->addElement('hidden', 'step', array(
@@ -39,6 +43,14 @@ class Application_Form_UploadFile extends Zend_Form
         ));
     }
 
+	public function setMultiFile($count)
+	{
+		$config = Zend_Registry::get('examDBConfig');
+		if($count > $config['max_upload_files']) {
+			$count = $config['max_upload_files'];
+		}
+		$this->_file->setMultiFile($count);
+	}
 
 }
 

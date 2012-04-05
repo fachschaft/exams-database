@@ -1,6 +1,15 @@
 <br /><br />
 <div id="view-content">
 	<p>View script for controller <b>Exams</b> and script/action name <b>upload</b></p>
+	<? if($this->exam != null): ?>
+	<a href="<?php echo $this->url(
+            array('controller'=>'exams',
+                  'action'=>'upload',
+                  'exam'=>$this->exam,
+				  'files'=>$this->files),
+            'default',
+            true) ?>">Add more Files</a><br>
+	<? endif; ?>
     <?
         echo $this->form; 
     ?>
