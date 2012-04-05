@@ -348,7 +348,8 @@ class Application_Model_ExamMapper
 												`exam_degree_idexam_degree` =  '".$exam->Degree."',
 												`university_iduniversity` =  '".$exam->university."',
 												`comment` =  '".$exam->comment."',
-												`autor` =  '".$exam->autor."' 
+												`autor` =  '".$exam->autor."',
+												`modified_last_date` = NOW()
 												WHERE  `idexam` =".$exam->id.";");
 		
 		
@@ -356,44 +357,27 @@ class Application_Model_ExamMapper
 	
 	public function updateExamStatusToUnchecked($examId) 
 	{
- 
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '2', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
-		// log
-		$this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_log` (`exam_idexam` ,`message`)
-															  VALUES ('".$examId."',  'Exam files uploaded by user.')");
-
+		$this->addLogMessage($examId, 'Exam files uploaded by user.');
     }
 	
 	public function updateExamStatusToDisapprove($examId) 
 	{
- 
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '2', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
-		// log
-		$this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_log` (`exam_idexam` ,`message`)
-															  VALUES ('".$examId."',  'Exam disapprove by %user%.')");
-
+		$this->addLogMessage($examId, 'Exam disapprove by %user%.');
     }
 	
 	public function updateExamStatusToChecked($examId) 
 	{
- 
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '3', `modified_last_date` = NOW() WHERE `idexam` =".$examId." AND `exam_status_idexam_status` =  '2';");
-		// log
-		$this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_log` (`exam_idexam` ,`message`)
-															  VALUES ('".$examId."',  'Exam aproved by %user%.')");
-
+		$this->addLogMessage($examId, 'Exam aproved by %user%.');
     }
 	
-		public function updateExamStatusToDelete($examId) 
+	public function updateExamStatusToDelete($examId) 
 	{
- 
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '4', `modified_last_date` = NOW() WHERE `idexam` =".$examId." AND `exam_status_idexam_status` =  '2';");
-		//ToDo(aritas): somthing to to with the documents
-		//ToDo(aritas): Add a log entry
-		// log
-		$this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_log` (`exam_idexam` ,`message`)
-															  VALUES ('".$examId."',  'Exam deleted by %user%.')");
-
+		$this->getDbTable()->getAdapter()->query("UPDATE `document` SET  `deleted` =  '1' WHERE  `exam_idexam` =".$examId.";");
+		$this->addLogMessage($examId, 'Exam deleted by %user%.');
     }
     
     // return true if the exam is valid, (has no id and no proboerty has a wrong value)
@@ -421,5 +405,10 @@ class Application_Model_ExamMapper
         }
         return true;
     }
+	
+	private function addLogMessage($examId, $message) {
+		$this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_log` (`exam_idexam` ,`message`)
+															  VALUES ('".$examId."',  '".$message."')");
+	}
 }
 

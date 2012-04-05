@@ -28,8 +28,7 @@ class Application_Model_DocumentMapper
     {
        $element = $this->getDbTable()->find($documentId)->current();
        $entry = new Application_Model_Document();
-       
-       
+
        $entry->setId($element['iddocument'])
                   ->setExtention($element['extention'])
                   ->setsubmitFileName($element['submit_file_name'])
@@ -37,6 +36,7 @@ class Application_Model_DocumentMapper
                   ->setmimeType($element['mime_type'])
                   ->setuploadDate($element['upload_date'])
                   ->setExamId($element['exam_idexam'])
+				  ->setDeleteState($element['deleted'])
                   ;
                   
         return $entry;
@@ -57,6 +57,7 @@ class Application_Model_DocumentMapper
                   ->setmimeType($row->mime_type)
                   ->setuploadDate($row->upload_date)
                   ->setExamId($row->exam_idexam)
+				  ->setDeleteState($row->deleted)
                   ;
             $entries[] = $entry;
         }
@@ -66,6 +67,13 @@ class Application_Model_DocumentMapper
 	public function updateDownloadCounter($documentId)
 	{
 		$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `downloads` =  `downloads`+1 WHERE `iddocument` =".$documentId.";");
+	}
+	
+	
+	public function updateReviewState($documentId)
+	{
+		$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `reviewed` = 1 WHERE `iddocument` =".$documentId.";");
+		$this->addLogMessage($documentId, 'Document (ID: '.$documentId.') downloaded (hopely reviewed too) by %user%.');
 	}
 
     
@@ -84,6 +92,11 @@ class Application_Model_DocumentMapper
             
             $insert = $this->getDbTable()->insert($data);
     }
+	
+	private function addLogMessage($documentId, $message) {
+		$this->getDbTable()->getAdapter()->query("INSERT INTO `exam_log` (`exam_idexam` ,`message`)
+															  VALUES ((SELECT exam_idexam FROM `document` WHERE iddocument = ".$documentId." GROUP BY exam_idexam),  '".$message."')");
+	}
 
 }
 

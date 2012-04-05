@@ -108,7 +108,7 @@
     <a href="<?php echo $this->url(
             array('controller'=>'exams',
                   'action'=>'download',
-                  'id'=>$document->id),
+                  'admin'=>$document->id),
             'default',
             true) ?>">File <? echo $id+1; ?></a> [<? echo $document->mimeType; ?>]<br \>
          <?php endforeach ?>   

@@ -142,6 +142,8 @@ class ExamsController extends Zend_Controller_Action
             $x = new Application_Model_DocumentMapper();
             $entries = $x->fetch($this->getRequest()->id);
 			
+			if($entries->DeleteState) { throw new Exception('The document is not longer available', 404); }
+			
 			$x->updateDownloadCounter($entries->id);
             
             header('Content-Type: application/octet-stream');
@@ -150,7 +152,21 @@ class ExamsController extends Zend_Controller_Action
             $path = $config['storagepath'];
             readfile ($path . $entries->getFileName() . "." . $entries->getextention());
             exit();
-        } else {
+        } else if(isset($this->getRequest()->admin)) {
+			//ToDo: check for admin state
+			
+			$x = new Application_Model_DocumentMapper();
+            $entries = $x->fetch($this->getRequest()->admin);
+			
+			$x->updateReviewState($entries->id);
+            
+            header('Content-Type: application/octet-stream');
+            header("Content-Disposition: attachment; filename=".date('YmdHis').".".$entries->getExtention());
+            $config = Zend_Registry::get('examDBConfig');
+            $path = $config['storagepath'];
+            readfile ($path . $entries->getFileName() . "." . $entries->getextention());
+            exit();
+		} else {
             throw new Exception('Invalid document called', 500);
         }
     }
