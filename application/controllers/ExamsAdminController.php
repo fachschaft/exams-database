@@ -158,7 +158,8 @@ class ExamsAdminController extends Zend_Controller_Action
 			$adapter = $this->getAuthAdapter($form->getValues());
 			$auth    = Zend_Auth::getInstance();
 			$result  = $auth->authenticate($adapter);
-
+			
+			echo $this->getRequest()->getClientIp();
 			if (!$result->isValid()) {
 				// Invalid credentials
 				$form->setDescription('Invalid credentials provided');
@@ -196,10 +197,11 @@ class ExamsAdminController extends Zend_Controller_Action
 
     private function getAuthAdapter(array $params)
     {
+	
 		// Set up the authentication adapter
 		$config = Zend_Registry::get('authenticate');
 		//return new Zend_Auth_Adapter_Digest($config['filename'], $config['realm'], $params['username'], $params['password']);
-		//return new Custom_Auth_Adapter_InternetProtocol($params['username'], $params['password']);
+		//return new Custom_Auth_Adapter_InternetProtocol($params['ip']);
 		return new Custom_Auth_Adapter_Simple($params['username'], $params['password']);
     }
 

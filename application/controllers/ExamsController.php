@@ -138,7 +138,12 @@ class ExamsController extends Zend_Controller_Action
     public function downloadAction()
     {
         if(isset($this->getRequest()->id)) 
-        {        
+        {   
+			$adapter = new Custom_Auth_Adapter_InternetProtocol($this->getRequest()->getClientIp());
+			$auth    = Zend_Auth::getInstance();
+			$result  = $auth->authenticate($adapter);
+			if(!$result->isValid()) { throw new Exception('Sorry, your not allowed to download a file', 500); }
+			
             $x = new Application_Model_DocumentMapper();
             $entries = $x->fetch($this->getRequest()->id);
 			
@@ -155,17 +160,31 @@ class ExamsController extends Zend_Controller_Action
         } else if(isset($this->getRequest()->admin)) {
 			//ToDo: check for admin state
 			
-			$x = new Application_Model_DocumentMapper();
-            $entries = $x->fetch($this->getRequest()->admin);
+			// check if a login exists for admin controller
+			if(!Zend_Auth::getInstance()->hasIdentity()) {
+				$data = $this->getRequest()->getParams();
+				// save the old controller and action to redirect the user after the login
+				if(isset($data['rcontroller']) || isset($data['raction'])) { } else {
+					$data['rcontroller'] = $data['controller'];
+					$data['raction'] = $data['action'];
+				}
+				unset($data['controller']);
+				unset($data['action']);
+				$this->_helper->Redirector->setGotoSimple('login', 'exams-admin', null, $data);
+			} else {
 			
-			$x->updateReviewState($entries->id);
-            
-            header('Content-Type: application/octet-stream');
-            header("Content-Disposition: attachment; filename=".date('YmdHis').".".$entries->getExtention());
-            $config = Zend_Registry::get('examDBConfig');
-            $path = $config['storagepath'];
-            readfile ($path . $entries->getFileName() . "." . $entries->getextention());
-            exit();
+				$x = new Application_Model_DocumentMapper();
+				$entries = $x->fetch($this->getRequest()->admin);
+				
+				$x->updateReviewState($entries->id);
+				
+				header('Content-Type: application/octet-stream');
+				header("Content-Disposition: attachment; filename=".date('YmdHis').".".$entries->getExtention());
+				$config = Zend_Registry::get('examDBConfig');
+				$path = $config['storagepath'];
+				readfile ($path . $entries->getFileName() . "." . $entries->getextention());
+				exit();
+			}
 		} else {
             throw new Exception('Invalid document called', 500);
         }
