@@ -21,6 +21,7 @@
           <actionMethod actionName="download"/>
           <actionMethod actionName="upload"/>
           <actionMethod actionName="uploadfinal"/>
+          <actionMethod actionName="quickSearch"/>
         </controllerFile>
         <controllerFile controllerName="ExamsAdmin">
           <actionMethod actionName="index"/>
@@ -29,6 +30,7 @@
           <actionMethod actionName="log"/>
           <actionMethod actionName="login"/>
           <actionMethod actionName="logout"/>
+          <actionMethod actionName="editfiles"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -40,6 +42,8 @@
         <formFile formName="UploadFile"/>
         <formFile formName="AdminDetail"/>
         <formFile formName="AdminLogin"/>
+        <formFile formName="AdminFileDetail"/>
+        <formFile formName="AdminFileUpload"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -88,6 +92,7 @@
         <modelFile modelName="ExamUniversityMapper"/>
         <modelFile modelName="Log"/>
         <modelFile modelName="LogMapper"/>
+        <modelFile modelName="ExamFileManager"/>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
       <viewsDirectory>
@@ -139,6 +144,12 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
             <viewScriptFile forActionName="logout"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
+            <viewScriptFile forActionName="editfiles"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Exams">
+            <viewScriptFile forActionName="quickSearch"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

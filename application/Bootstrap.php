@@ -17,6 +17,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 		$authenticateConfig = $this->getOption('authenticate');
         Zend_Registry::set('authenticate', $authenticateConfig);
     }
+    
+    public function _initPlaintextHelper()
+    {
+        // Initialise Zend_Layout's MVC helpers
+        Zend_Layout::startMvc();
+        Zend_Layout::getMvcInstance()->getView()->addHelperPath('Custom/View/Helper/', 'Custom_View_Helper');
+    }
 
 }
 

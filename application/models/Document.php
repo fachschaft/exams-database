@@ -11,6 +11,8 @@ class Application_Model_Document
     protected $_mimeType;
     protected $_submitFileName;
 	protected $_checkSum;
+	protected $_reviewed;
+	protected $_downloads;
     
     public function __construct(array $options = null)
     {
@@ -95,7 +97,7 @@ class Application_Model_Document
     
     public function setUploadDate($date)
     {
-        $this->_uploadDate = (int) $date;
+        $this->_uploadDate = (string) $date;
         return $this;
     }
  
@@ -157,6 +159,28 @@ class Application_Model_Document
     public function getCheckSum()
     {
         return $this->_checkSum;
+    }
+
+	public function setReviewed($bool)
+    {
+        $this->_reviewed = (bool) $bool;
+        return $this;
+    }
+ 
+    public function getReviewed()
+    {
+        return $this->_reviewed;
+    }
+	
+	public function setDownloads($bool)
+    {
+        $this->_downloads = (int) $bool;
+        return $this;
+    }
+ 
+    public function getDownloads()
+    {
+        return $this->_downloads;
     }
 
 }

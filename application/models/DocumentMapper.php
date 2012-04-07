@@ -49,6 +49,7 @@ class Application_Model_DocumentMapper
 
         $entries   = array();
         foreach ($resultSet as $row) {
+			if($row->deleted == 1) continue;
             $entry = new Application_Model_Document();
             $entry->setId($row->iddocument)
                   ->setExtention($row->extention)
@@ -58,6 +59,8 @@ class Application_Model_DocumentMapper
                   ->setuploadDate($row->upload_date)
                   ->setExamId($row->exam_idexam)
 				  ->setDeleteState($row->deleted)
+				  ->setReviewed($row->reviewed)
+				  ->setDownloads($row->downloads)
                   ;
             $entries[] = $entry;
         }
@@ -74,6 +77,12 @@ class Application_Model_DocumentMapper
 	{
 		$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `reviewed` = 1 WHERE `iddocument` =".$documentId.";");
 		$this->addLogMessage($documentId, 'Document (ID: '.$documentId.') downloaded (hopely reviewed too) by %user%.');
+	}
+	
+	public function deleteDocument($documentId)
+	{
+		$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `deleted` = 1 WHERE `iddocument` =".$documentId.";");
+		$this->addLogMessage($documentId, 'Document (ID: '.$documentId.') deleted by %user%.');
 	}
 
     

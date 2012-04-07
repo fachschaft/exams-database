@@ -183,9 +183,65 @@ class ExamsAdminController extends Zend_Controller_Action
 		
 		$this->view->form = $this->getLoginForm();
     }
+    
+    public function editfilesAction()
+    {
+		// catch post actions
+		 if($this->getRequest()->isPost()) {
+			$post = $this->getRequest()->getPost();
+			if(isset($post['action']) && isset($post['id'])) {
+				$ids = $post['id'];
+				
+				$fileManger = new Application_Model_ExamFileManager();
+				$documentMapper = new Application_Model_DocumentMapper();
+				$documents = $documentMapper->fetchByExamId($this->getRequest()->id);
+				
+				switch($post['action'])
+				{
+					case 'delete':
+						foreach($ids as $id) {
+							$documentMapper->deleteDocument($id);
+							}
+					break;
+					case 'pack':
+						$docs = array();
+						foreach($documents as $doc) {
+							if(in_array($doc->id, $ids)) {
+							// check if the document is in the selected one
+								$docs[] = $doc;
+							}
+						}
+						$fileManger->packDocuments($docs);
+					break;
+					case 'unpack':
+						foreach($documents as $doc) {
+							// check if the document is in the selected one
+							if(in_array($doc->id, $ids)) {
+								$fileManger->unpackDocuments(array($doc)); // short workaround
+							}
+						}
+					break;
+					default:
+						throw new Exception('Action not implemented', 500);
+					break;
+				}
+			
+			}
+		 }
 	
-	
-	//////// Helper functions
+		// catch regular displaying
+        if(!isset($this->getRequest()->id)) {
+            $this->_helper->Redirector->setGotoSimple('overview', null);
+        } else {
+            $documentMapper = new Application_Model_DocumentMapper();
+            $documents = $documentMapper->fetchByExamId($this->getRequest()->id);
+            
+            $form = new Application_Form_AdminFileDetail();
+            $form->setId($this->getRequest()->id);
+            $form->setupDocuments($documents);
+            $this->view->form = $form;
+        }
+    }
 
     private function getLoginForm()
     {
@@ -197,7 +253,6 @@ class ExamsAdminController extends Zend_Controller_Action
 
     private function getAuthAdapter(array $params)
     {
-	
 		// Set up the authentication adapter
 		$config = Zend_Registry::get('authenticate');
 		//return new Zend_Auth_Adapter_Digest($config['filename'], $config['realm'], $params['username'], $params['password']);
@@ -211,8 +266,9 @@ class ExamsAdminController extends Zend_Controller_Action
         $this->_helper->redirector('login'); // back to login page
     }
 
-
 }
+
+
 
 
 

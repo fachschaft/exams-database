@@ -25,6 +25,7 @@ class ExamsController extends Zend_Controller_Action
                 return $this->_helper->Redirector->setGotoSimple('degrees', null, null, $post);
             }
         }
+		
     }
 
     public function degreesAction()
@@ -53,6 +54,7 @@ class ExamsController extends Zend_Controller_Action
         } else {
             return $this->_helper->redirector('groups');
         }
+		
     }
 
     public function coursesAction()
@@ -147,7 +149,7 @@ class ExamsController extends Zend_Controller_Action
             $x = new Application_Model_DocumentMapper();
             $entries = $x->fetch($this->getRequest()->id);
 			
-			if($entries->DeleteState) { throw new Exception('The document is not longer available', 404); }
+			if($entries->DeleteState) { throw new Exception('The document is not longer available', 500); }
 			
 			$x->updateDownloadCounter($entries->id);
             
@@ -155,7 +157,12 @@ class ExamsController extends Zend_Controller_Action
             header("Content-Disposition: attachment; filename=".date('YmdHis').".".$entries->getExtention());
             $config = Zend_Registry::get('examDBConfig');
             $path = $config['storagepath'];
-            readfile ($path . $entries->getFileName() . "." . $entries->getextention());
+			$file = $path . $entries->getFileName() . "." . $entries->getextention();
+			if(is_readable($file)) {
+				readfile($file);
+			} else {
+				throw new Exception('File not found', 500);
+			}
             exit();
         } else if(isset($this->getRequest()->admin)) {
 			//ToDo: check for admin state
@@ -182,12 +189,18 @@ class ExamsController extends Zend_Controller_Action
 				header("Content-Disposition: attachment; filename=".date('YmdHis').".".$entries->getExtention());
 				$config = Zend_Registry::get('examDBConfig');
 				$path = $config['storagepath'];
-				readfile ($path . $entries->getFileName() . "." . $entries->getextention());
+				$file = $path . $entries->getFileName() . "." . $entries->getextention();
+				if(is_readable($file)) {
+				readfile($file);
+				} else {
+					throw new Exception('File not found', 500);
+				}
 				exit();
 			}
 		} else {
             throw new Exception('Invalid document called', 500);
         }
+		
     }
 
     public function uploadAction()
@@ -221,7 +234,8 @@ class ExamsController extends Zend_Controller_Action
 						$this->view->files = $this->getRequest()->files + 3;
 					}
 				}
-				
+			
+			
         }
         
         if ($this->getRequest()->isPost() || $step == 3) {
@@ -296,67 +310,16 @@ class ExamsController extends Zend_Controller_Action
 							}
 
 							if($form->exam_file->receive()) {
-							$locations = $form->exam_file->getFileName();
-							if(!is_array($locations)) {
-								$locations = array($locations);
-							}
-							
-							foreach($locations as $location) {
-							
-								//var_dump($form->exam_file->getFileName());
-								//exit();
-								//$location = $form->exam_file->getFileName();
-								//$mime = $form->exam_file->getMimeType();
-								$ex_names = preg_split('/\./', $location, -1);
-								$extention = $ex_names[count($ex_names)-1];
-								
-								if(!is_writable($dir)) {
-									unlink($location);
-									throw new Zend_Exception ("Cannot write in directory (".$dir.")");
-								}
-								//ToDo(aritas1): Handle all errors!
-								$new_file_name = md5(time()+rand());
-								$count = 0;
-								while(file_exists($dir.$new_file_name.".".$extention))
-								{
-									$new_file_name = md5(time()+rand());
-									$count++;
-									if($count > 1000) { throw new Zend_Exception ("Cannot find a free filname, please contact the admin!"); }
-								}
-								$sum = md5_file($location);
-								
-								// for php >= 5.3
-								/*$finfo = new finfo(FILEINFO_MIME, "/usr/share/misc/magic"); // return mime type ala mimetype extension
-
-								if (!$finfo) {
-									throw new Zend_Exception ("Cannot open the mime type Database, please contact the admin!");
-								}
-								$mime = $finfo->file($location);*/
-								$mime = mime_content_type($location);
-								
-								rename($location, $dir.$new_file_name.".".$extention);
-								
-								// save the file name to database (crate a document) and link this to the exam
-								$document = new Application_Model_Document();
-
-								$document->ExamId = $post['examId'];
-								$document->extention = $extention;
-								$file_names = preg_split('/\//', $location, -1);
-								$document->submitFileName = $file_names[count($file_names)-1];
-								$document->fileName = $new_file_name;
-								$document->mimeType = $mime;
-								$document->checkSum = $sum;
-								
-								$documentMapper = new Application_Model_DocumentMapper();
-								$documentMapper->saveNew($document);
-							}
+								$fileManger = new Application_Model_ExamFileManager();
+								// save the received files
+								$fileManger->storeUploadedFiles($form->exam_file->getFileName(), $post['examId']);
+								// update exam to unhecked
+								$examMapper->updateExamStatusToUnchecked($post['examId']);
+								// redirect to final page
+								$this->_helper->Redirector->setGotoSimple('upload_final');
 							} else {
 								break;
 							}
-
-							$examMapper->updateExamStatusToUnchecked($document->ExamId);
-							
-							$this->_helper->Redirector->setGotoSimple('upload_final');
 						}
                     }
                     break;
@@ -378,8 +341,15 @@ class ExamsController extends Zend_Controller_Action
         // action body
     }
 
+    public function quickSearchAction()
+    {
+        // action body
+    }
+
 
 }
+
+
 
 
 

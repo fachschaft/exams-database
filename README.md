@@ -1,5 +1,9 @@
 # Installation
 
+Requires: (PHP 5 >= 5.2.0, PECL zip >= 1.1.0)
+
+Ensure that *zlibc* is installed!
+
 After downloading the project you have to include the Zend Framework 1.11.11. Either install it globally or have a look at library/README.txt for instructions to include it locally.
 
 Setup your database parameters in **application/configs/application.ini**
