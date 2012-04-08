@@ -1,6 +1,6 @@
 # Installation
 
-Requires: (PHP 5 >= 5.2.0, PECL zip >= 1.1.0)
+Requires: (PHP 5 >= 5.2.0, PECL zip >= 1.5.0)
 
 Ensure that *zlibc* is installed!
 
@@ -11,3 +11,5 @@ Setup your database parameters in **application/configs/application.ini**
 To initialize the database (**all data will be dropped**) run scripts/load.mysql.php e.g.:
 
 `cd /path/to/folder/scripts; php load.mysql.php --env development --withdata`
+
+Ensure: /data/exams needs 775 permissions

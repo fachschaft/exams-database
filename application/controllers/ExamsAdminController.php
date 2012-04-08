@@ -228,6 +228,25 @@ class ExamsAdminController extends Zend_Controller_Action
 			
 			}
 		 }
+		 
+		// catch do actions
+		 if(isset($this->getRequest()->do)) {
+		 	if(!isset($this->getRequest()->file)) {
+		 		throw new Exception('No file ID given', 500);
+		 	}
+		 	$documentMapper = new Application_Model_DocumentMapper();
+		 	
+		 	// switch over the given action
+		 	switch($this->getRequest()->do)
+		 	{
+		 		case "delete":
+		 			$documentMapper->deleteDocument($this->getRequest()->file);
+		 			break;
+		 		default:
+		 			throw new Exception('Action not implemented', 500);
+		 			break;
+		 	}
+		 }
 	
 		// catch regular displaying
         if(!isset($this->getRequest()->id)) {
