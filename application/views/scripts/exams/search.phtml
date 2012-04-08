@@ -99,14 +99,14 @@
         //echo $entry->university;
 		echo '<br>';
         echo $entry->Autor;
-    ?></dd>
+    ?>
     </div>
 	</td>
 	<td>
 	<div id="exam-comment" style="max-width:150px;">    
 	<?
         echo $entry->comment;
-    ?></dd>
+    ?>
     </div>
 	</td>
 	<td>
@@ -117,7 +117,7 @@
                   'action'=>'download',
                   'id'=>$document->id),
             'default',
-            true) ?>">File <? echo $id+1; ?></a><br \>
+            true) ?>">File <? echo $id+1; ?></a><br>
          <?php endforeach ?>   
 	</div>
 	</td>
@@ -129,14 +129,14 @@
 				  'do'=>'disapprove',
                   'id'=>$entry->id),
             'default',
-            true) ?>">disapprove</a><br \>
+            true) ?>">disapprove</a><br>
 			<? endif; ?>
 	<a href="<?php echo $this->url(
             array('controller'=>'exams',
                   'action'=>'report',
                   'id'=>$entry->id),
             'default',
-            true) ?>">report</a><br \>
+            true) ?>">report</a><br>
 	</td>
 	</tr>
 	<?php endforeach ?>

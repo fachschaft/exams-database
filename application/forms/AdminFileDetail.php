@@ -124,8 +124,8 @@ class Application_Form_AdminFileDetail extends Zend_Form
 			$i = 1;
 			foreach($lables as $id => $elemment)
 			{
-				$this->addElement(new Custom_Form_Element_PlainText('text'.$i.'_'.$doc->id, array('value'=>$elemment, 'decorators'=>$this->cellDecoratorHeader)));
-				$groupElements[] = 'text'.$i.'_'.$doc->id;
+				$this->addElement(new Custom_Form_Element_PlainText('text'.$i, array('value'=>$elemment, 'decorators'=>$this->cellDecoratorHeader)));
+				$groupElements[] = 'text'.$i;
 				$i++;
 			}
 
