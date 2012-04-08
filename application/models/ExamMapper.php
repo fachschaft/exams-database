@@ -34,6 +34,7 @@ class Application_Model_ExamMapper
 			
 		}
 		
+		$where2 = "";
 		if($withReflexive) {
 			$status .= " AND ";
 			$where2 = '((cor.idcourse = chc.course_idcourse1) OR (cor.idcourse = chc.course_idcourse))';

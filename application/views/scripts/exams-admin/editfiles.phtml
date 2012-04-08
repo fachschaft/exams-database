@@ -44,4 +44,15 @@
     <?
         echo $this->form; 
     ?>
+    <hr>
+    <a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'editfiles',
+                  'id'=>$this->exam,
+				  'files'=>$this->files),
+            'default',
+            true) ?>">Add more Files</a><br>
+    <?
+        echo $this->form2; 
+    ?>
 </div>

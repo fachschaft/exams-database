@@ -226,6 +226,16 @@ class ExamsAdminController extends Zend_Controller_Action
 					break;
 				}
 			
+			} else {
+				$form2 = new Application_Form_AdminFileUpload();
+				if($form2->isValid($this->getRequest()->getPost())) {
+					if($form2->exam_file->receive()) {
+						$fileManger = new Application_Model_ExamFileManager();
+						// save the received files
+						$fileManger->storeUploadedFiles($form2->exam_file->getFileName(), $this->getRequest()->id);
+						$this->_helper->Redirector->setGotoSimple('editfiles', null, null, array('id'=>$this->getRequest()->id));
+					}
+				}
 			}
 		 }
 		 
@@ -259,6 +269,17 @@ class ExamsAdminController extends Zend_Controller_Action
             $form->setId($this->getRequest()->id);
             $form->setupDocuments($documents);
             $this->view->form = $form;
+            
+            $form2 = new Application_Form_AdminFileUpload();
+            $this->view->files = 3;
+            $this->view->exam = $this->getRequest()->id; 
+            if(isset($this->getRequest()->files))
+            {
+            	$form2->setMultiFile($this->getRequest()->files);
+            	$this->view->files = $this->getRequest()->files +2;
+            }
+            
+            $this->view->form2 = $form2;
         }
     }
 
