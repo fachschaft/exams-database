@@ -57,6 +57,10 @@ class Application_Model_ExamSearch {
 	
 	public function searchIndex($query) {
 		$index = Zend_Search_Lucene::open ( $this->filepath );
-		$index->find ( $query );
+		$hits = $index->find ( $query );
+		foreach ( $hits as $hit ) {
+			// TODO(aamuuninen) do something sensible with the results
+			echo $hit->filename;
+		}
 	}
 }

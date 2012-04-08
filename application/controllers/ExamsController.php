@@ -343,7 +343,15 @@ class ExamsController extends Zend_Controller_Action
 
     public function quickSearchAction()
     {
-        // action body
+    	$form = new Application_Form_ExamQuickSearch();
+    	if ($this->_request->isPost()) {
+    		$formData = $this->_request->getPost();
+    		if (!$form->isValid($formData)) throw new Exception('Invalid Form Data');
+    		 
+    		echo "You searched for $formData[_query]"; 
+    		exit;
+    	}
+    	$this->view->form = $form;
     }
 
 
