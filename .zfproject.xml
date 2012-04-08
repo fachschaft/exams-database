@@ -44,6 +44,7 @@
         <formFile formName="AdminLogin"/>
         <formFile formName="AdminFileDetail"/>
         <formFile formName="AdminFileUpload"/>
+        <formFile formName="ExamQuickSearch"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -93,6 +94,7 @@
         <modelFile modelName="Log"/>
         <modelFile modelName="LogMapper"/>
         <modelFile modelName="ExamFileManager"/>
+        <modelFile modelName="ExamSearch"/>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
       <viewsDirectory>
