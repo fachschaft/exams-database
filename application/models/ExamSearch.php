@@ -2,30 +2,30 @@
 
 class Application_Model_ExamSearch {
 	
-	protected $filepath = "/data/searchindex";
+	protected $indexpath = "/data/searchindex";
 	
 	public function createIndex() {
-		if (file_exists ( $this->filepath )) {
+		if (file_exists ( $this->indexpath )) {
 			throw new Exception ( 'Index allready exists. Please use "renewIndex" to rebuild it' );
 		}
-		$index = Zend_Search_Lucene::create ( $this->filepath );
+		$index = Zend_Search_Lucene::create ( $this->indexpath );
 	}
 	
 	public function getIndexSize() {
-		$index = Zend_Search_Lucene::open ( $this->filepath );
+		$index = Zend_Search_Lucene::open ( $this->indexpath );
 		$documents = $index->numDocs ();
 		return $documents;
 	}
 	
 	public function optimizeIndex() {
-		$index = Zend_Search_Lucene::open ( $this->filepath );
+		$index = Zend_Search_Lucene::open ( $this->indexpath );
 		$index->optimize ();
 	}
 	
 	public function renewIndex() {
-		if (file_exists ( $this->filepath )) {
-			unlink ( $this->filepath );
-			$index = Zend_Search_Lucene::create ( $this->filepath );
+		if (file_exists ( $this->indexpath )) {
+			unlink ( $this->indexpath );
+			$index = Zend_Search_Lucene::create ( $this->indexpath );
 			/*
 			 * TODO(aamuuninen) fill the index with all the exams in the
 			 * database $keywords_array = ...; for ($n = 0; $n <
@@ -39,7 +39,7 @@ class Application_Model_ExamSearch {
 	}
 	
 	public function addFileToIndex($filename, array $keywords) {
-		$index = Zend_Search_Lucene::open ( $this->filepath );
+		$index = Zend_Search_Lucene::open ( $this->indexpath );
 		$doc = new Zend_Search_Lucene_Document ();
 		$doc->addField ( Zend_Search_Lucene_Field::Text ( 'filename', $filename ) );
 		foreach ( $keywords as $keyword ) {
@@ -48,7 +48,7 @@ class Application_Model_ExamSearch {
 	}
 	
 	public function removeFileFromIndex($filename) {
-		$index = Zend_Search_Lucene::open ( $this->filepath );
+		$index = Zend_Search_Lucene::open ( $this->indexpath );
 		$hits = $index->find ( 'filename:' . $filename );
 		foreach ( $hits as $hit ) {
 			$index->delete ( $hit->id );
@@ -56,7 +56,7 @@ class Application_Model_ExamSearch {
 	}
 	
 	public function searchIndex($query) {
-		$index = Zend_Search_Lucene::open ( $this->filepath );
+		$index = Zend_Search_Lucene::open ( $this->indexpath );
 		$hits = $index->find ( $query );
 		foreach ( $hits as $hit ) {
 			// TODO(aamuuninen) do something sensible with the results
