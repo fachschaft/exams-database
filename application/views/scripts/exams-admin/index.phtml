@@ -2,10 +2,17 @@
 <div id="view-content">
 	<p>View script for controller <b>ExamsAdmin</b> and script/action name <b>index</b></p>
 		<ul>
-	<li><a href="<?php echo $this->url(
+			<li><a href="<?php echo $this->url(
+            	array('controller'=>'exams-admin',
+                	  'action'=>'overview'),
+            			'default', true) ?>">
+            			Overview</a></li>
+            
+    <li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
-                  'action'=>'overview'),
+                  'action'=>'build-quicksearch-index'),
             'default',
-            true) ?>">Overview</a></li>
-			</ul>
+            true) ?>">Quicksearch Index</a></li>
+	
+		</ul>
 </div>
