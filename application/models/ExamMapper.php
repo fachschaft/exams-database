@@ -368,6 +368,8 @@ class Application_Model_ExamMapper
 	{
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '2', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
 		$this->addLogMessage($examId, 'Exam disapprove by %user%.');
+		$index = new Application_Model_ExamSearch();
+		$index->removeFileFromIndex($examId);
     }
 	
 	public function updateExamStatusToChecked($examId) 
@@ -375,10 +377,9 @@ class Application_Model_ExamMapper
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '3', `modified_last_date` = NOW() WHERE `idexam` =".$examId." AND `exam_status_idexam_status` =  '2';");
 		$this->addLogMessage($examId, 'Exam aproved by %user%.');
 		$index = new Application_Model_ExamSearch();
-		//$keywords = $this->findAdmin($examId);
 		//TODO(aamuuninen) wait for "entmurxing", then utilize sensible keywords
  		$keywords = "foo bar";
-		$index->addFileToIndex($id, $keywords);
+		$index->addFileToIndex($examId, $keywords);
     }
 	
 	public function updateExamStatusToDelete($examId) 

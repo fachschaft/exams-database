@@ -75,11 +75,11 @@ class Application_Model_ExamSearch {
 		$index->addDocument ( $doc );
 	}
 	
-	public function removeFileFromIndex($filename) {
+	public function removeFileFromIndex($id) {
 		$index = Zend_Search_Lucene::open ( $this->_indexpath );
-		$hits = $index->find ( 'examid:' . $filename );
+		$hits = $index->find ( 'examid:' . $id );
 		foreach ( $hits as $hit ) {
-			$index->delete ( $hit->examid );
+			$index->delete ( $hit->id );
 		}
 	}
 	
