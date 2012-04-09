@@ -17,10 +17,14 @@ class Application_Form_AdminQuicksearch extends Zend_Form {
 		$this->_buttonRebuildIndex = new Zend_Form_Element_Submit ( 'rebuildIndex' );
 		$this->_buttonRebuildIndex->setAttrib('id', 'rebuildindex');
 		
+		$this->_buttonDeleteIndex = new Zend_Form_Element_Submit ( 'deleteIndex' );
+		$this->_buttonDeleteIndex->setAttrib('id', 'deleteindex');
+		
 
 		$this->addElements ( array (
 				$this->_buttonNewIndex, 
 				$this->_buttonRebuildIndex,
+				$this->_buttonDeleteIndex
 		) );
 	}
 

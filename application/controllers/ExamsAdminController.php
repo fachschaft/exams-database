@@ -305,6 +305,7 @@ class ExamsAdminController extends Zend_Controller_Action {
 		$form = new Application_Form_AdminQuicksearch ();
 		$form->newIndex->setLabel ( 'Create new Index' );
 		$form->rebuildIndex->setLabel ( 'Rebuild Index from Database' );
+		$form->deleteIndex->setLabel ( 'Delete the Index' );
 		
 		$this->view->form = $form;
 		if ($this->getRequest ()->isPost ()) {
@@ -313,29 +314,18 @@ class ExamsAdminController extends Zend_Controller_Action {
 			if ($form->isValid ( $formData ) && $form->newIndex->isChecked ()) {
 				$index = new Application_Model_ExamSearch ();
 				$index->createIndex ();
-				echo "done";
+				echo "Index created";
 			} else if ($form->isValid ( $formData ) && $form->rebuildIndex->isChecked ()) {
 				$index = new Application_Model_ExamSearch ();
 				$index->renewIndex ();
-				echo "done";
+				echo "Index rebuilt";
+			} else if ($form->isValid ( $formData ) && $form->deleteIndex->isChecked ()) {
+				$index = new Application_Model_ExamSearch ();
+				$index->deleteIndex ();
+				echo "Index deleted";
 			} else
 				throw new Exception ( "Invalid Form Data" );
 		}
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

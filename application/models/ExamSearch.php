@@ -11,6 +11,18 @@ class Application_Model_ExamSearch {
 		$index = Zend_Search_Lucene::create ( $this->indexpath );
 	}
 	
+	public function deleteIndex($path = NULL) {
+		if ($path == NULL)
+			$path = $this->indexpath;
+		foreach ( glob ( $path . '/*' ) as $file ) {
+			if (is_dir ( $file ))
+				$this->deleteIndex ( $file );
+			else
+				unlink ( $file );
+		}
+		rmdir ( $path );
+	}
+	
 	public function getIndexSize() {
 		$index = Zend_Search_Lucene::open ( $this->indexpath );
 		$documents = $index->numDocs ();
@@ -23,20 +35,19 @@ class Application_Model_ExamSearch {
 	}
 	
 	public function renewIndex() {
-		if (file_exists ( $this->indexpath )) {
-			// TODO(aamuuninen) needs work as index is a directory not a file
-			unlink ( $this->indexpath );
-			$index = Zend_Search_Lucene::create ( $this->indexpath );
-			/*
-			 * TODO(aamuuninen) fill the index with all the exams in the
-			 * database $keywords_array = ...; for ($n = 0; $n <
-			 * number_of_exams; $n++){ $doc = new Zend_Search_Lucene_Document();
-			 * $doc->addField(Zend_Search_Lucene_Field::Text('filename',
-			 * $row['filename']));
-			 * $doc->addField(Zend_Search_Lucene_Field::Keyword('keyword',
-			 * $keywords_array));
-			 */
-		}
+		if (file_exists ( $this->indexpath ))
+			$this->deleteIndex ();
+		$index = Zend_Search_Lucene::create ( $this->indexpath );
+		
+		/*
+		 * TODO(aamuuninen) fill the index with all the exams in the database
+		 * $keywords_array = ...; for ($n = 0; $n < number_of_exams; $n++){ $doc
+		 * = new Zend_Search_Lucene_Document();
+		 * $doc->addField(Zend_Search_Lucene_Field::Text('filename',
+		 * $row['filename']));
+		 * $doc->addField(Zend_Search_Lucene_Field::Keyword('keyword',
+		 * $keywords_array));
+		 */
 	}
 	
 	public function addFileToIndex($filename, array $keywords) {
