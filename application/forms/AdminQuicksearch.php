@@ -12,7 +12,7 @@ class Application_Form_AdminQuicksearch extends Zend_Form {
 		$this->setAction ( '/exams-admin/build-quicksearch-index' );
 		
 		$this->_buttonNewIndex = new Zend_Form_Element_Submit ( 'newIndex' );
-		$this->setAttrib('id', 'newindex');
+		$this->_buttonNewIndex->setAttrib('id', 'newindex');
 		
 		$this->_buttonRebuildIndex = new Zend_Form_Element_Submit ( 'rebuildIndex' );
 		$this->_buttonRebuildIndex->setAttrib('id', 'rebuildindex');

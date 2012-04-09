@@ -348,7 +348,9 @@ class ExamsController extends Zend_Controller_Action
     		$formData = $this->_request->getPost();
     		if (!$form->isValid($formData)) throw new Exception('Invalid Form Data');
     		 
-    		echo "You searched for $formData[_query]"; 
+    		echo "You searched for $formData[_query]<br>"; 
+    		$index = new Application_Model_ExamSearch();
+    		$index->searchIndex($formData['_query']);
     		exit;
     	}
     	$this->view->form = $form;
