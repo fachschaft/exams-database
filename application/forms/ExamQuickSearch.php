@@ -17,7 +17,10 @@ class Application_Form_ExamQuickSearch extends Zend_Form
 		$submit = new Zend_Form_Element_Submit('submit');
 		$submit->setLabel('Search');
 		
-		$this->addElements(array($this->_query, $submit));
+		$this->addElements ( array (
+				$this->_query,
+				$submit 
+		) );
     }
 
 }

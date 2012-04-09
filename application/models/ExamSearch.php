@@ -2,7 +2,7 @@
 
 class Application_Model_ExamSearch {
 	
-	protected $indexpath = "/data/searchindex";
+	protected $indexpath = '/var/www/exams/exams-database/data/my-index';
 	
 	public function createIndex() {
 		if (file_exists ( $this->indexpath )) {
@@ -24,6 +24,7 @@ class Application_Model_ExamSearch {
 	
 	public function renewIndex() {
 		if (file_exists ( $this->indexpath )) {
+			// TODO(aamuuninen) needs work as index is a directory not a file
 			unlink ( $this->indexpath );
 			$index = Zend_Search_Lucene::create ( $this->indexpath );
 			/*
