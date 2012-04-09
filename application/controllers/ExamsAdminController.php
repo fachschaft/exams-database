@@ -315,14 +315,17 @@ class ExamsAdminController extends Zend_Controller_Action {
 				$index = new Application_Model_ExamSearch ();
 				$index->createIndex ();
 				echo "Index created";
+				
 			} else if ($form->isValid ( $formData ) && $form->rebuildIndex->isChecked ()) {
 				$index = new Application_Model_ExamSearch ();
 				$index->renewIndex ();
 				echo "Index rebuilt";
+				
 			} else if ($form->isValid ( $formData ) && $form->deleteIndex->isChecked ()) {
 				$index = new Application_Model_ExamSearch ();
 				$index->deleteIndex ();
 				echo "Index deleted";
+				
 			} else
 				throw new Exception ( "Invalid Form Data" );
 		}
