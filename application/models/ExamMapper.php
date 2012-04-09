@@ -90,8 +90,9 @@ class Application_Model_ExamMapper
         $entries   = array();
         foreach ($resultSet as $row) {
             $entry = new Application_Model_Exam();
+                       
+            $coursesIds = explode(",", $row['courses']);
             
-            $coursesIds = split(",", $row['courses']);
             
             // collect the courses
             $selectCourse = $this->getDbTable()->getAdapter()->select()
