@@ -368,7 +368,8 @@ class Application_Model_ExamMapper
 	public function updateExamStatusToDisapprove($examId) 
 	{
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '2', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
-		$this->addLogMessage($examId, 'Exam disapprove by %user%.');
+		$this->addLogMessage($examId, 'Exam disapproved by %user%.');
+		//remove the exam from the search index
 		$index = new Application_Model_ExamSearch();
 		$index->removeFileFromIndex($examId);
     }
@@ -376,7 +377,8 @@ class Application_Model_ExamMapper
 	public function updateExamStatusToChecked($examId) 
 	{
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '3', `modified_last_date` = NOW() WHERE `idexam` =".$examId." AND `exam_status_idexam_status` =  '2';");
-		$this->addLogMessage($examId, 'Exam aproved by %user%.');
+		$this->addLogMessage($examId, 'Exam approved by %user%.');
+		// Add the exam to the search index
 		$index = new Application_Model_ExamSearch();
 		//TODO(aamuuninen) wait for "entmurxing", then utilize sensible keywords
  		$keywords = "foo bar";
@@ -390,6 +392,12 @@ class Application_Model_ExamMapper
 		$this->addLogMessage($examId, 'Exam deleted by %user%.');
     }
     
+    public function updateExamStatusToReported($examId)
+    {
+    	//TODO is changing the last modified date here correct?
+    	$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '5', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
+    	$this->addLogMessage($examId, 'Exam was reported.');
+    }
     // return true if the exam is valid, (has no id and no proboerty has a wrong value)
     private function validateNewExam($exam) 
 	{
