@@ -45,6 +45,7 @@
         <formFile formName="AdminFileDetail"/>
         <formFile formName="AdminFileUpload"/>
         <formFile formName="ExamQuickSearch"/>
+        <formFile formName="AdminQuicksearch"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
