@@ -35,6 +35,10 @@ class ExamsAdminController extends Zend_Controller_Action {
 			switch ($do) {
 				case "approve" :
 					$examMapper->updateExamStatusToChecked ( $id );
+					$index = new Application_Model_ExamSearch();
+					$keywords = "foo bar";
+					echo "add to index please!";
+					$index->addFileToIndex($id, $keywords);
 					$this->_helper->Redirector->setGotoSimple ( 'overview' );
 					break;
 				case "disapprove" :
