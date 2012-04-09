@@ -306,6 +306,7 @@ class ExamsAdminController extends Zend_Controller_Action {
 		$form->newIndex->setLabel ( 'Create new Index' );
 		$form->rebuildIndex->setLabel ( 'Rebuild Index from Database' );
 		$form->deleteIndex->setLabel ( 'Delete the Index' );
+		$form->optimizeIndex->setLabel ( 'Collect garbage' );
 		
 		$this->view->form = $form;
 		if ($this->getRequest ()->isPost ()) {
@@ -315,17 +316,22 @@ class ExamsAdminController extends Zend_Controller_Action {
 				$index = new Application_Model_ExamSearch ();
 				$index->createIndex ();
 				echo "Index created";
-				
+			
 			} else if ($form->isValid ( $formData ) && $form->rebuildIndex->isChecked ()) {
 				$index = new Application_Model_ExamSearch ();
 				$index->renewIndex ();
 				echo "Index rebuilt";
-				
+			
 			} else if ($form->isValid ( $formData ) && $form->deleteIndex->isChecked ()) {
 				$index = new Application_Model_ExamSearch ();
 				$index->deleteIndex ();
 				echo "Index deleted";
-				
+			
+			} else if ($form->isValid ( $formData ) && $form->optimizeIndex->isChecked ()) {
+				$index = new Application_Model_ExamSearch ();
+				$index->optimizeIndex ();
+				echo "Garbage removed, index optimized";
+			
 			} else
 				throw new Exception ( "Invalid Form Data" );
 		}
