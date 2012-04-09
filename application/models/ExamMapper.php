@@ -274,7 +274,7 @@ class Application_Model_ExamMapper
                     'exam_type_idexam_type'         => $exam->type,
                     'exam_sub_type_idexam_sub_type' => $exam->subType,
 					'degree_iddegree' 				=> $exam->degreeId,
-                    // autor is missing in db, fix this ;)
+                    //TODO autor is missing in db, fix this ;)
                     'exam_status_idexam_status'     => 1,
                     'exam_degree_idexam_degree'     => $exam->degree,
                     'university_iduniversity'       => $exam->university,
@@ -306,7 +306,7 @@ class Application_Model_ExamMapper
             }
 
         } else {
-            // handle fail
+            // TODO handle fail
         }
         
         return $insert;
