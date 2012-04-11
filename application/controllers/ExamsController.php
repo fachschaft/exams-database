@@ -156,8 +156,8 @@ class ExamsController extends Zend_Controller_Action {
 			
 			header ( 'Content-Type: application/octet-stream' );
 			header ( "Content-Disposition: attachment; filename=" . date ( 'YmdHis' ) . "." . $entries->getExtention () );
-			$config = Zend_Registry::get ( 'examDBConfig' );
-			$path = $config ['storagepath'];
+			$filemanager = new Application_Model_ExamFileManager();
+			$path = $filemanager->getFileStoragePath(); 
 			$file = $path . $entries->getFileName () . "." . $entries->getextention ();
 			if (is_readable ( $file )) {
 				readfile ( $file );
@@ -192,8 +192,10 @@ class ExamsController extends Zend_Controller_Action {
 				
 				header ( 'Content-Type: application/octet-stream' );
 				header ( "Content-Disposition: attachment; filename=" . date ( 'YmdHis' ) . "." . $entries->getExtention () );
-				$config = Zend_Registry::get ( 'examDBConfig' );
-				$path = $config ['storagepath'];
+
+				$filemanager = new Application_Model_ExamFileManager();
+				$path = $filemanager->getFileStoragePath();
+
 				$file = $path . $entries->getFileName () . "." . $entries->getextention ();
 				if (is_readable ( $file )) {
 					readfile ( $file );

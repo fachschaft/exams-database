@@ -5,40 +5,62 @@ class Application_Model_ExamFileManager
 	private $_fileDestinationPath;
 	private $_fileTempPath;
 	
+	public function getFileDestinationPath() {
+		return $this->_fileDestinationPath;
+	}
+	
+	public function getFileStoragePath() {
+		return $this->_fileDestinationPath;
+	}
+
+	public function getFileTempPath() {
+		return $this->_fileTempPath;
+	}
+	
+	
+	public function setFileDestinationPath($fileDestinationPath) {
+		if (strlen ( $fileDestinationPath ) == 0)
+			throw new Exception ( 'The storage path is empty. Please check your application.ini' );
+
+		// if the path does not end with a /, add one
+		if (substr ( $fileDestinationPath, - 1 ) != "/") {
+			$fileDestinationPath .= "/";
+		}
+		
+		$this->_fileDestinationPath = $fileDestinationPath;
+	}
+
+
+	public function setFileTempPath($fileTempPath) {
+		if (strlen ( $fileTempPath ) == 0)
+			throw new Exception ( 'The temporary storage path is empty. Please check your application.ini' );
+			
+		// if the path does not end with a /, add one
+		if (substr ( $fileTempPath, - 1 ) != "/") {
+			$fileTempPath .= "/";
+		}
+		$this->_fileTempPath = $fileTempPath;
+	}
+
 	public function __construct()
     {
-        $config = Zend_Registry::get('examDBConfig');
-
-		if($config['storagepath'] != "") {
-			$this->_fileDestinationPath = $config['storagepath'];
-		}
-		// if not end with a /, add one
-		if(substr($config['storagepath'], -1) != "/") { $this->_fileDestinationPath .= "/"; }
-			
-		if($config['temppath'] != "") {
-			$this->_fileTempPath = $config['temppath'];
-		}
-		// if not end with a /, add one
-		if(substr($config['temppath'], -1) != "/") { $this->_fileTempPath .= "/"; }
+		$config = Zend_Registry::get ( 'examDBConfig' );
 		
-		// check if destination path is writable
+		$this->setFileDestinationPath ( $config ['storagepath'] );
+		$this->setFileTempPath ( $config ['temppath'] );
+		
+		// check if the set paths are writable
 		if(!is_writable($this->_fileDestinationPath))
-		{
 			throw new Zend_Exception ("Cannot write in directory ".$this->_fileDestinationPath."! Plese call your admin.", 500);
-		}
 		
-		// check if temp path is writable
 		if(!is_writable($this->_fileTempPath))
-		{
 			throw new Zend_Exception ("Cannot write in directory ".$this->_fileTempPath."! Plese call your admin.", 500);
-		}
-				
     }
 	
 	public function packDocuments($documents)
 	{
 		$zip = new ZipArchive;
-		$extention = ".zip"; //extetion for the new archive | hase to start with a dot
+		$extention = ".zip"; //extetion for the new archive | has to start with a dot
 		
 		// get free filename in temp dir
 		$new_file_name = $this->getFreeFilename($this->_fileTempPath);
