@@ -65,7 +65,7 @@ class ExamsController extends Zend_Controller_Action
         if(!isset($this->getRequest()->degree)) {
             return $this->_helper->redirector('groups');
         } else {
-            //ToDo(aritas1): check if the degree is valid (db check)
+            //TODO(aritas1): check if the degree is valid (db check)
         }
         
         //setup the form
@@ -106,7 +106,7 @@ class ExamsController extends Zend_Controller_Action
         if(!isset($this->getRequest()->degree)) {
             return $this->_helper->redirector('groups');
         } else {
-            //ToDo(aritas1): check if the degree is valid (db check)
+            //TODO(aritas1): check if the degree is valid (db check)
             // check also if the combination of degree / group is valid
         }
         
@@ -165,7 +165,7 @@ class ExamsController extends Zend_Controller_Action
 			}
             exit();
         } else if(isset($this->getRequest()->admin)) {
-			//ToDo: check for admin state
+			//TODO: check for admin state
 			
 			// check if a login exists for admin controller
 			if(!Zend_Auth::getInstance()->hasIdentity()) {
@@ -348,9 +348,7 @@ class ExamsController extends Zend_Controller_Action
     		$formData = $this->_request->getPost();
     		if (!$form->isValid($formData)) throw new Exception('Invalid Form Data');
     		 
-    		echo "You searched for $formData[_query]<br>"; 
-    		$index = new Application_Model_ExamSearch();
-    		$index->searchIndex($formData['_query']);
+    		echo "You searched for $formData[_query]"; 
     		exit;
     	}
     	$this->view->form = $form;

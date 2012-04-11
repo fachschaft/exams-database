@@ -184,80 +184,61 @@ class Application_Model_ExamFileManager
 	private function unpackRarArchive($doc)
 	{
 		echo "start unpackin rar";
-		//toDo(leinfeda): goon here
-		//$archive = new RarArchive;
-		//$archive = RarArchive::open($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention);
+		$rar_arch = RarArchive::open($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention);
+		if ($rar_arch === FALSE)
+			throw new Zend_Exception ("Failed opening file.", 500);
 		
-		/*$rar_file = rar_open($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention) or die("Can't open Rar archive");
+		$entries = $rar_arch->getEntries();
+		if ($entries === FALSE)
+			throw new Zend_Exception ("Failed fetching entries.", 500);
 		
-		$entries = rar_list($rar_file);
+		echo "Found " . count($entries) . " files.\n";
 		
-		foreach ($entries as $entry) {
-			echo 'Filename: ' . $entry->getName() . "\n";
-			echo 'Packed size: ' . $entry->getPackedSize() . "\n";
-			echo 'Unpacked size: ' . $entry->getUnpackedSize() . "\n";
-		
-			$entry->extract($this->_fileTempPath);
+		foreach ($entries as $e) {
+			$stream = $e->getStream();
+			if ($stream === FALSE)
+				throw new Zend_Exception ("Failed opening first file.", 500);
+
+			$new_file_name = $this->getFreeFilename($this->_fileTempPath);
+			$tmp_filename = $this->_fileTempPath.$new_file_name;
+			if(file_put_contents($tmp_filename, $stream) == false) {
+				throw new Zend_Exception ("Cannot extract file.", 500);
+			}
+			
+			// get the extetion of the filename from the archive
+			$ex_names = preg_split('/\./', $e->getName(), -1);
+			$extention = $ex_names[count($ex_names)-1];
+			
+			// get free filename from destionation
+			$new_file_name = $this->getFreeFilename($this->_fileDestinationPath);
+			$destination_filename = $this->_fileDestinationPath.$new_file_name.'.'.$extention;
+			if(!file_exists($destination_filename)) {
+				// moving file to destionation
+				rename($tmp_filename, $destination_filename);
+					
+				// check if rename was successful
+				if(file_exists($destination_filename)) {
+					// save the new file
+					$document = new Application_Model_Document();
+					$document->extention = $extention;
+					$document->submitFileName = $e->getName();
+					$document->fileName = $new_file_name;
+					$document->mimeType = mime_content_type($destination_filename);
+					$document->ExamId = $doc->examId;
+					$document->CheckSum = md5_file($destination_filename);
+			
+					$documentMapper = new Application_Model_DocumentMapper();
+					$documentMapper->saveNew($document);
+				}
+			} else {
+				// destination already contains this archive file
+				unlink($tmp_filename);
+				throw new Exception($destination_filename . ' destination file already exists.', 500);
+			}
 		}
 		
-		rar_close($rar_file);*/
-		
-		
-		/*if ($archive->open($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention) === TRUE)
-		{
-			// go through all files in the archive
-			for ($i=0; $i<$archive->numFiles;$i++) {
-				// get all infos
-				$info = $archive->statIndex($i);
-				// get filepointer
-				$fp = $archive->getStream($info['name']);
-	
-				// get a free file name in temp folder
-				$new_file_name = $this->getFreeFilename($this->_fileTempPath);
-				$tmp_filename = $this->_fileTempPath.$new_file_name;
-	
-				// create a file from the filepoint of the zip archive
-				if(file_put_contents($tmp_filename, $fp) == false) {
-					throw new Zend_Exception ("Cannot extract file.", 500);
-				}
-	
-	
-				// get the extetion of the filename from the archive
-				$ex_names = preg_split('/\./', $info['name'], -1);
-				$extention = $ex_names[count($ex_names)-1];
-	
-				// get free filename from destionation
-				$new_file_name = $this->getFreeFilename($this->_fileDestinationPath);
-				$destination_filename = $this->_fileDestinationPath.$new_file_name.'.'.$extention;
-				if(!file_exists($destination_filename)) {
-					// moving file to destionation
-					rename($tmp_filename, $destination_filename);
-						
-					// check if rename was successful
-					if(file_exists($destination_filename)) {
-						// save the new file
-						$document = new Application_Model_Document();
-						$document->extention = $extention;
-						$document->submitFileName = $info['name'];
-						$document->fileName = $new_file_name;
-						$document->mimeType = mime_content_type($destination_filename);
-						$document->ExamId = $doc->examId;
-						$document->CheckSum = md5_file($destination_filename);
-	
-						$documentMapper = new Application_Model_DocumentMapper();
-						$documentMapper->saveNew($document);
-					}
-				} else {
-					// destination already contains this archive file
-					unlink($tmp_filename);
-					throw new Exception($destination_filename . ' destination file already exists.', 500);
-				}
-			}
-			var_dump($archive);
-		} else {
-			// unpacking faild
-			throw new Exception('Can\'t open zip Archive. ' . $this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention, 500);
-		}*/
+		$rar_arch->close();
+
 	}
 	
 	public function storeUploadedFiles($files, $examId)

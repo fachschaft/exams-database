@@ -91,7 +91,7 @@ class Application_Model_ExamMapper
         foreach ($resultSet as $row) {
             $entry = new Application_Model_Exam();
             
-            $coursesIds = split(",", $row['courses']);
+            $coursesIds = explode(",", $row['courses']);
             
             // collect the courses
             $selectCourse = $this->getDbTable()->getAdapter()->select()
@@ -238,7 +238,7 @@ class Application_Model_ExamMapper
 			  $resultSet = $this->getDbTable()->getAdapter()->fetchAll($select);
 		
         if (0 == count($resultSet)) {
-			//ToDo: if no lecturer set, cout = 0 ... fix this
+			//TODO: if no lecturer set, cout = 0 ... fix this
 			throw new Zend_Exception ("No result (count = 0).");
             return;
         }

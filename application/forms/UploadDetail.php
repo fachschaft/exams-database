@@ -177,7 +177,7 @@ class Application_Form_UploadDetail extends Zend_Form
             }
         }
     
-        //$opt = array('-1'=>'- other -');
+        $opt = array();
         foreach($options as $id => $o) { $opt[$id] = $o; }
         if($opt != null) $this->_elementLecturer->setMultiOptions($opt);
         //$this->_elementLecturer->setValue(array('-1'));

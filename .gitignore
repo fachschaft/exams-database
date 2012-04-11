@@ -37,5 +37,6 @@ Thumbs.db
 ######################
 docs/
 library/Zend
-
+data/exams/
+data/my-index/
 
