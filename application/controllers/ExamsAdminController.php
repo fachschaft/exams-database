@@ -6,17 +6,11 @@ class ExamsAdminController extends Zend_Controller_Action {
 		// check if a login exists for admin controller
 		if (! Zend_Auth::getInstance ()->hasIdentity () && $this->getRequest ()->getActionName () != "login") {
 			$data = $this->getRequest ()->getParams ();
-			// save the old controller and action to redirect the user after the
-			// login
-			if (isset ( $data ['rcontroller'] ) || isset ( $data ['raction'] )) {
-			} else {
-				$data ['rcontroller'] = $data ['controller'];
-				$data ['raction'] = $data ['action'];
-			}
-			unset ( $data ['controller'] );
-			unset ( $data ['action'] );
+			// save the old controller and action to redirect the user after the login
+			$authmanager = new Application_Model_AuthManager ();
+			$data = $authmanager->pushParameters ( $data );
+			
 			$this->_helper->Redirector->setGotoSimple ( 'login', null, null, $data );
-		
 		}
 	}
 	
@@ -128,6 +122,7 @@ class ExamsAdminController extends Zend_Controller_Action {
 		}
 	}
 	public function loginAction() {
+		$authmanager = new Application_Model_AuthManager();
 		$request = $this->getRequest ();
 		
 		// Check if we have a POST request
@@ -135,46 +130,25 @@ class ExamsAdminController extends Zend_Controller_Action {
 			// Get our form and validate it
 			$form = $this->getLoginForm ();
 			if (! $form->isValid ( $request->getPost () )) {
-				// Invalid entries
 				$this->view->form = $form;
 				return $this->render ( 'login' ); // re-render the login form
 			}
-			
-			// Get our authentication adapter and check credentials
-			$adapter = $this->getAuthAdapter ( $form->getValues () );
-			$auth = Zend_Auth::getInstance ();
-			$result = $auth->authenticate ( $adapter );
-			
-			if (! $result->isValid ()) {
-				// Invalid credentials
+			// Check if credentials provided are valid 
+			$formdata = $form->getValues ();			
+			if (!$authmanager->checkLogin($formdata)) {
 				$form->setDescription ( 'Invalid credentials provided' );
 				$this->view->form = $form;
 				return $this->render ( 'login' ); // re-render the login form
 			}
 			
-			// We're authenticated! Redirect to the page the user likeed to be
-			// or go to index page
+			else {
 			$data = $this->getRequest ()->getParams ();
 			
-			// reconstruct the old parameter
-			unset ( $data ['username'] );
-			unset ( $data ['password'] );
-			unset ( $data ['login'] );
-			
-			if (! isset ( $data ['raction'] )) {
-				$data ['action'] = "index";
-			} else {
-				$data ['action'] = $data ['raction'];
-				unset ( $data ['raction'] );
-			}
-			if (! isset ( $data ['rcontroller'] )) {
-				$data ['controller'] = null;
-			} else {
-				$data ['controller'] = $data ['rcontroller'];
-				unset ( $data ['rcontroller'] );
-			}
+			// reconstruct the old parameters
+			$data = $authmanager->popParameters($data);
 			
 			$this->_helper->Redirector->setGotoSimple ( $data ['action'], $data ['controller'], null, $data );
+			}
 		}
 		
 		$this->view->form = $this->getLoginForm ();
@@ -284,14 +258,6 @@ class ExamsAdminController extends Zend_Controller_Action {
 		) );
 	}
 	
-	private function getAuthAdapter(array $params) {
-		// Set up the authentication adapter
-		$config = Zend_Registry::get ( 'authenticate' );
-		// return new Zend_Auth_Adapter_Digest($config['filename'],
-		// $config['realm'], $params['username'], $params['password']);
-		// return new Custom_Auth_Adapter_InternetProtocol($params['ip']);
-		return new Custom_Auth_Adapter_Simple ( $params ['username'], $params ['password'] );
-	}
 	
 	public function logoutAction() {
 		Zend_Auth::getInstance ()->clearIdentity ();

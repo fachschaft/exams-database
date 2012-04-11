@@ -132,10 +132,10 @@ class ExamsController extends Zend_Controller_Action {
                         );
     }
 	
-	public function downloadAction() 
-	{	
+	public function downloadAction() {
 		if (isset ( $this->getRequest ()->id )) {
-			// For anonymous Users, check if the user is allowed to download files based on IP
+			// For anonymous Users, check if the user is allowed to download
+			// files based on IP
 			if (! Zend_Auth::getInstance ()->hasIdentity ()) {
 				$adapter = new Custom_Auth_Adapter_InternetProtocol ( $this->getRequest ()->getClientIp () );
 				$auth = Zend_Auth::getInstance ();
@@ -154,28 +154,23 @@ class ExamsController extends Zend_Controller_Action {
 			if (Zend_Auth::getInstance ()->hasIdentity ()) {
 				// If user is logged in, get the fileid for the download
 				$fileId = $this->getRequest ()->admin;
-			}
-			else {
+			} else {
 				$data = $this->getRequest ()->getParams ();
-				// save the old controller and action to redirect the user after
-				// the login
-				if (! isset ( $data ['rcontroller'] ) || isset ( $data ['raction'] )) {
-					$data ['rcontroller'] = $data ['controller'];
-					$data ['raction'] = $data ['action'];
-				}
-				unset ( $data ['controller'] );
-				unset ( $data ['action'] );
+				// save the old controller and action to redirect the user after the login
+				$authmanager = new Application_Model_AuthManager ();
+				$data = $authmanager->pushParameters ( $data );
+				
 				$this->_helper->Redirector->setGotoSimple ( 'login', 'exams-admin', null, $data );
-			} 
-		} 
-		else
+			}
+		} else
 			throw new Exception ( 'Invalid document called', 500 );
-		
-		// Send the User the file he requested for Download.
+			
+			// Send the User the file he requested for Download.
 		$filemanager = new Application_Model_ExamFileManager ();
 		$filemanager->downloadDocuments ( $fileId );
-		//This exit() is important as php will output a lot of html instead of just the file contents if it is missing.
-		exit();
+		// This exit() is important as php will output a lot of html instead of
+		// just the file contents if it is missing.
+		exit ();
 	
 	}
 	
