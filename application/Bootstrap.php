@@ -24,6 +24,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         Zend_Layout::startMvc();
         Zend_Layout::getMvcInstance()->getView()->addHelperPath('Custom/View/Helper/', 'Custom_View_Helper');
     }
+    
+    protected function _initTimezone()
+    {
+    	date_default_timezone_set('UTC');
+    }
 
 }
 
