@@ -132,31 +132,30 @@ class ExamsController extends Zend_Controller_Action {
                         );
     }
 	
-	public function downloadAction() {
-		// TODO: move this into bootstrap
-		date_default_timezone_set ( 'UTC' );
-		
+	public function downloadAction() 
+	{	
 		if (isset ( $this->getRequest ()->id )) {
+			// For anonymous Users, check if the user is allowed to download files based on IP
 			if (! Zend_Auth::getInstance ()->hasIdentity ()) {
 				$adapter = new Custom_Auth_Adapter_InternetProtocol ( $this->getRequest ()->getClientIp () );
 				$auth = Zend_Auth::getInstance ();
 				$result = $auth->authenticate ( $adapter );
-				if (! $result->isValid ()) {
+				if (! $result->isValid ())
 					throw new Exception ( 'Sorry, your not allowed to download a file', 500 );
-				}
 			}
+			// If user is allowed to download, get the fileid for the download
 			$fileId = $this->getRequest ()->id;
-			$filemanager = new Application_Model_ExamFileManager ();
-			$filemanager->downloadDocuments ( $fileId );
-			exit ();
-		
 		} 
-		
+
 		else if (isset ( $this->getRequest ()->admin )) {
 			// ToDo: check for admin state
 			
 			// check if a login exists for admin controller
-			if (! Zend_Auth::getInstance ()->hasIdentity ()) {
+			if (Zend_Auth::getInstance ()->hasIdentity ()) {
+				// If user is logged in, get the fileid for the download
+				$fileId = $this->getRequest ()->admin;
+			}
+			else {
 				$data = $this->getRequest ()->getParams ();
 				// save the old controller and action to redirect the user after
 				// the login
@@ -168,18 +167,13 @@ class ExamsController extends Zend_Controller_Action {
 				unset ( $data ['action'] );
 				$this->_helper->Redirector->setGotoSimple ( 'login', 'exams-admin', null, $data );
 			} 
-			
-			else {
-				$fileId = $this->getRequest ()->admin;
-				$filemanager = new Application_Model_ExamFileManager ();
-				$filemanager->downloadDocuments ( $fileId );
-				exit ();
-			}
 		} 
-		
-		else {
+		else
 			throw new Exception ( 'Invalid document called', 500 );
-		}
+		
+		// Send the User the file he requested for Download.
+		$filemanager = new Application_Model_ExamFileManager ();
+		$filemanager->downloadDocuments ( $fileId );
 	
 	}
 	
@@ -332,7 +326,6 @@ class ExamsController extends Zend_Controller_Action {
 		$this->view->form = $form;
 	}
 
-
     public function quickSearchAction()
     {
     	$form = new Application_Form_ExamQuickSearch();
@@ -346,10 +339,3 @@ class ExamsController extends Zend_Controller_Action {
     	$this->view->form = $form;
     }
 }
-
-
-
-
-
-
-
