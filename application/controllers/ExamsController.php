@@ -128,7 +128,7 @@ class ExamsController extends Zend_Controller_Action {
                         $this->getRequest()->semester,
                         $this->getRequest()->examType, 
                         $this->getRequest()->degree,
-						"3"	// 3 means public state
+						array(3,5)	// 3 means public state
                         );
     }
 

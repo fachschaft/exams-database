@@ -25,12 +25,12 @@ class Application_Model_ExamMapper
     }
     
     // this function takes single integer or arrays
-    public function fetch($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree, $status = "", $withReflexive = true)
+    public function fetch($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree, array $status = array(), $withReflexive = true)
     {  
 	
-		if($status != "")
+		if(!empty($status))
 		{
-			$status = "x.exam_status_idexam_status = " . $status;
+			$status = "x.exam_status_idexam_status IN (" . implode(",", $status).") ";
 			
 		}
 		
@@ -181,7 +181,7 @@ class Application_Model_ExamMapper
 	public function fetchAdmin()
 	{
 		// collect all exams with status 2 (unchecked)
-		return $this->fetch("-1", "-1", "-1", "-1", "-1", "2", false);
+		return $this->fetch("-1", "-1", "-1", "-1", "-1", array(2), false);
 	}
 	
 	public function find($id)

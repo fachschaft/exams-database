@@ -32,7 +32,7 @@ class Application_Model_ExamFileManager
 		{
 			throw new Zend_Exception ("Cannot write in directory ".$this->_fileTempPath."! Plese call your admin.", 500);
 		}
-		
+				
     }
 	
 	public function packDocuments($documents)
@@ -112,6 +112,9 @@ class Application_Model_ExamFileManager
 				case"application/x-rar":
 					$this->unpackRarArchive($doc);
 					break;
+				case"application/x-gzip":
+					//.gz
+					break;
 				default:
 					// this is no file how can be unpacked
 					//echo "<p>this is no file how can be unpacked</p>";
@@ -141,36 +144,7 @@ class Application_Model_ExamFileManager
 				if(file_put_contents($tmp_filename, $fp) == false) { throw new Zend_Exception ("Cannot extract file.", 500); }
 						
 				
-				// get the extetion of the filename from the archive
-				$ex_names = preg_split('/\./', $info['name'], -1);
-				$extention = $ex_names[count($ex_names)-1];
-				
-				// get free filename from destionation
-				$new_file_name = $this->getFreeFilename($this->_fileDestinationPath);
-				$destination_filename = $this->_fileDestinationPath.$new_file_name.'.'.$extention;
-				if(!file_exists($destination_filename)) {
-					// moving file to destionation
-					rename($tmp_filename, $destination_filename);
-					
-					// check if rename was successful
-					if(file_exists($destination_filename)) {
-						// save the new file
-						$document = new Application_Model_Document();
-						$document->extention = $extention;
-						$document->submitFileName = $info['name'];
-						$document->fileName = $new_file_name;
-						$document->mimeType = mime_content_type($destination_filename);
-						$document->ExamId = $doc->examId;
-						$document->CheckSum = md5_file($destination_filename);
-						
-						$documentMapper = new Application_Model_DocumentMapper();
-						$documentMapper->saveNew($document);
-					}
-				} else {
-					// destination already contains this archive file
-					unlink($tmp_filename); 
-					throw new Exception($destination_filename . ' destination file already exists.', 500); 
-				}
+				$this->storeUploadedFile($tmp_filename, $doc->examId, $info['name']);
 			}
 		} else {
 			// unpacking faild
@@ -200,41 +174,14 @@ class Application_Model_ExamFileManager
 				throw new Zend_Exception ("Cannot extract file.", 500);
 			}
 			
-			// get the extetion of the filename from the archive
-			$ex_names = preg_split('/\./', $e->getName(), -1);
-			$extention = $ex_names[count($ex_names)-1];
-			
-			// get free filename from destionation
-			$new_file_name = $this->getFreeFilename($this->_fileDestinationPath);
-			$destination_filename = $this->_fileDestinationPath.$new_file_name.'.'.$extention;
-			if(!file_exists($destination_filename)) {
-				// moving file to destionation
-				rename($tmp_filename, $destination_filename);
-					
-				// check if rename was successful
-				if(file_exists($destination_filename)) {
-					// save the new file
-					$document = new Application_Model_Document();
-					$document->extention = $extention;
-					$document->submitFileName = $e->getName();
-					$document->fileName = $new_file_name;
-					$document->mimeType = mime_content_type($destination_filename);
-					$document->ExamId = $doc->examId;
-					$document->CheckSum = md5_file($destination_filename);
-			
-					$documentMapper = new Application_Model_DocumentMapper();
-					$documentMapper->saveNew($document);
-				}
-			} else {
-				// destination already contains this archive file
-				unlink($tmp_filename);
-				throw new Exception($destination_filename . ' destination file already exists.', 500);
-			}
+			$this->storeUploadedFile ( $tmp_filename, $doc->examId, $e->getName());
+
 		}
 		
 		$rar_arch->close();
 
 	}
+	
 	
 	public function storeUploadedFiles($files, $examId)
 	{
@@ -242,36 +189,48 @@ class Application_Model_ExamFileManager
 			$files = array($files);
 		}
 	
-		foreach($files as $location) 
+		foreach($files as $location)
 		{
-			$ex_names = preg_split('/\./', $location, -1);
-			$extention = $ex_names[count($ex_names)-1];
-			
-			if(!is_writable($this->_fileDestinationPath)) {
-				unlink($location);
-				throw new Zend_Exception ("Cannot write in directory (".$this->_fileDestinationPath.")", 500);
-			}
-			
-			$sum = md5_file($location);
-			$mime = mime_content_type($location);
-			
-			// move the file to destination
-			$new_file_name = $this->getFreeFilename($this->_fileDestinationPath, $extention);
-			rename($location, $this->_fileDestinationPath.$new_file_name.".".$extention);
-			
-			// save the file name to database (crate a document) and link this to the exam
-			$document = new Application_Model_Document();
-
-			$document->ExamId = $examId;
-			$document->extention = $extention;
 			$file_names = preg_split('/\//', $location, -1);
-			$document->submitFileName = $file_names[count($file_names)-1];
-			$document->fileName = $new_file_name;
-			$document->mimeType = $mime;
-			$document->checkSum = $sum;
-			
-			$documentMapper = new Application_Model_DocumentMapper();
-			$documentMapper->saveNew($document);
+			$file_name = $file_names[count($file_names)-1];
+			$this->storeUploadedFile ($location, $examId, $file_name);
+		}
+	}
+	
+	/**
+	 * @param tmp_filename
+	 * @param document
+	 * @param documentMapper
+	 */private function storeUploadedFile($tmp_filename, $examId, $fileName) {
+		// get the extetion of the filename from the archive
+		$ex_names = preg_split('/\./', $fileName, -1);
+		$extention = $ex_names[count($ex_names)-1];
+		
+		// get free filename from destionation
+		$new_file_name = $this->getFreeFilename($this->_fileDestinationPath);
+		$destination_filename = $this->_fileDestinationPath.$new_file_name.'.'.$extention;
+		if(!file_exists($destination_filename)) {
+			// moving file to destionation
+			rename($tmp_filename, $destination_filename);
+				
+			// check if rename was successful
+			if(file_exists($destination_filename)) {
+				// save the new file
+				$document = new Application_Model_Document();
+				$document->extention = $extention;
+				$document->submitFileName = $fileName;
+				$document->fileName = $new_file_name;
+				$document->mimeType = mime_content_type($destination_filename);
+				$document->ExamId = $examId;
+				$document->CheckSum = md5_file($destination_filename);
+		
+				$documentMapper = new Application_Model_DocumentMapper();
+				$documentMapper->saveNew($document);
+			}
+		} else {
+			// destination already contains this archive file
+			unlink($tmp_filename);
+			throw new Exception($destination_filename . ' destination file already exists.', 500);
 		}
 	}
 	
