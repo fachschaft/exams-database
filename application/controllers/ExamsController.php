@@ -174,6 +174,7 @@ class ExamsController extends Zend_Controller_Action {
 		// Send the User the file he requested for Download.
 		$filemanager = new Application_Model_ExamFileManager ();
 		$filemanager->downloadDocuments ( $fileId );
+		//This exit() is important as php will output a lot of html instead of just the file contents if it is missing.
 		exit();
 	
 	}
@@ -308,9 +309,8 @@ class ExamsController extends Zend_Controller_Action {
 		$this->view->form = $form;
 	}
 	
-	public function uploadfinalAction() {
-		// action body
-	}
+	// This empty action is required to output a html page thanking user for his upload
+	public function uploadfinalAction() {	}	
 	
 	public function reportAction() {
 		$examid = $this->getRequest ()->id;
