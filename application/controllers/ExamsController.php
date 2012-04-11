@@ -174,6 +174,7 @@ class ExamsController extends Zend_Controller_Action {
 		// Send the User the file he requested for Download.
 		$filemanager = new Application_Model_ExamFileManager ();
 		$filemanager->downloadDocuments ( $fileId );
+		exit();
 	
 	}
 	
