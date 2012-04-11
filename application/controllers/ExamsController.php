@@ -131,80 +131,53 @@ class ExamsController extends Zend_Controller_Action {
 						array(3,5)	// 3 means public state
                         );
     }
-
-    public function downloadAction()
-    {
-    	date_default_timezone_set('UTC');
-    	
-        if(isset($this->getRequest()->id)) 
-        {   
-        	if (! Zend_Auth::getInstance ()->hasIdentity ()) {
-	        	$adapter = new Custom_Auth_Adapter_InternetProtocol($this->getRequest()->getClientIp());
-				$auth    = Zend_Auth::getInstance();
-				$result  = $auth->authenticate($adapter);
-				if(!$result->isValid()) { throw new Exception('Sorry, your not allowed to download a file', 500); }
-        	}
-			
-			$x = new Application_Model_DocumentMapper ();
-			$entries = $x->fetch ( $this->getRequest ()->id );
-			
-			if ($entries->DeleteState) {
-				throw new Exception ( 'The document is not longer available', 500 );
+	
+	public function downloadAction() {
+		// TODO: move this into bootstrap
+		date_default_timezone_set ( 'UTC' );
+		
+		if (isset ( $this->getRequest ()->id )) {
+			if (! Zend_Auth::getInstance ()->hasIdentity ()) {
+				$adapter = new Custom_Auth_Adapter_InternetProtocol ( $this->getRequest ()->getClientIp () );
+				$auth = Zend_Auth::getInstance ();
+				$result = $auth->authenticate ( $adapter );
+				if (! $result->isValid ()) {
+					throw new Exception ( 'Sorry, your not allowed to download a file', 500 );
+				}
 			}
-			
-			$x->updateDownloadCounter ( $entries->id );
-			
-			header ( 'Content-Type: application/octet-stream' );
-			header ( "Content-Disposition: attachment; filename=" . date ( 'YmdHis' ) . "." . $entries->getExtention () );
-			$filemanager = new Application_Model_ExamFileManager();
-			$path = $filemanager->getFileStoragePath(); 
-			$file = $path . $entries->getFileName () . "." . $entries->getextention ();
-			if (is_readable ( $file )) {
-				readfile ( $file );
-			} else {
-				throw new Exception ( 'File not found', 500 );
-			}
+			$fileId = $this->getRequest ()->id;
+			$filemanager = new Application_Model_ExamFileManager ();
+			$filemanager->downloadDocuments ( $fileId );
 			exit ();
-		} else if (isset ( $this->getRequest ()->admin )) {
+		
+		} 
+		
+		else if (isset ( $this->getRequest ()->admin )) {
 			// ToDo: check for admin state
-
 			
 			// check if a login exists for admin controller
 			if (! Zend_Auth::getInstance ()->hasIdentity ()) {
 				$data = $this->getRequest ()->getParams ();
 				// save the old controller and action to redirect the user after
 				// the login
-				if (isset ( $data ['rcontroller'] ) || isset ( $data ['raction'] )) {
-				} else {
+				if (! isset ( $data ['rcontroller'] ) || isset ( $data ['raction'] )) {
 					$data ['rcontroller'] = $data ['controller'];
 					$data ['raction'] = $data ['action'];
 				}
 				unset ( $data ['controller'] );
 				unset ( $data ['action'] );
 				$this->_helper->Redirector->setGotoSimple ( 'login', 'exams-admin', null, $data );
-			} else {
-				
-				$x = new Application_Model_DocumentMapper ();
-				$entries = $x->fetch ( $this->getRequest ()->admin );
-				
-				$x->updateReviewState ( $entries->id );
-				
-				
-				header ( 'Content-Type: application/octet-stream' );
-				header ( "Content-Disposition: attachment; filename=" . date ( 'YmdHis' ) . "." . $entries->getExtention () );
-
-				$filemanager = new Application_Model_ExamFileManager();
-				$path = $filemanager->getFileStoragePath();
-
-				$file = $path . $entries->getFileName () . "." . $entries->getextention ();
-				if (is_readable ( $file )) {
-					readfile ( $file );
-				} else {
-					throw new Exception ( 'File not found', 500 );
-				}
+			} 
+			
+			else {
+				$fileId = $this->getRequest ()->admin;
+				$filemanager = new Application_Model_ExamFileManager ();
+				$filemanager->downloadDocuments ( $fileId );
 				exit ();
 			}
-		} else {
+		} 
+		
+		else {
 			throw new Exception ( 'Invalid document called', 500 );
 		}
 	

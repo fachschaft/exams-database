@@ -30,7 +30,6 @@ class Application_Model_ExamFileManager
 		$this->_fileDestinationPath = $fileDestinationPath;
 	}
 
-
 	public function setFileTempPath($fileTempPath) {
 		if (strlen ( $fileTempPath ) == 0)
 			throw new Exception ( 'The temporary storage path is empty. Please check your application.ini' );
@@ -57,6 +56,28 @@ class Application_Model_ExamFileManager
 			throw new Zend_Exception ("Cannot write in directory ".$this->_fileTempPath."! Plese call your admin.", 500);
     }
 	
+	public function downloadDocuments($id) {
+		$doc = new Application_Model_DocumentMapper ();
+		$entries = $doc->fetch ( $id );
+		
+		if ($entries->DeleteState)
+			throw new Exception ( 'The document is not longer available', 500 );
+		
+		$doc->updateDownloadCounter ( $entries->id );
+		
+		header ( 'Content-Type: application/octet-stream' );
+		header ( "Content-Disposition: attachment; filename=" . date ( 'YmdHis' ) . "." . $entries->getExtention () );
+		
+		$path = $this->getFileStoragePath ();
+		$file = $path . $entries->getFileName () . "." . $entries->getextention ();
+
+		if (is_readable ( $file ))
+			readfile ( $file );
+		else
+			throw new Exception ( 'File not found', 500 );
+	}
+    
+
 	public function packDocuments($documents)
 	{
 		$zip = new ZipArchive;
