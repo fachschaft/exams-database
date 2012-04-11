@@ -25,7 +25,30 @@ class ExamsController extends Zend_Controller_Action {
 	}
 	
 	public function degreesAction() {
-		$form = new Application_Form_ExamDegrees ();
+	$form = new Application_Form_ExamDegrees();
+        
+        if ($this->getRequest()->isPost()) {
+            $form->setMultiOptions($this->getRequest()->group);
+            $form->setGroup($this->getRequest()->group);
+            
+            if($form->isValid($this->getRequest()->getPost())) {
+                $post = $this->getRequest()->getPost();
+                if (isset($post['submit']))
+                    unset($post['submit']);
+                if (isset($post['group']))
+                    unset($post['group']);
+                return $this->_helper->Redirector->setGotoSimple('courses', null, null, $post);
+            }
+        }
+        
+        if(isset($this->getRequest()->group)) {
+
+            $form->setMultiOptions($this->getRequest()->group);
+            $form->setGroup($this->getRequest()->group);
+            $this->view->form = $form;
+        } else {
+            return $this->_helper->redirector('groups');
+        }
 		
     }
 
@@ -111,12 +134,16 @@ class ExamsController extends Zend_Controller_Action {
 
     public function downloadAction()
     {
+    	date_default_timezone_set('UTC');
+    	
         if(isset($this->getRequest()->id)) 
         {   
-			$adapter = new Custom_Auth_Adapter_InternetProtocol($this->getRequest()->getClientIp());
-			$auth    = Zend_Auth::getInstance();
-			$result  = $auth->authenticate($adapter);
-			if(!$result->isValid()) { throw new Exception('Sorry, your not allowed to download a file', 500); }
+        	if (! Zend_Auth::getInstance ()->hasIdentity ()) {
+	        	$adapter = new Custom_Auth_Adapter_InternetProtocol($this->getRequest()->getClientIp());
+				$auth    = Zend_Auth::getInstance();
+				$result  = $auth->authenticate($adapter);
+				if(!$result->isValid()) { throw new Exception('Sorry, your not allowed to download a file', 500); }
+        	}
 			
 			$x = new Application_Model_DocumentMapper ();
 			$entries = $x->fetch ( $this->getRequest ()->id );
@@ -161,6 +188,7 @@ class ExamsController extends Zend_Controller_Action {
 				$entries = $x->fetch ( $this->getRequest ()->admin );
 				
 				$x->updateReviewState ( $entries->id );
+				
 				
 				header ( 'Content-Type: application/octet-stream' );
 				header ( "Content-Disposition: attachment; filename=" . date ( 'YmdHis' ) . "." . $entries->getExtention () );

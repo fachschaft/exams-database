@@ -145,7 +145,6 @@ class ExamsAdminController extends Zend_Controller_Action {
 			$auth = Zend_Auth::getInstance ();
 			$result = $auth->authenticate ( $adapter );
 			
-			echo $this->getRequest ()->getClientIp ();
 			if (! $result->isValid ()) {
 				// Invalid credentials
 				$form->setDescription ( 'Invalid credentials provided' );
@@ -209,11 +208,9 @@ class ExamsAdminController extends Zend_Controller_Action {
 						$fileManger->packDocuments($docs);
 					break;
 					case 'unpack':
-						echo "unpack";
 						foreach($documents as $doc) {
 							// check if the document is in the selected one
 							if(in_array($doc->id, $ids)) {
-								echo "unpack " . $doc->id;
 								$fileManger->unpackDocuments(array($doc)); // short workaround
 							}
 						}

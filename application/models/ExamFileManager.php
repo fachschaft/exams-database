@@ -188,15 +188,14 @@ class Application_Model_ExamFileManager
 		if ($entries === FALSE)
 			throw new Zend_Exception ("Failed fetching entries.", 500);
 		
-		echo "Found " . count($entries) . " files.\n";
-		
 		foreach ($entries as $e) {
+			$new_file_name = $this->getFreeFilename($this->_fileTempPath);
+			$tmp_filename = $this->_fileTempPath.$new_file_name;
+			
 			$stream = $e->getStream();
 			if ($stream === FALSE)
 				throw new Zend_Exception ("Failed opening first file.", 500);
-
-			$new_file_name = $this->getFreeFilename($this->_fileTempPath);
-			$tmp_filename = $this->_fileTempPath.$new_file_name;
+			
 			if(file_put_contents($tmp_filename, $stream) == false) {
 				throw new Zend_Exception ("Cannot extract file.", 500);
 			}
