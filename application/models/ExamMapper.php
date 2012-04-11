@@ -90,8 +90,13 @@ class Application_Model_ExamMapper
         $entries   = array();
         foreach ($resultSet as $row) {
             $entry = new Application_Model_Exam();
-            
+                       
             $coursesIds = explode(",", $row['courses']);
+            
+<<<<<<< HEAD
+            $coursesIds = explode(",", $row['courses']);
+=======
+>>>>>>> origin/admin
             
             // collect the courses
             $selectCourse = $this->getDbTable()->getAdapter()->select()
@@ -273,7 +278,7 @@ class Application_Model_ExamMapper
                     'exam_type_idexam_type'         => $exam->type,
                     'exam_sub_type_idexam_sub_type' => $exam->subType,
 					'degree_iddegree' 				=> $exam->degreeId,
-                    // autor is missing in db, fix this ;)
+                    //TODO autor is missing in db, fix this ;)
                     'exam_status_idexam_status'     => 1,
                     'exam_degree_idexam_degree'     => $exam->degree,
                     'university_iduniversity'       => $exam->university,
@@ -305,7 +310,7 @@ class Application_Model_ExamMapper
             }
 
         } else {
-            // handle fail
+            // TODO handle fail
         }
         
         return $insert;
@@ -367,13 +372,21 @@ class Application_Model_ExamMapper
 	public function updateExamStatusToDisapprove($examId) 
 	{
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '2', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
-		$this->addLogMessage($examId, 'Exam disapprove by %user%.');
+		$this->addLogMessage($examId, 'Exam disapproved by %user%.');
+		//remove the exam from the search index
+		$index = new Application_Model_ExamSearch();
+		$index->removeFileFromIndex($examId);
     }
 	
 	public function updateExamStatusToChecked($examId) 
 	{
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '3', `modified_last_date` = NOW() WHERE `idexam` =".$examId." AND `exam_status_idexam_status` =  '2';");
-		$this->addLogMessage($examId, 'Exam aproved by %user%.');
+		$this->addLogMessage($examId, 'Exam approved by %user%.');
+		// Add the exam to the search index
+		$index = new Application_Model_ExamSearch();
+		//TODO(aamuuninen) wait for "entmurxing", then utilize sensible keywords
+ 		$keywords = "foo bar";
+		$index->addFileToIndex($examId, $keywords);
     }
 	
 	public function updateExamStatusToDelete($examId) 
@@ -383,6 +396,12 @@ class Application_Model_ExamMapper
 		$this->addLogMessage($examId, 'Exam deleted by %user%.');
     }
     
+    public function updateExamStatusToReported($examId)
+    {
+    	//TODO is changing the last modified date here correct?
+    	$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '5', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
+    	$this->addLogMessage($examId, 'Exam was reported.');
+    }
     // return true if the exam is valid, (has no id and no proboerty has a wrong value)
     private function validateNewExam($exam) 
 	{

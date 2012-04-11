@@ -70,14 +70,14 @@ class Application_Model_ExamSearch {
 	public function addFileToIndex($id, $keywords) {
 		$index = Zend_Search_Lucene::open ( $this->_indexpath );
 		$doc = new Zend_Search_Lucene_Document ();
-		$doc->addField ( Zend_Search_Lucene_Field::Text ( 'id', $id ) );
+		$doc->addField ( Zend_Search_Lucene_Field::Keyword( 'examid', $id ) );
 		$doc->addField ( Zend_Search_Lucene_Field::Text ( 'keyword', $keywords ) );
 		$index->addDocument ( $doc );
 	}
 	
-	public function removeFileFromIndex($filename) {
+	public function removeFileFromIndex($id) {
 		$index = Zend_Search_Lucene::open ( $this->_indexpath );
-		$hits = $index->find ( 'id:' . $filename );
+		$hits = $index->find ( 'examid:' . $id );
 		foreach ( $hits as $hit ) {
 			$index->delete ( $hit->id );
 		}
@@ -88,7 +88,7 @@ class Application_Model_ExamSearch {
 		$hits = $index->find ( $query );
 		foreach ( $hits as $hit ) {
 			// TODO(aamuuninen) do something sensible with the results
-			echo "Id: $hit->id<br>";
+			echo "Id: $hit->examid<br>";
 			echo "Keywords for this record: $hit->keyword<br>";
 		}
 	}

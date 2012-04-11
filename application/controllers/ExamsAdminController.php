@@ -35,10 +35,6 @@ class ExamsAdminController extends Zend_Controller_Action {
 			switch ($do) {
 				case "approve" :
 					$examMapper->updateExamStatusToChecked ( $id );
-					$index = new Application_Model_ExamSearch();
-					$keywords = "foo bar";
-					echo "add to index please!";
-					$index->addFileToIndex($id, $keywords);
 					$this->_helper->Redirector->setGotoSimple ( 'overview' );
 					break;
 				case "disapprove" :
@@ -123,6 +119,7 @@ class ExamsAdminController extends Zend_Controller_Action {
 	public function logAction() {
 		// action body
 		if (! isset ( $this->getRequest ()->id )) {
+			// TODO Do something here
 		} else {
 			$logMapper = new Application_Model_LogMapper ();
 			$log = $logMapper->fetchByExam ( $this->getRequest ()->id );
@@ -309,6 +306,7 @@ class ExamsAdminController extends Zend_Controller_Action {
 		$form->newIndex->setLabel ( 'Create new Index' );
 		$form->rebuildIndex->setLabel ( 'Rebuild Index from Database' );
 		$form->deleteIndex->setLabel ( 'Delete the Index' );
+		$form->optimizeIndex->setLabel ( 'Collect garbage' );
 		
 		$this->view->form = $form;
 		if ($this->getRequest ()->isPost ()) {
@@ -318,17 +316,22 @@ class ExamsAdminController extends Zend_Controller_Action {
 				$index = new Application_Model_ExamSearch ();
 				$index->createIndex ();
 				echo "Index created";
-				
+			
 			} else if ($form->isValid ( $formData ) && $form->rebuildIndex->isChecked ()) {
 				$index = new Application_Model_ExamSearch ();
 				$index->renewIndex ();
 				echo "Index rebuilt";
-				
+			
 			} else if ($form->isValid ( $formData ) && $form->deleteIndex->isChecked ()) {
 				$index = new Application_Model_ExamSearch ();
 				$index->deleteIndex ();
 				echo "Index deleted";
-				
+			
+			} else if ($form->isValid ( $formData ) && $form->optimizeIndex->isChecked ()) {
+				$index = new Application_Model_ExamSearch ();
+				$index->optimizeIndex ();
+				echo "Garbage removed, index optimized";
+			
 			} else
 				throw new Exception ( "Invalid Form Data" );
 		}
