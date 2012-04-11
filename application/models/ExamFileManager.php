@@ -102,22 +102,19 @@ class Application_Model_ExamFileManager
 	
 	public function unpackDocuments($documents)
 	{
-		echo "unpacking documents";
 		foreach($documents as $doc)
 		{
 			switch($doc->mimeType)
 			{
 				case"application/zip":
-					echo "unzip";
 					$this->unpackZipArchive($doc);
 				break;
 				case"application/x-rar":
-					echo "x-rar";
 					$this->unpackRarArchive($doc);
 					break;
 				default:
 					// this is no file how can be unpacked
-					echo "<p>this is no file how can be unpacked</p>";
+					//echo "<p>this is no file how can be unpacked</p>";
 				break;
 			}
 		}
@@ -183,7 +180,6 @@ class Application_Model_ExamFileManager
 	
 	private function unpackRarArchive($doc)
 	{
-		echo "start unpackin rar";
 		$rar_arch = RarArchive::open($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention);
 		if ($rar_arch === FALSE)
 			throw new Zend_Exception ("Failed opening file.", 500);

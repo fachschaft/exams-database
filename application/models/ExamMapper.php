@@ -92,12 +92,7 @@ class Application_Model_ExamMapper
             $entry = new Application_Model_Exam();
                        
             $coursesIds = explode(",", $row['courses']);
-            
-<<<<<<< HEAD
-            $coursesIds = explode(",", $row['courses']);
-=======
->>>>>>> origin/admin
-            
+           
             // collect the courses
             $selectCourse = $this->getDbTable()->getAdapter()->select()
                             ->from(array('x' => 'exam'),
