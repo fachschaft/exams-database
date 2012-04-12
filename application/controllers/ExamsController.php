@@ -13,7 +13,6 @@ class ExamsController extends Zend_Controller_Action {
 				unset ( $_post [$entry] );
 		}
 		if ($scrubIfAllSelected != NULL) {
-				print_r($scrubIfAllSelected);
 			foreach ( $scrubIfAllSelected as $entry ) {
 				if (isset ( $_post [$entry] ) && in_array ( - 1, $_post [$entry] ))
 					unset ( $_post [$entry] );
