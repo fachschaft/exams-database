@@ -133,14 +133,13 @@ class ExamsController extends Zend_Controller_Action {
     }
 	
 	public function downloadAction() {
+		$authmanager = new Application_Model_AuthManager ();
 		if (isset ( $this->getRequest ()->id )) {
 			// For anonymous Users, check if the user is allowed to download
 			// files based on IP
 			if (! Zend_Auth::getInstance ()->hasIdentity ()) {
-				$adapter = new Custom_Auth_Adapter_InternetProtocol ( $this->getRequest ()->getClientIp () );
-				$auth = Zend_Auth::getInstance ();
-				$result = $auth->authenticate ( $adapter );
-				if (! $result->isValid ())
+				$ip = array ('ip' => $this->getRequest ()->getClientIp ());
+				if (!$authmanager->grantPermission($ip))
 					throw new Exception ( 'Sorry, your not allowed to download a file', 500 );
 			}
 			// If user is allowed to download, get the fileid for the download
@@ -157,7 +156,6 @@ class ExamsController extends Zend_Controller_Action {
 			} else {
 				$data = $this->getRequest ()->getParams ();
 				// save the old controller and action to redirect the user after the login
-				$authmanager = new Application_Model_AuthManager ();
 				$data = $authmanager->pushParameters ( $data );
 				
 				$this->_helper->Redirector->setGotoSimple ( 'login', 'exams-admin', null, $data );

@@ -135,7 +135,7 @@ class ExamsAdminController extends Zend_Controller_Action {
 			}
 			// Check if credentials provided are valid 
 			$formdata = $form->getValues ();			
-			if (!$authmanager->checkLogin($formdata)) {
+			if (!$authmanager->grantPermission($formdata)) {
 				$form->setDescription ( 'Invalid credentials provided' );
 				$this->view->form = $form;
 				return $this->render ( 'login' ); // re-render the login form

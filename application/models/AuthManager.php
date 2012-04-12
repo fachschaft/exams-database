@@ -39,14 +39,21 @@ class Application_Model_AuthManager {
 	
 	public function getAuthAdapter(array $params) {
 		// Set up the authentication adapter
-		$config = Zend_Registry::get ( 'authenticate' );
+		// $config = Zend_Registry::get ( 'authenticate' );
 		// return new Zend_Auth_Adapter_Digest($config['filename'],
 		// $config['realm'], $params['username'], $params['password']);
-		// return new Custom_Auth_Adapter_InternetProtocol($params['ip']);
-		return new Custom_Auth_Adapter_Simple ( $params ['username'], $params ['password'] );
+		// 
+		if (isset ($params['username']) && isset( $params['password']))
+			return new Custom_Auth_Adapter_Simple ( $params ['username'], $params ['password'] );
+		
+		elseif (isset($params['ip']))
+			return new Custom_Auth_Adapter_InternetProtocol($params['ip']);
+		
+		else 
+			throw new Exception('Could not get Auth adapter');
 	}
 
-	public function checkLogin($data){
+	public function checkPermission($data){
 		$adapter = $this->getAuthAdapter ($data);
 		$auth = Zend_Auth::getInstance ();
 		$result = $auth->authenticate ( $adapter );
