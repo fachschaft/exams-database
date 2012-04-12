@@ -5,6 +5,23 @@ class ExamsController extends Zend_Controller_Action {
 	public function init() {
 	}
 	
+	// Scrub entries from $_POST[] that are not needed
+	private function scrubPost(array $scrubEntries, array $scrubIfAllSelected = NULL) {
+		$_post = $this->getRequest ()->getPost ();
+		foreach ( $scrubEntries as $entry ) {
+			if (isset ( $_post [$entry] ))
+				unset ( $_post [$entry] );
+		}
+		if ($scrubIfAllSelected != NULL) {
+				print_r($scrubIfAllSelected);
+			foreach ( $scrubIfAllSelected as $entry ) {
+				if (isset ( $_post [$entry] ) && in_array ( - 1, $_post [$entry] ))
+					unset ( $_post [$entry] );
+			}
+		}
+		return $_post;
+	}
+	
 	public function indexAction() {
 		$this->_helper->redirector ( 'groups' );
 	}
@@ -15,9 +32,7 @@ class ExamsController extends Zend_Controller_Action {
 		
 		if ($this->getRequest ()->isPost ()) {
 			if ($form->isValid ( $this->getRequest ()->getPost () )) {
-				$post = $this->getRequest ()->getPost ();
-				if (isset ( $post ['submit'] ))
-					unset ( $post ['submit'] );
+				$post = $this->scrubPost(array('submit'));
 				return $this->_helper->Redirector->setGotoSimple ( 'degrees', null, null, $post );
 			}
 		}
@@ -32,11 +47,7 @@ class ExamsController extends Zend_Controller_Action {
             $form->setGroup($this->getRequest()->group);
             
             if($form->isValid($this->getRequest()->getPost())) {
-                $post = $this->getRequest()->getPost();
-                if (isset($post['submit']))
-                    unset($post['submit']);
-                if (isset($post['group']))
-                    unset($post['group']);
+            	$post = $this->scrubPost(array(submit, group));
                 return $this->_helper->Redirector->setGotoSimple('courses', null, null, $post);
             }
         }
@@ -71,19 +82,10 @@ class ExamsController extends Zend_Controller_Action {
         
         if ($this->getRequest()->isPost()) {
             if($form->isValid($this->getRequest()->getPost())) {
-                $post = $this->getRequest()->getPost();
-                // remove parameter witch not be needed
-                if (isset($post['submit']))
-                    unset($post['submit']);
-                if (isset($post['lecturer']) && in_array(-1, $post['lecturer']))
-                    unset($post['lecturer']);
-                if (isset($post['course']) && in_array(-1, $post['course']))
-                    unset($post['course']);
-                if (isset($post['semester']) && in_array(-1, $post['semester']))
-                    unset($post['semester']);
-                if (isset($post['examType']) && in_array(-1, $post['examType']))
-                    unset($post['examType']);
-                return $this->_helper->Redirector->setGotoSimple('search', null, null, $post);
+            	$post = $this->scrubPost(array('submit'), array('lecturer', 'course', 'semester', 'examType'));
+  
+                 return $this->_helper->Redirector->setGotoSimple('search', null, null, $post);
+
             } else {
                 $this->view->form = $form;
             }
