@@ -140,7 +140,7 @@ class ExamsController extends Zend_Controller_Action {
 			if (! Zend_Auth::getInstance ()->hasIdentity ()) {
 				$ip = array ('ip' => $this->getRequest ()->getClientIp ());
 				if (!$authmanager->grantPermission($ip))
-					throw new Exception ( 'Sorry, your not allowed to download a file', 500 );
+					throw new Exception ( 'Sorry, your not allowed to download a file', 401 );
 			}
 			// If user is allowed to download, get the fileid for the download
 			$fileId = $this->getRequest ()->id;
@@ -161,7 +161,7 @@ class ExamsController extends Zend_Controller_Action {
 				$this->_helper->Redirector->setGotoSimple ( 'login', 'exams-admin', null, $data );
 			}
 		} else
-			throw new Exception ( 'Invalid document called', 500 );
+			throw new Exception ( 'Invalid request', 400 );
 			
 			// Send the User the file he requested for Download.
 		$filemanager = new Application_Model_ExamFileManager ();
