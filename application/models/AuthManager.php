@@ -37,7 +37,17 @@ class Application_Model_AuthManager {
 		return $params;
 	}
 	
-	public function getAuthAdapter(array $params) {
+	public function grantPermission($data){
+		$adapter = $this->getAuthAdapter ($data);
+		$auth = Zend_Auth::getInstance ();
+		$result = $auth->authenticate ( $adapter );
+		if ($result->isValid())
+			return true;
+		else
+			return false;
+	}
+	
+	private function getAuthAdapter(array $params) {
 		// Set up the authentication adapter
 		// $config = Zend_Registry::get ( 'authenticate' );
 		// return new Zend_Auth_Adapter_Digest($config['filename'],
@@ -53,15 +63,5 @@ class Application_Model_AuthManager {
 			throw new Exception('Could not get Auth adapter');
 	}
 
-	public function checkPermission($data){
-		$adapter = $this->getAuthAdapter ($data);
-		$auth = Zend_Auth::getInstance ();
-		$result = $auth->authenticate ( $adapter );
-		if ($result->isValid())
-			return true;
-		else
-			return false;
-	}
-	
 }
 
