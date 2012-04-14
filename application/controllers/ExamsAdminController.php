@@ -107,7 +107,7 @@ class ExamsAdminController extends Zend_Controller_Action {
 			$id = $this->getRequest ()->id;
 			
 			$examMapper = new Application_Model_ExamMapper ();
-			$exam = $examMapper->findAdmin ( $id );
+			$exam = $examMapper->find( $id );
 			
 			$form = new Application_Form_AdminDetail ();
 			$form->setAction ( '/exams-admin/editdetails/id/' . $id );

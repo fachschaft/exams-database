@@ -24,8 +24,6 @@ class Application_Model_ExamMapper
         return $this->_dbTable;
     }
     
-    
-    
     private function getExam($examId)
     {
   		// define the join select over the exam itself
@@ -166,7 +164,6 @@ class Application_Model_ExamMapper
 		if(!empty($status))
 		{
 			$status = "x.exam_status_idexam_status IN (" . implode(",", $status).") ";
-			
 		}
 		
 		$where2 = "";
@@ -177,9 +174,7 @@ class Application_Model_ExamMapper
 
         $select = $this->getDbTable()->getAdapter()->select()
               ->from(array('x' => 'exam'),
-                     array('idexam',
-                     		 //'comment', 'autor', 'sem.name as semester_name', 'GROUP_CONCAT(lec.idlecturer) as lecturer', 'uni.name as university', 'ext.name as type_name', 'est.name as sub_typ_name', 'GROUP_CONCAT(cor.idcourse) as courses'
-                     		))
+                     array('idexam'))
               ->join(array('uni' => 'university'),
                      'uni.iduniversity = x.university_iduniversity')
 			  ->join(array('ehl' => 'exam_has_lecturer'),
@@ -227,88 +222,6 @@ class Application_Model_ExamMapper
         $entries   = array();
         foreach ($resultSet as $row) {
         	$entries[] = $this->getExam($row['idexam']);
-        	
-            //$entry = new Application_Model_Exam();
-                       
-            /*$coursesIds = explode(",", $row['courses']);
-           
-            // collect the courses
-            $selectCourse = $this->getDbTable()->getAdapter()->select()
-                            ->from(array('x' => 'exam'),
-                     array('idexam', 'cor.name as name', 'cor.idcourse as idcourse'))
-              ->join(array('ehcg' => 'exam_has_course'),
-                     'ehcg.exam_idexam = x.idexam')
-              ->join(array('cor' => 'course'),
-                     'cor.idcourse = ehcg.course_idcourse')
-              ->where('idexam = ?', $row['idexam']);
-              $resultSetCourses = $this->getDbTable()->getAdapter()->fetchAll($selectCourse);
-            $courses = array();
-            $coursesIds = array();
-            foreach($resultSetCourses as $id => $cours)
-            {
-                $courses[$cours['idcourse']] = $cours['name'];
-                $coursesIds[] = $cours['idcourse'];
-            }
-            
-            if($withReflexive) {
-				// collect all related courses
-				// EXAMPLE Select
-				// SELECT * FROM `course_has_course` as chc JOIN `course` WHERE 
-				// (chc.course_idcourse = 4 AND course.idcourse = chc.course_idcourse1) OR 
-				// (chc.course_idcourse1 = 4 AND course.idcourse = chc.course_idcourse)
-				$selectRelatedCourse = $this->getDbTable()->getAdapter()->select()
-				  ->from(array('chc' => 'course_has_course'),
-						 array('cor.idcourse as idcourse', 'cor.name as name'))
-				  ->join(array('cor' => 'course'),'')
-				  ->where('(chc.course_idcourse IN (?) AND cor.idcourse = chc.course_idcourse1) OR
-							(chc.course_idcourse1 IN (?) AND cor.idcourse = chc.course_idcourse)', $coursesIds);
-				$resultRelatedCourse = $this->getDbTable()->getAdapter()->fetchAll($selectRelatedCourse);
-				 foreach($resultRelatedCourse as $id => $cours)
-				{
-					$courses[$cours['idcourse']] = $cours['name'] . "*";
-				}
-			}
-            
-            
-            // collect the lecturer
-            $selectLecturer = $this->getDbTable()->getAdapter()->select()
-              ->from(array('x' => 'exam'),
-                     array('idexam'))
-              ->join(array('ehl' => 'exam_has_lecturer'),
-                     'ehl.exam_idexam = x.idexam')
-              ->join(array('lec' => 'lecturer'),
-                     'lec.idlecturer = ehl.lecturer_idlecturer')
-              ->where('idexam = ?', $row['idexam']);
-              $resultSetLecturer = $this->getDbTable()->getAdapter()->fetchAll($selectLecturer);
-            $lecturers = array();
-            
-            foreach($resultSetLecturer as $id => $lect)
-            {
-				if($lect['degree'] == "" && $lect['first_name'] == "") {
-					$lecturers[$id] = $lect['name'];
-				} else {
-                $lecturers[$id] = $lect['name'] .', '. $lect['degree'] . ' ' . $lect['first_name'];
-				}
-            }
-            
-            // collect documents
-            $documentsMapper = new Application_Model_DocumentMapper();
-            $documents = $documentsMapper->fetchByExamId($row['idexam']);
-            
-            
-            $entry->setId($row['idexam'])
-                  ->setSemester($row['semester_name'])
-                  ->setLecturer($lecturers)
-                  ->setType($row['type_name'])
-                  ->setSubType($row['sub_typ_name'])
-                  ->setCourse($courses)
-                  ->setDocuments($documents)
-				  ->setComment($row['comment'])
-				  ->setUniversity($row['university'])
-				  ->setAutor($row['autor'])
-                  ;
-            $entries[] = $entry;*/
-
         }
 
         return $entries;
@@ -323,84 +236,6 @@ class Application_Model_ExamMapper
 	public function find($id)
     {
         return $this->getExam($id);
-        /*$result = $this->getDbTable()->find($id);
-        if (0 == count($result)) {
-            return;
-        }
-        $row = $result->current();
-		$exam = new Application_Model_Exam();
-        $exam->setId($row->idexam)
-             ->setComment($row->comment)
-			 ->setDegreeId($row->degree_iddegree)
-             ->setSemester($row->semester_idsemester)
-             ->setType($row->exam_type_idexam_type)
-			 ->setSubType($row->exam_sub_type_idexam_sub_type)
-			 ->setDegree($row->exam_degree_idexam_degree)
-			 ->setUniversity($row->university_iduniversity)
-			 ->setAutor($row->autor)
-			 ->setStatus($row->exam_status_idexam_status);
-				  
-		return $exam;*/
-    }
-	
-	public function findAdmin($id)
-    {
-    	return $this->getExam($id);
-    	
-		/*$select = $this->getDbTable()->getAdapter()->select()
-              ->from(array('x' => 'exam'),
-                     array('idexam', 'comment', 'autor', 'degree_iddegree', 'exam_status_idexam_status',
-						   'exam_type_idexam_type', 'exam_sub_type_idexam_sub_type', 'exam_degree_idexam_degree',
-						   'university_iduniversity',
-						   'GROUP_CONCAT(cor.idcourse) as courses', 'GROUP_CONCAT(lec.idlecturer) as lecturer',
-						   'GROUP_CONCAT(sem.idsemester) as semester'))
-              ->join(array('uni' => 'university'),
-                     'uni.iduniversity = x.university_iduniversity')
-			  ->join(array('ehl' => 'exam_has_lecturer'),
-                     'ehl.exam_idexam = x.idexam')
-              ->join(array('lec' => 'lecturer'),
-                     'lec.idlecturer = ehl.lecturer_idlecturer')
-              ->join(array('sem' => 'semester'),
-                     'sem.idsemester = x.semester_idsemester')
-              ->join(array('ext' => 'exam_type'),
-                     'ext.idexam_type = x.exam_type_idexam_type')
-              ->join(array('est' => 'exam_sub_type'),
-                     'est.idexam_sub_type = x.exam_sub_type_idexam_sub_type')
-              ->join(array('ehcg' => 'exam_has_course'),
-                     'ehcg.exam_idexam = x.idexam')
-              ->join(array('cor' => 'course'),
-                     'cor.idcourse = ehcg.course_idcourse')
-              ->where('x.idexam = '. $id)
-              ->group('idexam');
-			  
-			  $resultSet = $this->getDbTable()->getAdapter()->fetchAll($select);
-		
-        if (0 == count($resultSet)) {
-			//TODO: if no lecturer set, cout = 0 ... fix this
-			throw new Zend_Exception ("No result (count = 0).");
-            return;
-        }
-
-		foreach ($resultSet as $row) {
-		$semester = explode(',' , $row['semester']);
-		if(count($semester) > 0) $semester = $semester[0];
-		
-		$exam = new Application_Model_Exam();
-        $exam->setId($row['idexam'])
-				  ->setDegreeId($row['degree_iddegree'])
-                  ->setSemester($semester)
-                  ->setLecturer(explode(',' , $row['lecturer']))
-                  ->setType($row['exam_type_idexam_type'])
-                  ->setSubType($row['exam_sub_type_idexam_sub_type'])
-                  ->setCourse(explode(',' , $row['courses']))
-				  ->setComment($row['comment'])
-				  ->setUniversity($row['university_iduniversity'])
-				  ->setAutor($row['autor'])
-				  ->setDegree($row['exam_degree_idexam_degree'])
-                  ;
-		}
-		
-		return $exam;*/
     }
 		
 	public function saveAsNewExam($exam) {
@@ -443,7 +278,7 @@ class Application_Model_ExamMapper
 	
 	public function updateExam(Application_Model_Exam $exam)
 	{
-		$exam_old = $this->findAdmin($exam->id);
+		$exam_old = $this->find($exam->id);
 
 		// delete foreign
 		// course

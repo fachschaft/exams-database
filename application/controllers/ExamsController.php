@@ -97,40 +97,53 @@ class ExamsController extends Zend_Controller_Action {
     {
         $request = $this->getRequest();
         $this->view->exams = array();
-     
-        // go back to degree
-        if(!isset($this->getRequest()->degree)) {
-            return $this->_helper->redirector('groups');
+        if(isset($this->getRequest()->exam)) {
+        	$exams = array();
+        	if(!is_array($this->getRequest()->exam)) { $this->getRequest()->setParam('exam', array($this->getRequest()->exam)); }
+        	foreach($this->getRequest()->exam as $id)
+        	{
+        		$examsMapper = new Application_Model_ExamMapper();
+        		$exam = $examsMapper->find($id);
+        		if($exam->status->id == Application_Model_ExamStatus::PublicExam)
+        			$exams[] = $exam;
+        	}
+        	
+        	$this->view->exams = $exams;
         } else {
-            //TODO(aritas1): check if the degree is valid (db check)
-            // check also if the combination of degree / group is valid
-        }
-        
-        if(!isset($this->getRequest()->course)) {
-            $this->getRequest()->setParam('course', -1);
-        }
-        
-        if(!isset($this->getRequest()->lecturer)) {
-            $this->getRequest()->setParam('lecturer', -1);
-        }
-        
-        if(!isset($this->getRequest()->semester)) {
-            $this->getRequest()->setParam('semester', -1);
-        }
-        
-        if(!isset($this->getRequest()->examType)) {
-            $this->getRequest()->setParam('examType', -1);
-        }
-        
-        $exams = new Application_Model_ExamMapper();
-        $this->view->exams = $exams->fetch(
-                        $this->getRequest()->course,
-                        $this->getRequest()->lecturer,
-                        $this->getRequest()->semester,
-                        $this->getRequest()->examType, 
-                        $this->getRequest()->degree,
-						array(3,5)	// 3 means public state
-                        );
+	        // go back to degree
+	        if(!isset($this->getRequest()->degree)) {
+	            return $this->_helper->redirector('groups');
+	        } else {
+	            //TODO(aritas1): check if the degree is valid (db check)
+	            // check also if the combination of degree / group is valid
+	        }
+	        
+	        if(!isset($this->getRequest()->course)) {
+	            $this->getRequest()->setParam('course', -1);
+	        }
+	        
+	        if(!isset($this->getRequest()->lecturer)) {
+	            $this->getRequest()->setParam('lecturer', -1);
+	        }
+	        
+	        if(!isset($this->getRequest()->semester)) {
+	            $this->getRequest()->setParam('semester', -1);
+	        }
+	        
+	        if(!isset($this->getRequest()->examType)) {
+	            $this->getRequest()->setParam('examType', -1);
+	        }
+	        
+	        $exams = new Application_Model_ExamMapper();
+	        $this->view->exams = $exams->fetch(
+	                        $this->getRequest()->course,
+	                        $this->getRequest()->lecturer,
+	                        $this->getRequest()->semester,
+	                        $this->getRequest()->examType, 
+	                        $this->getRequest()->degree,
+							array(3,5)	// 3 means public state
+	                        );
+	    }
     }
 	
 	public function downloadAction() {
