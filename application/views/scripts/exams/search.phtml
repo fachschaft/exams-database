@@ -71,12 +71,19 @@
 			{
 				echo "- ".$course;
 				echo '<br>';
-			} ?>
+			} 
+			foreach($entry->CourseConnected as $course)
+			{
+				echo "- ".$course ."*";
+				echo '<br>';
+			}
+			?>
 		</div>
 	</td>
 	<td>
 		<div id="exam-semester">
-			<? echo $entry->semester;
+			<? 
+				echo $entry->semester;
 			?>
 		</div>
 	</td>
@@ -94,11 +101,11 @@
 	<?
         echo $entry->Type;
         echo '<br>';
-        echo $entry->SubType;
-		//echo '<br>';
-        //echo $entry->university;
+		echo $entry->SubType;
 		echo '<br>';
-        echo $entry->Autor;
+		echo $entry->university;
+		echo '<br>';
+	    echo $entry->Autor;
     ?>
     </div>
 	</td>

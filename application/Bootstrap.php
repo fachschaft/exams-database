@@ -9,6 +9,11 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         $view->doctype('XHTML1_STRICT');
     }
     
+    protected function _initTimezone()
+    {
+    	date_default_timezone_set('UTC');
+    }
+    
     public function _initExams()
     {
         $examsConfig = $this->getOption('exams');

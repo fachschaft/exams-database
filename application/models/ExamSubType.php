@@ -11,6 +11,11 @@ class Application_Model_ExamSubType
             $this->setOptions($options);
         }
     }
+    
+    public function __toString()
+    {
+    	return $this->_name;
+    }
  
     public function __set($name, $value)
     {

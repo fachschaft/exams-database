@@ -33,7 +33,7 @@ class Application_Model_DegreeMapper
         foreach ($resultSet as $row) {
             $entry = new Application_Model_Degree();
             $entry->setId($row->iddegree)
-                  ->setGroup($row->degree_group_iddegree_group)
+                  ->setGroup(new Application_Model_DegreeGroup(array('id'=>$row->degree_group_iddegree_group)))
                   ->setName($row->name);
             $entries[] = $entry;
         }
@@ -49,7 +49,7 @@ class Application_Model_DegreeMapper
         foreach ($resultSet as $row) {
             $entry = new Application_Model_Degree();
             $entry->setId($row->iddegree)
-                  ->setGroup($row->degree_group_iddegree_group)
+                  ->setGroup(new Application_Model_DegreeGroup(array('id'=>$row->degree_group_iddegree_group)))
                   ->setName($row->name);
             $entries[] = $entry;
         }

@@ -24,7 +24,7 @@ class Application_Model_LecturerMapper
         return $this->_dbTable;
     }
     
-    public function fetchByDegree($degreeId)
+    public function fetchByDegree(Application_Model_Degree $degree)
     {   
         //$adapter = $this->getDbTable()->getAdapter();
         
@@ -33,7 +33,7 @@ class Application_Model_LecturerMapper
                      array('idlecturer', 'name', 'first_name',	'degree'))
               ->join(array('dhl' => 'degree_has_lecturer'),
                      'dhl.lecturer_idlecturer = l.idlecturer')
-              ->where('dhl.degree_iddegree = ?', $degreeId);
+              ->where('dhl.degree_iddegree = ?', $degree->id);
         
         $resultSet = $this->getDbTable()->getAdapter()->fetchAll($select);
          

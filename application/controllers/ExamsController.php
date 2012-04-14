@@ -216,8 +216,8 @@ class ExamsController extends Zend_Controller_Action {
 		if (isset ( $this->getRequest ()->degree )) {
 			$step = 2;
 			$form = new Application_Form_UploadDetail ();
-			$form->setCourseOptions ( $this->getRequest ()->degree );
-			$form->setLecturerOptions ( $this->getRequest ()->degree );
+			$form->setCourseOptions (new Application_Model_Degree(array('id'=>$this->getRequest ()->degree )));
+			$form->setLecturerOptions (new Application_Model_Degree(array('id'=>$this->getRequest ()->degree )));
 			$form->setDegree ( $this->getRequest ()->degree );
 		}
 		
@@ -258,8 +258,8 @@ class ExamsController extends Zend_Controller_Action {
 					break;
 				case 2 :
 					$form = new Application_Form_UploadDetail ();
-					$form->setCourseOptions ( $this->getRequest ()->degree );
-					$form->setLecturerOptions ( $this->getRequest ()->degree );
+					$form->setCourseOptions ( new Application_Model_Degree(array('id'=>$this->getRequest ()->degree)) );
+					$form->setLecturerOptions ( new Application_Model_Degree(array('id'=>$this->getRequest ()->degree)) );
 					$form->setDegree ( $this->getRequest ()->degree );
 					if ($form->isValid ( $this->getRequest ()->getPost () )) {
 						$post = $this->getRequest ()->getPost ();
@@ -269,10 +269,26 @@ class ExamsController extends Zend_Controller_Action {
 						$exam = new Application_Model_Exam ();
 						$examMapper = new Application_Model_ExamMapper ();
 						
-						$exam->setOptions ( $post );
-						$exam->setDegree ( null );
-						$exam->setDegree ( $post ['degree_exam'] );
-						$exam->setDegreeId ( $post ['degree'] );
+						var_dump($post);
+						$exam->setSemester(new Application_Model_Semester(array('id'=>$post['semester'])));
+						$exam->setType(new Application_Model_ExamType(array('id'=>$post['type'])));
+						$exam->setSubType(new Application_Model_ExamSubType(array('id'=>$post['subType'])));
+						$exam->setDegree ( new Application_Model_Degree(array('id'=>$this->getRequest ()->degree)) );
+						$exam->setWrittenDegree(new Application_Model_ExamDegree(array('id'=>$post['degree_exam'])));
+						$exam->setUniversity(new Application_Model_ExamUniversity(array('id'=>$post['university'])));
+						$exam->setComment($post['comment']);
+						$exam->setAutor($post['autor']);
+						$courses = array();
+						foreach ($post['course'] as $course) { $courses[] = new Application_Model_Course(array('id'=>$course)); }
+						$exam->setCourse($courses);
+						$lecturers = array();
+						foreach ($post['lecturer'] as $lecturer) { $lecturers[] = new Application_Model_Course(array('id'=>$lecturer)); }
+						$exam->setLecturer($lecturers);
+						
+						// $exam->setOptions ( $post );
+						//$exam->setDegree ( null );
+						
+						//$exam->setDegreeId ( new Application_Model_Degree(array('id'=>$this->getRequest ()->degree)) );
 						
 						$examId = $examMapper->saveAsNewExam ( $exam );
 						$exam->setId ( $examId );
@@ -288,7 +304,8 @@ class ExamsController extends Zend_Controller_Action {
 						$exam = $examMapper->find ( $this->getRequest ()->exam );
 						if ($exam->id != $this->getRequest ()->exam) {
 							throw new Zend_Exception ( "Sorry, no exam found." );
-						} else if ($exam->status != 1) {
+							// the status id is save as key, so if stauts[1] isset exam, hase sthe status 1
+						} else if ($exam->status->id != Application_Model_ExamStatus::NothingUploaded) {
 							throw new Zend_Exception ( "Sorry, you can't upload twice!" );
 						}
 					}
@@ -308,7 +325,7 @@ class ExamsController extends Zend_Controller_Action {
 							$post = $this->getRequest ()->getPost ();
 							
 							$exam = $examMapper->find ( $post ['examId'] );
-							if ($exam->id != $post ['examId'] || $exam->status != 1) {
+							if ($exam->id != $post ['examId'] || $exam->status != Application_Model_ExamStatus::NothingUploaded) {
 								throw new Zend_Exception ( "Sorry, you can't upload twice!" );
 							}
 							

@@ -70,6 +70,9 @@
           <dbTableFile dbTableName="ExamDegree"/>
           <dbTableFile dbTableName="ExamUniversity"/>
           <dbTableFile dbTableName="ExamLog"/>
+          <dbTableFile dbTableName="ExamHasLecturer"/>
+          <dbTableFile dbTableName="ExamHasCourse"/>
+          <dbTableFile dbTableName="CourseHasCourse"/>
         </dbTableDirectory>
         <modelFile modelName="DegreeGroup"/>
         <modelFile modelName="DegreeGroupMapper"/>
@@ -97,6 +100,7 @@
         <modelFile modelName="LogMapper"/>
         <modelFile modelName="ExamFileManager"/>
         <modelFile modelName="ExamSearch"/>
+        <modelFile modelName="ExamStatus"/>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
       <viewsDirectory>

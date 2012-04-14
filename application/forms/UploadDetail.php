@@ -21,7 +21,7 @@ class Application_Form_UploadDetail extends Zend_Form
         $this->_elementCourse->setAttrib('size', '10')
                              ->setRequired(true)
                              ->setLabel('Vorlesung');
-        $this->setCourseOptions(array());
+        //$this->setCourseOptions(array());
         $this->addElement($this->_elementCourse);
         
         //
@@ -29,7 +29,7 @@ class Application_Form_UploadDetail extends Zend_Form
         $this->_elementLecturer->setAttrib('size', '10')
                                ->setRequired(true)
                                ->setLabel('Dozent');
-        $this->setLecturerOptions(array());
+        //$this->setLecturerOptions(array());
         $this->addElement($this->_elementLecturer);
         
         //
@@ -95,17 +95,15 @@ class Application_Form_UploadDetail extends Zend_Form
         //$this->setMultiOptions();
     }
     
-    public function setCourseOptions($degree)
+    public function setCourseOptions(Application_Model_Degree $degree)
     {
         $options = array();
-        if(!empty($degree)) {
-            $courses = new Application_Model_CourseMapper();
-            $entries = $courses->fetchByDegree($degree);
-  
-            foreach($entries as $group)
-            {
-               $options[$group->getId()] = $group->getName();
-            } 
+        $courses = new Application_Model_CourseMapper();
+        $entries = $courses->fetchByDegree($degree);
+ 
+        foreach($entries as $group)
+        {
+           $options[$group->getId()] = $group->getName();
         }
     
         $opt = array();
@@ -164,18 +162,17 @@ class Application_Form_UploadDetail extends Zend_Form
         //$this->_elementExamSubType->setValue(array('-1'));
     }
     
-    public function setLecturerOptions($degree)
+    public function setLecturerOptions(Application_Model_Degree $degree)
     {   
         $options = array();
-        if(!empty($degree)) {
-            $lecturers = new Application_Model_LecturerMapper();
-            $entries = $lecturers->fetchByDegree($degree);
+        $lecturers = new Application_Model_LecturerMapper();
+        $entries = $lecturers->fetchByDegree($degree);
 
-            foreach($entries as $group)
-            {
-                $options[$group->getId()] = $group->getName();
-            }
+        foreach($entries as $group)
+        {
+            $options[$group->getId()] = $group->getName();
         }
+        
     
         $opt = array();
         foreach($options as $id => $o) { $opt[$id] = $o; }

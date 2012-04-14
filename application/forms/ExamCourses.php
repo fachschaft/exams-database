@@ -53,12 +53,12 @@ class Application_Form_ExamCourses extends Zend_Form
         ));
     }
     
-    public function setCourseOptions($degree)
+    public function setCourseOptions($degreeId)
     {
         $options = array();
-        if(!empty($degree)) {
+        if(!empty($degreeId)) {
             $courses = new Application_Model_CourseMapper();
-            $entries = $courses->fetchByDegree($degree);
+            $entries = $courses->fetchByDegree(new Application_Model_Degree(array('id'=>$degreeId)));
   
             foreach($entries as $group)
             {
@@ -105,12 +105,12 @@ class Application_Form_ExamCourses extends Zend_Form
         $this->_elementExamType->setValue(array('-1'));
     }
     
-    public function setLecturerOptions($degree)
+    public function setLecturerOptions($degreeId)
     {   
         $options = array();
-        if(!empty($degree)) {
+        if(!empty($degreeId)) {
             $lecturers = new Application_Model_LecturerMapper();
-            $entries = $lecturers->fetchByDegree($degree);
+            $entries = $lecturers->fetchByDegree(new Application_Model_Degree(array('id'=>$degreeId)));
 
             foreach($entries as $group)
             {

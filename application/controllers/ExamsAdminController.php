@@ -75,13 +75,30 @@ class ExamsAdminController extends Zend_Controller_Action {
 			$form = new Application_Form_AdminDetail ();
 			$post = $this->getRequest ()->getPost ();
 			$form->setAction ( '/exams-admin/editdetails/id/' . $post ['exam_id'] );
-			$form->setCourseOptions ( $post ['degree'] );
-			$form->setLecturerOptions ( $post ['degree'] );
+			$form->setCourseOptions ( new Application_Model_Degree(array('id'=>$post ['degree'])) );
+			$form->setLecturerOptions ( new Application_Model_Degree(array('id'=>$post ['degree'])) );
 			$form->setExamId ( $post ['exam_id'] );
 			$form->setDegree ( $post ['degree'] );
 			if ($form->isValid ( $this->getRequest ()->getPost () )) {
 				$exam = new Application_Model_Exam ();
-				$exam->setId ( $post ['exam_id'] )->setCourse ( $post ['course'] )->setLecturer ( $post ['lecturer'] )->setSemester ( $post ['semester'] )->setType ( $post ['type'] )->setSubType ( $post ['subType'] )->setComment ( $post ['comment'] )->setUniversity ( $post ['university'] )->setAutor ( $post ['autor'] )->setDegree ( $post ['degree_exam'] );
+				var_dump($exam);
+				$exam->setId ( $post ['exam_id'] );
+				$corses = array();
+				foreach ($post ['course'] as $cor) { $corses[] = new Application_Model_Course(array('id'=>$cor));  }
+				$exam->setCourse ( $corses );
+				$lecturer = array();
+				foreach ($post ['lecturer'] as $lec) {
+					$lecturer[] = new Application_Model_Lecturer(array('id'=>$lec));
+				}
+				$exam->setCourse ( $corses );
+				$exam->setLecturer ( $lecturer );
+				$exam->setSemester ( new Application_Model_Semester(array('id'=>$post ['semester'])) );
+				$exam->setType ( new Application_Model_ExamType(array('id'=>$post ['type'])) );
+				$exam->setSubType ( new Application_Model_ExamSubType(array('id'=>$post ['subType'])) );
+				$exam->setComment ( $post ['comment'] );
+				$exam->setUniversity ( new Application_Model_ExamUniversity(array('id'=>$post ['university'])) );
+				$exam->setAutor ( $post ['autor'] );
+				$exam->setDegree ( new Application_Model_Degree(array('id'=>$post ['degree_exam'])) );
 				$examMapper = new Application_Model_ExamMapper ();
 				$examMapper->updateExam ( $exam );
 				$this->_helper->Redirector->setGotoSimple ( 'overview' );
@@ -100,10 +117,10 @@ class ExamsAdminController extends Zend_Controller_Action {
 			
 			$form = new Application_Form_AdminDetail ();
 			$form->setAction ( '/exams-admin/editdetails/id/' . $id );
-			$form->setExamId ( $exam->Id );
-			$form->setDegree ( $exam->degreeId );
-			$form->setCourseOptions ( $exam->degreeId, $exam->course );
-			$form->setLecturerOptions ( $exam->degreeId, $exam->lecturer );
+			$form->setExamId ( $exam->id );
+			$form->setDegree ( $exam->degree->id );
+			$form->setCourseOptions ( $exam->degree, $exam->course );
+			$form->setLecturerOptions ( $exam->degree, $exam->lecturer );
 			$form->setSemesterOptions ( $exam->semester );
 			$form->setExamTypeOptions ( $exam->type );
 			$form->setExamSubType ( $exam->SubType );

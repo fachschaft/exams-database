@@ -24,16 +24,16 @@ class Application_Model_CourseMapper
         return $this->_dbTable;
     }
     
-    public function fetchByDegree($degreeId)
+    public function fetchByDegree(Application_Model_Degree $degree)
     {    
-        $degree = new Application_Model_DbTable_Degree();
+        $degreeTb = new Application_Model_DbTable_Degree();
 
         //$profiler = new Zend_Db_Profiler();
         //$profiler->setEnabled(true);
         //$degree->getAdapter()->setProfiler($profiler);
 
         
-        $resultSet = $degree->find($degreeId)->current()
+        $resultSet = $degreeTb->find($degree->id)->current()
                             ->findManyToManyRowset('Application_Model_DbTable_Course',
                                                    'Application_Model_DbTable_DegreeHasCourse',
                                                    'Degree', 'Course');

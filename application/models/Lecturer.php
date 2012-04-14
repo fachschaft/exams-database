@@ -2,7 +2,7 @@
 
 class Application_Model_Lecturer
 {
-    protected $_degree;
+    protected $_degree;	// degree of the person
     protected $_firstName;
     protected $_name;
     protected $_id;
@@ -12,6 +12,11 @@ class Application_Model_Lecturer
         if (is_array($options)) {
             $this->setOptions($options);
         }
+    }
+    
+    public function __toString()
+    {
+    	return $this->_name . ", " . $this->_degree . " " . $this->_firstName;
     }
  
     public function __set($name, $value)

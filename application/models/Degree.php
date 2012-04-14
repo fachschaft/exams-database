@@ -55,9 +55,9 @@ class Application_Model_Degree
         return $this->_name;
     }  
 
-    public function setGroup($id)
+    public function setGroup(Application_Model_DegreeGroup $group)
     {
-        $this->_degree_group = (int) $id;
+        $this->_degree_group = $group;
         return $this;
     }
  

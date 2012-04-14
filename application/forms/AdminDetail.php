@@ -23,7 +23,7 @@ class Application_Form_AdminDetail extends Zend_Form
         $this->_elementCourse->setAttrib('size', '10')
                              ->setRequired(true)
                              ->setLabel('Vorlesung');
-        $this->setCourseOptions(array());
+        //$this->setCourseOptions();
         $this->addElement($this->_elementCourse);
         
         //
@@ -31,7 +31,7 @@ class Application_Form_AdminDetail extends Zend_Form
         $this->_elementLecturer->setAttrib('size', '10')
                                ->setRequired(true)
                                ->setLabel('Dozent');
-        $this->setLecturerOptions(array());
+        //$this->setLecturerOptions(array());
         $this->addElement($this->_elementLecturer);
         
         //
@@ -93,22 +93,23 @@ class Application_Form_AdminDetail extends Zend_Form
         ));
     }
     
-	public function setCourseOptions($degree, $selected = array())
+	public function setCourseOptions(Application_Model_Degree $degree, array $courses = array())
     {
         $options = array();
-        if(!empty($degree)) {
-            $courses = new Application_Model_CourseMapper();
-            $entries = $courses->fetchByDegree($degree);
+       
+        $coursesMapper = new Application_Model_CourseMapper();
+        $entries = $coursesMapper->fetchByDegree($degree);
   
-            foreach($entries as $group)
-            {
-               $options[$group->getId()] = $group->getName();
-            } 
-        }
+        foreach($entries as $group)
+        {
+           $options[$group->getId()] = $group->getName();
+        } 
     
         $opt = array();
         foreach($options as $id => $o) { $opt[$id] = $o; }
         $this->_elementCourse->setMultiOptions($opt);
+        $selected = array();
+        foreach($courses as $course) { $selected[] = $course->id; }
 		$this->_elementCourse->setValue($selected);
     }
     
@@ -160,21 +161,22 @@ class Application_Form_AdminDetail extends Zend_Form
         $this->_elementExamSubType->setValue($selected);
     }
     
-    public function setLecturerOptions($degree, $selected = array())
+    public function setLecturerOptions(Application_Model_Degree $degree, array $lecturers = array())
     {   
         $options = array();
-        if(!empty($degree)) {
-            $lecturers = new Application_Model_LecturerMapper();
-            $entries = $lecturers->fetchByDegree($degree);
 
-            foreach($entries as $group)
-            {
-                $options[$group->getId()] = $group->getName();
-            }
+        $lecturersMapper = new Application_Model_LecturerMapper();
+        $entries = $lecturersMapper->fetchByDegree($degree);
+
+        foreach($entries as $group)
+        {
+           $options[$group->getId()] = $group->getName();
         }
-    
+        $opt = array();
         foreach($options as $id => $o) { $opt[$id] = $o; }
         if($opt != null) $this->_elementLecturer->setMultiOptions($opt);
+        $selected = array();
+        foreach($lecturers as $lecturer) { $selected[] = $lecturer->id; }
         $this->_elementLecturer->setValue($selected);
     }
     

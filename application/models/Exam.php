@@ -2,22 +2,270 @@
 
 class Application_Model_Exam
 {
-    
+    // all stores arrays, with the id as key and the name connectet to this key as value
+    /* e.g.
+     * array('1' => 'Huber, Prof. Dr. A.')
+     */
+	
+	
+	// primary key
     protected $_id;
-	protected $_degreeId; // not the text degree
+    
+    // free text field
+    protected $_autor;
+    protected $_comment;
+    
+    // dates
+    protected $_created;
+    protected $_modified;
+    
+    
+	protected $_degree; // uploaded degree, associated with the degree table
+	protected $_status;
     protected $_semester;
     protected $_type;
     protected $_subType;
-    protected $_lecturer;
-    protected $_documents;
-    protected $_course;
-    protected $_comment;
-    protected $_degree;
     protected $_university;
-    protected $_autor;
-	protected $_status;
     
-    public function __construct(array $options = null)
+    protected $_writtenDegree; // exam wirtten for degree, not the uploeded degree
+    
+    // complex types
+    protected $_lecturer;
+    protected $_course;
+    
+    protected $_courseConnected;
+    
+    // more complex type
+    protected $_documents; // array with docid and a document object
+
+    
+    /**
+	 * @return the $_courseConnected
+	 */
+	public function getCourseConnected() {
+		return $this->_courseConnected;
+	}
+
+	/**
+	 * @param field_type $_courseConnected
+	 */
+	public function setCourseConnected(array $_courseConnected) {
+		$this->_courseConnected = $_courseConnected;
+	}
+
+	/**
+	 * @return the $_id
+	 */
+	public function getId() {
+		return $this->_id;
+	}
+
+	/**
+	 * @return the $_autor
+	 */
+	public function getAutor() {
+		return $this->_autor;
+	}
+
+	/**
+	 * @return the $_comment
+	 */
+	public function getComment() {
+		return $this->_comment;
+	}
+
+	/**
+	 * @return the $_created
+	 */
+	public function getCreated() {
+		return $this->_created;
+	}
+
+	/**
+	 * @return the $_modified
+	 */
+	public function getModified() {
+		return $this->_modified;
+	}
+
+	/**
+	 * @return the $_degree
+	 */
+	public function getDegree() {
+		return $this->_degree;
+	}
+
+	/**
+	 * @return the $_status
+	 */
+	public function getStatus() {
+		return $this->_status;
+	}
+
+	/**
+	 * @return the $_semester
+	 */
+	public function getSemester() {
+		return $this->_semester;
+	}
+
+	/**
+	 * @return the $_type
+	 */
+	public function getType() {
+		return $this->_type;
+	}
+
+	/**
+	 * @return the $_subType
+	 */
+	public function getSubType() {
+		return $this->_subType;
+	}
+
+	/**
+	 * @return the $_university
+	 */
+	public function getUniversity() {
+		return $this->_university;
+	}
+
+	/**
+	 * @return the $_writtenDegree
+	 */
+	public function getWrittenDegree() {
+		return $this->_writtenDegree;
+	}
+
+	/**
+	 * @return the $_lecturer
+	 */
+	public function getLecturer() {
+		return $this->_lecturer;
+	}
+
+	/**
+	 * @return the $_course
+	 */
+	public function getCourse() {
+		return $this->_course;
+	}
+
+	/**
+	 * @return the $_documents
+	 */
+	public function getDocuments() {
+		return $this->_documents;
+	}
+
+	/**
+	 * @param field_type $_id
+	 */
+	public function setId($_id) {
+		$this->_id = (int) $_id;
+	}
+
+	/**
+	 * @param field_type $_autor
+	 */
+	public function setAutor($_autor) {
+		$this->_autor = (string) $_autor;
+	}
+
+	/**
+	 * @param field_type $_comment
+	 */
+	public function setComment($_comment) {
+		$this->_comment =  (string) $_comment;
+	}
+
+	/**
+	 * @param field_type $_created
+	 */
+	public function setCreated($_created) {
+		$this->_created = strtotime ($_created);
+	}
+
+	/**
+	 * @param field_type $_modified
+	 */
+	public function setModified($_modified) {
+		$this->_modified = strtotime ($_modified);
+	}
+
+	/**
+	 * @param field_type $_degree
+	 */
+	public function setDegree(Application_Model_Degree $_degree) {
+		$this->_degree = $_degree;
+	}
+
+	/**
+	 * @param field_type $_status
+	 */
+	public function setStatus(Application_Model_ExamStatus $_status) {
+		$this->_status = $_status;
+	}
+
+	/**
+	 * @param field_type $_semester
+	 */
+	public function setSemester(Application_Model_Semester $_semester) {
+		$this->_semester = $_semester;
+	}
+
+	/**
+	 * @param field_type $_type
+	 */
+	public function setType(Application_Model_ExamType $_type) {
+		$this->_type = $_type;
+	}
+
+	/**
+	 * @param field_type $_subType
+	 */
+	public function setSubType(Application_Model_ExamSubType $_subType) {
+		$this->_subType = $_subType;
+	}
+
+	/**
+	 * @param field_type $_university
+	 */
+	public function setUniversity(Application_Model_ExamUniversity $_university) {
+		$this->_university = $_university;
+	}
+
+	/**
+	 * @param field_type $_writtenDegree
+	 */
+	public function setWrittenDegree(Application_Model_ExamDegree $_writtenDegree) {
+		$this->_writtenDegree = $_writtenDegree;
+	}
+
+	/**
+	 * @param field_type $_lecturer
+	 */
+	public function setLecturer(array $_lecturer) {
+		$this->_lecturer = $_lecturer;
+	}
+
+	/**
+	 * @param field_type $_course
+	 */
+	public function setCourse(array $_course) {
+		$this->_course = $_course;
+	}
+
+	/**
+	 * @param field_type $_documents
+	 */
+	public function setDocuments(array $_documents) {
+		$this->_documents = $_documents;
+	}
+	
+	
+
+	public function __construct(array $options = null)
     {
         if (is_array($options)) {
             $this->setOptions($options);
@@ -54,159 +302,7 @@ class Application_Model_Exam
         return $this;
     }   
     
-    public function setId($id)
-    {
-        $this->_id = (int) $id;
-        return $this;
-    }
- 
-    public function getId()
-    {
-        return $this->_id;
-    }
-	
-	public function setDegreeId($id)
-    {
-        $this->_degreeId = (int) $id;
-        return $this;
-    }
- 
-    public function getDegreeId()
-    {
-        return $this->_degreeId;
-    }
-	
-	
-    
-    public function setComment($comment)
-    {
-        $this->_comment = (string) $comment;
-        return $this;
-    }
- 
-    public function getComment()
-    {
-        return $this->_comment;
-    }
-    
-    public function setSemester($text)
-    {
-        $this->_semester = (string) $text;
-        return $this;
-    }
- 
-    public function getSemester()
-    {
-        return $this->_semester;
-    }
-    
-    public function setType($text)
-    {
-        $this->_type = (string) $text;
-        return $this;
-    }
- 
-    public function getType()
-    {
-        return $this->_type;
-    }
-    
-    public function setLecturer($text)
-    {
-        if(is_array($text)){
-            $this->_lecturer = $text;
-        } else {
-            $this->_lecturer = array($text);
-        }
-        return $this;
-    }
- 
-    public function getLecturer()
-    {
-        return $this->_lecturer;
-    }
-    
-    public function setSubType($text)
-    {
-        $this->_subType = (string) $text;
-        return $this;
-    }
- 
-    public function getSubType()
-    {
-        return $this->_subType;
-    }
-    
-    public function setCourse($text)
-    {
-        if(is_array($text)){
-            $this->_course = $text;
-        } else {
-            $this->_course = array($text);
-        }
-            
-        return $this;
-    }
- 
-    public function getCourse()
-    {
-        return $this->_course;
-    }
-    
-    public function setDegree($text)
-    {
-        $this->_degree = (string) $text;
-        return $this;
-    }
- 
-    public function getDegree()
-    {
-        return $this->_degree;
-    }
-    
-    public function setUniversity($text)
-    {
-        $this->_university = (string) $text;
-        return $this;
-    }
- 
-    public function getUniversity()
-    {
-        return $this->_university;
-    }
-    
-    public function setAutor($text)
-    {
-        $this->_autor = (string) $text;
-        return $this;
-    }
- 
-    public function getAutor()
-    {
-        return $this->_autor;
-    }
-    
-    public function setDocuments($documents)
-    {
-        $this->_documents = $documents;
-        return $this;
-    }
- 
-    public function getDocuments()
-    {
-        return $this->_documents;
-    }
-    
-	public function setStatus($status)
-    {
-        $this->_status = $status;
-        return $this;
-    }
- 
-    public function getStatus()
-    {
-        return $this->_status;
-    }
+   
     
 }
 
