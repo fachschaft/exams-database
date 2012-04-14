@@ -508,8 +508,7 @@ class Application_Model_ExamMapper
 		// Add the exam to the search index
 		$index = new Application_Model_ExamSearch();
 		//TODO(aamuuninen) wait for "entmurxing", then utilize sensible keywords
- 		$keywords = "foo bar";
-		$index->addFileToIndex($examId, $keywords);
+		$index->addFileToIndex($examId);
     }
 	
 	public function updateExamStatusToDelete($examId) 
@@ -525,6 +524,26 @@ class Application_Model_ExamMapper
     	$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Reported."' WHERE `idexam` =".$examId.";");
     	$this->addLogMessage($examId, 'Exam was reported.');
     }
+	
+	public function returnQuicksearchIndexKeywords($id) {
+		if (! isset ( $id ))
+			throw new Exception ( "No Id given for index keyword generation", 500 );
+		
+		$keywordsArray = array ();
+		$exam = $this->find ( $id );
+		foreach ( $exam->course as $course ) {
+			$keywordsArray [] = $course->name;
+		}
+		foreach ( $exam->lecturer as $lecturer ) {
+			$keywordsArray [] = $lecturer->name;
+		}
+		
+		foreach ( $exam->courseConnected as $connected ) {
+			$keywordsArray [] = $connected->name;
+		}
+		
+		return implode ( ' ', $keywordsArray);
+	}
     
 	private function addLogMessage($examId, $message) {
 		$this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_log` (`exam_idexam` ,`message`)

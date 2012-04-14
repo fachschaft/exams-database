@@ -67,10 +67,13 @@ class Application_Model_ExamSearch {
 		 */
 	}
 	
-	public function addFileToIndex($id, $keywords) {
+	public function addFileToIndex($id) {
+		$examMapper = new Application_Model_ExamMapper();
 		$index = Zend_Search_Lucene::open ( $this->_indexpath );
 		$doc = new Zend_Search_Lucene_Document ();
 		$doc->addField ( Zend_Search_Lucene_Field::Keyword( 'examid', $id ) );
+		$keywords = $examMapper->returnQuicksearchIndexKeywords($id);
+		echo $keywords;
 		$doc->addField ( Zend_Search_Lucene_Field::Text ( 'keyword', $keywords ) );
 		$index->addDocument ( $doc );
 	}
@@ -86,10 +89,13 @@ class Application_Model_ExamSearch {
 	public function searchIndex($query) {
 		$index = Zend_Search_Lucene::open ( $this->_indexpath );
 		$hits = $index->find ( $query );
+		$foundIds = array();
 		foreach ( $hits as $hit ) {
-			// TODO(aamuuninen) do something sensible with the results
-			echo "Id: $hit->examid<br>";
-			echo "Keywords for this record: $hit->keyword<br>";
+			// Debug prints
+/* 			echo "Id: $hit->examid<br>";
+			echo "Keywords for this record: $hit->keyword<br>"; */
+			$foundIds[] = $hit->examid;
 		}
+		return $foundIds;
 	}
 }
