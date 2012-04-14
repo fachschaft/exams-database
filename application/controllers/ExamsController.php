@@ -97,6 +97,7 @@ class ExamsController extends Zend_Controller_Action {
     {
         $request = $this->getRequest();
         $this->view->exams = array();
+        var_dump($this->getRequest());
         if(isset($this->getRequest()->exam)) {
         	$exams = array();
         	if(!is_array($this->getRequest()->exam)) { $this->getRequest()->setParam('exam', array($this->getRequest()->exam)); }
@@ -359,8 +360,10 @@ class ExamsController extends Zend_Controller_Action {
     		if (!$form->isValid($formData)) throw new Exception('Invalid Form Data');
        		$index = new Application_Model_ExamSearch();
     		$exam = $index->searchIndex($formData['_query']);
-    		$data = array('exam', $exam);
-    		return $this->_helper->Redirector->setGotoSimple ( 'search', null, null, $data );
+    		if(!empty($exam)) {
+    			$data['exam'] = $exam;
+    			return $this->_helper->Redirector->setGotoSimple ( 'search', null, null, $data );
+    		}
     	}
     	$this->view->form = $form;
     }
