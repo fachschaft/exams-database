@@ -274,27 +274,26 @@ class ExamsAdminController extends Zend_Controller_Action {
 		$this->view->form = $form;
 		if ($this->getRequest ()->isPost ()) {
 			$formData = $this->getRequest ()->getPost ();
-			
-			if ($form->isValid ( $formData ) && $form->newIndex->isChecked ()) {
+			if ($form->isValid ( $formData )) {
 				$index = new Application_Model_ExamSearch ();
-				$index->createIndex ();
-				echo "Index created";
-			
-			} else if ($form->isValid ( $formData ) && $form->rebuildIndex->isChecked ()) {
-				$index = new Application_Model_ExamSearch ();
-				$index->renewIndex ();
-				echo "Index rebuilt";
-			
-			} else if ($form->isValid ( $formData ) && $form->deleteIndex->isChecked ()) {
-				$index = new Application_Model_ExamSearch ();
-				$index->deleteIndex ();
-				echo "Index deleted";
-			
-			} else if ($form->isValid ( $formData ) && $form->optimizeIndex->isChecked ()) {
-				$index = new Application_Model_ExamSearch ();
-				$index->optimizeIndex ();
-				echo "Garbage removed, index optimized";
-			
+				
+				if ($form->newIndex->isChecked ()) {
+					$index->createIndex ();
+					echo "Index created";
+				
+				} else if ($form->rebuildIndex->isChecked ()) {
+					$index->renewIndex ();
+					echo "Index rebuilt";
+				
+				} else if ($form->deleteIndex->isChecked ()) {
+					$index->deleteIndex ();
+					echo "Index deleted";
+				
+				} else if ($form->optimizeIndex->isChecked ()) {
+					$index->optimizeIndex ();
+					echo "Garbage removed, index optimized";
+				
+				}
 			} else
 				throw new Exception ( "Invalid Form Data" );
 		}
