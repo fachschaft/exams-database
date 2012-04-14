@@ -522,7 +522,7 @@ class Application_Model_ExamMapper
     public function updateExamStatusToReported($examId)
     {
     	//TODO is changing the last modified date here correct?
-    	$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Reported."', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
+    	$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Reported."' WHERE `idexam` =".$examId.";");
     	$this->addLogMessage($examId, 'Exam was reported.');
     }
     

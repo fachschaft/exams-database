@@ -5,6 +5,22 @@ class ExamsController extends Zend_Controller_Action {
 	public function init() {
 	}
 	
+	// Scrub entries from $_POST[] that are not needed
+	private function scrubPost(array $scrubEntries, array $scrubIfAllSelected = NULL) {
+		$_post = $this->getRequest ()->getPost ();
+		foreach ( $scrubEntries as $entry ) {
+			if (isset ( $_post [$entry] ))
+				unset ( $_post [$entry] );
+		}
+		if ($scrubIfAllSelected != NULL) {
+			foreach ( $scrubIfAllSelected as $entry ) {
+				if (isset ( $_post [$entry] ) && in_array ( - 1, $_post [$entry] ))
+					unset ( $_post [$entry] );
+			}
+		}
+		return $_post;
+	}
+	
 	public function indexAction() {
 		$this->_helper->redirector ( 'groups' );
 	}
@@ -15,9 +31,7 @@ class ExamsController extends Zend_Controller_Action {
 		
 		if ($this->getRequest ()->isPost ()) {
 			if ($form->isValid ( $this->getRequest ()->getPost () )) {
-				$post = $this->getRequest ()->getPost ();
-				if (isset ( $post ['submit'] ))
-					unset ( $post ['submit'] );
+				$post = $this->scrubPost(array('submit'));
 				return $this->_helper->Redirector->setGotoSimple ( 'degrees', null, null, $post );
 			}
 		}
@@ -32,11 +46,7 @@ class ExamsController extends Zend_Controller_Action {
             $form->setGroup($this->getRequest()->group);
             
             if($form->isValid($this->getRequest()->getPost())) {
-                $post = $this->getRequest()->getPost();
-                if (isset($post['submit']))
-                    unset($post['submit']);
-                if (isset($post['group']))
-                    unset($post['group']);
+            	$post = $this->scrubPost(array(submit, group));
                 return $this->_helper->Redirector->setGotoSimple('courses', null, null, $post);
             }
         }
@@ -71,19 +81,10 @@ class ExamsController extends Zend_Controller_Action {
         
         if ($this->getRequest()->isPost()) {
             if($form->isValid($this->getRequest()->getPost())) {
-                $post = $this->getRequest()->getPost();
-                // remove parameter witch not be needed
-                if (isset($post['submit']))
-                    unset($post['submit']);
-                if (isset($post['lecturer']) && in_array(-1, $post['lecturer']))
-                    unset($post['lecturer']);
-                if (isset($post['course']) && in_array(-1, $post['course']))
-                    unset($post['course']);
-                if (isset($post['semester']) && in_array(-1, $post['semester']))
-                    unset($post['semester']);
-                if (isset($post['examType']) && in_array(-1, $post['examType']))
-                    unset($post['examType']);
-                return $this->_helper->Redirector->setGotoSimple('search', null, null, $post);
+            	$post = $this->scrubPost(array('submit'), array('lecturer', 'course', 'semester', 'examType'));
+  
+                 return $this->_helper->Redirector->setGotoSimple('search', null, null, $post);
+
             } else {
                 $this->view->form = $form;
             }
@@ -131,80 +132,44 @@ class ExamsController extends Zend_Controller_Action {
 						array(3,5)	// 3 means public state
                         );
     }
+	
+	public function downloadAction() {
+		$authmanager = new Application_Model_AuthManager ();
+		if (isset ( $this->getRequest ()->id )) {
+			// For anonymous Users, check if the user is allowed to download
+			// files based on IP
+			if (! Zend_Auth::getInstance ()->hasIdentity ()) {
+				$ip = array ('ip' => $this->getRequest ()->getClientIp ());
+				if (!$authmanager->grantPermission($ip))
+					throw new Exception ( 'Sorry, your not allowed to download a file', 401 );
+			}
+			// If user is allowed to download, get the fileid for the download
+			$fileId = $this->getRequest ()->id;
+		} 
 
-    public function downloadAction()
-    {
-    	date_default_timezone_set('UTC');
-    	
-        if(isset($this->getRequest()->id)) 
-        {   
-        	if (! Zend_Auth::getInstance ()->hasIdentity ()) {
-	        	$adapter = new Custom_Auth_Adapter_InternetProtocol($this->getRequest()->getClientIp());
-				$auth    = Zend_Auth::getInstance();
-				$result  = $auth->authenticate($adapter);
-				if(!$result->isValid()) { throw new Exception('Sorry, your not allowed to download a file', 500); }
-        	}
-			
-			$x = new Application_Model_DocumentMapper ();
-			$entries = $x->fetch ( $this->getRequest ()->id );
-			
-			if ($entries->DeleteState) {
-				throw new Exception ( 'The document is not longer available', 500 );
-			}
-			
-			$x->updateDownloadCounter ( $entries->id );
-			
-			header ( 'Content-Type: application/octet-stream' );
-			header ( "Content-Disposition: attachment; filename=" . date ( 'YmdHis' ) . "." . $entries->getExtention () );
-			$config = Zend_Registry::get ( 'examDBConfig' );
-			$path = $config ['storagepath'];
-			$file = $path . $entries->getFileName () . "." . $entries->getextention ();
-			if (is_readable ( $file )) {
-				readfile ( $file );
-			} else {
-				throw new Exception ( 'File not found', 500 );
-			}
-			exit ();
-		} else if (isset ( $this->getRequest ()->admin )) {
+		else if (isset ( $this->getRequest ()->admin )) {
 			// ToDo: check for admin state
-
 			
 			// check if a login exists for admin controller
-			if (! Zend_Auth::getInstance ()->hasIdentity ()) {
-				$data = $this->getRequest ()->getParams ();
-				// save the old controller and action to redirect the user after
-				// the login
-				if (isset ( $data ['rcontroller'] ) || isset ( $data ['raction'] )) {
-				} else {
-					$data ['rcontroller'] = $data ['controller'];
-					$data ['raction'] = $data ['action'];
-				}
-				unset ( $data ['controller'] );
-				unset ( $data ['action'] );
-				$this->_helper->Redirector->setGotoSimple ( 'login', 'exams-admin', null, $data );
+			if (Zend_Auth::getInstance ()->hasIdentity ()) {
+				// If user is logged in, get the fileid for the download
+				$fileId = $this->getRequest ()->admin;
 			} else {
+				$data = $this->getRequest ()->getParams ();
+				// save the old controller and action to redirect the user after the login
+				$data = $authmanager->pushParameters ( $data );
 				
-				$x = new Application_Model_DocumentMapper ();
-				$entries = $x->fetch ( $this->getRequest ()->admin );
-				
-				$x->updateReviewState ( $entries->id );
-				
-				
-				header ( 'Content-Type: application/octet-stream' );
-				header ( "Content-Disposition: attachment; filename=" . date ( 'YmdHis' ) . "." . $entries->getExtention () );
-				$config = Zend_Registry::get ( 'examDBConfig' );
-				$path = $config ['storagepath'];
-				$file = $path . $entries->getFileName () . "." . $entries->getextention ();
-				if (is_readable ( $file )) {
-					readfile ( $file );
-				} else {
-					throw new Exception ( 'File not found', 500 );
-				}
-				exit ();
+				$this->_helper->Redirector->setGotoSimple ( 'login', 'exams-admin', null, $data );
 			}
-		} else {
-			throw new Exception ( 'Invalid document called', 500 );
-		}
+		} else
+			throw new Exception ( 'Invalid request', 400 );
+			
+			// Send the User the file he requested for Download.
+		$filemanager = new Application_Model_ExamFileManager ();
+		$filemanager->downloadDocuments ( $fileId );
+		// This exit() is important as php will output a lot of html instead of
+		// just the file contents if it is missing.
+		exit ();
 	
 	}
 	
@@ -355,9 +320,8 @@ class ExamsController extends Zend_Controller_Action {
 		$this->view->form = $form;
 	}
 	
-	public function uploadfinalAction() {
-		// action body
-	}
+	// This empty action is required to output a html page thanking user for his upload
+	public function uploadfinalAction() {	}	
 	
 	public function reportAction() {
 		$examid = $this->getRequest ()->id;
@@ -374,7 +338,6 @@ class ExamsController extends Zend_Controller_Action {
 		$this->view->form = $form;
 	}
 
-
     public function quickSearchAction()
     {
     	$form = new Application_Form_ExamQuickSearch();
@@ -388,10 +351,3 @@ class ExamsController extends Zend_Controller_Action {
     	$this->view->form = $form;
     }
 }
-
-
-
-
-
-
-
