@@ -20,7 +20,6 @@ class ExamsAdminController extends Zend_Controller_Action {
 	
 	public function overviewAction() {
 		$examMapper = new Application_Model_ExamMapper ();
-		
 		$request = $this->getRequest ();
 		if (isset ( $request->do ) && isset ( $request->id )) {
 			$do = $request->do;
