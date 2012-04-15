@@ -34,6 +34,10 @@ class ExamsAdminController extends Zend_Controller_Action {
 					$examMapper->updateExamStatusToDisapprove ( $id );
 					$this->_helper->Redirector->setGotoSimple ( 'overview' );
 					break;
+				case "unreport" :
+					$examMapper->updateExamStatusUnreport ( $id );
+					$this->_helper->Redirector->setGotoSimple ( 'overview' );
+				break;
 				case "delete" :
 					$examMapper->updateExamStatusToDelete ( $id );
 					$this->_helper->Redirector->setGotoSimple ( 'overview' );

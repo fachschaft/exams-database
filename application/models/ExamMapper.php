@@ -368,6 +368,12 @@ class Application_Model_ExamMapper
     	$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Reported."' WHERE `idexam` =".$examId.";");
     	$this->addLogMessage($examId, 'Exam was reported with reason ' . $reason . '.');
     }
+    
+    public function updateExamStatusUnreport($examId)
+    {
+    	$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::PublicExam."', `modified_last_date` = NOW() WHERE `idexam` =".$examId." AND `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Reported."';");
+    	$this->addLogMessage($examId, 'Exam unreport by %user%.');
+    }
 	
 	public function returnQuicksearchIndexKeywords($id) {
 		if (! isset ( $id ))
