@@ -288,6 +288,7 @@ class ExamsAdminController extends Zend_Controller_Action {
 		$form->rebuildIndex->setLabel ( 'Rebuild Index from Database' );
 		$form->deleteIndex->setLabel ( 'Delete the Index' );
 		$form->optimizeIndex->setLabel ( 'Collect garbage' );
+		$form->indexSize->setLabel ('Return index filecount ');
 		
 		$this->view->form = $form;
 		if ($this->getRequest ()->isPost ()) {
@@ -311,6 +312,9 @@ class ExamsAdminController extends Zend_Controller_Action {
 					$index->optimizeIndex ();
 					echo "Garbage removed, index optimized";
 				
+				} else if ($form->indexSize->isChecked()){
+					$size = $index->getIndexSize();
+					echo "There are $size files in the Index";
 				}
 			} else
 				throw new Exception ( "Invalid Form Data" );

@@ -6,6 +6,7 @@ class Application_Form_AdminQuicksearch extends Zend_Form {
 	protected $_buttonRebuildIndex = NULL;
 	protected $_buttonDeleteIndex = NULL;
 	protected $_buttonOptimizeIndex = NULL;
+	protected $_buttonIndexSize = NULL;
 	
 	public function init() {
 		
@@ -24,12 +25,16 @@ class Application_Form_AdminQuicksearch extends Zend_Form {
 		$this->_buttonOptimizeIndex = new Zend_Form_Element_Submit ( 'optimizeIndex' );
 		$this->_buttonOptimizeIndex->setAttrib('id', 'optimizeindex');
 		
+		$this->_buttonIndexSize = new Zend_Form_Element_Submit ( 'indexSize' );
+		$this->_buttonIndexSize->setAttrib('id', 'indexsize');
+		
 
 		$this->addElements ( array (
 				$this->_buttonNewIndex, 
 				$this->_buttonRebuildIndex,
 				$this->_buttonDeleteIndex,
-				$this->_buttonOptimizeIndex
+				$this->_buttonOptimizeIndex,
+				$this->_buttonIndexSize
 		) );
 	}
 
