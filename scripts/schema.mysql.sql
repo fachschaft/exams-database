@@ -136,6 +136,7 @@ CREATE  TABLE IF NOT EXISTS `exam` (
   `university_iduniversity` INT NOT NULL ,
   `comment` TEXT NULL ,
   `autor` TEXT NULL ,
+  `downloads` INT NOT NULL DEFAULT 0 ,
   `create_date` TIMESTAMP NULL ,
   `modified_last_date` TIMESTAMP NULL ,
   PRIMARY KEY (`idexam`) ,
@@ -206,12 +207,14 @@ DROP TABLE IF EXISTS `document` ;
 CREATE  TABLE IF NOT EXISTS `document` (
   `iddocument` INT NOT NULL AUTO_INCREMENT ,
   `exam_idexam` INT NOT NULL ,
-  `extention` VARCHAR(10) NULL ,
-  `submit_file_name` VARCHAR(255) NULL ,
-  `mime_type` VARCHAR(255) NULL ,
+  `display_name` VARCHAR(255) NULL ,
   `file_name` VARCHAR(255) NULL ,
+  `submit_file_name` VARCHAR(255) NULL ,
+  `extention` VARCHAR(10) NULL ,
+  `mime_type` VARCHAR(255) NULL ,
   `deleted` TINYINT(1) NOT NULL DEFAULT 0 ,
   `reviewed` TINYINT(1) NOT NULL DEFAULT 0 ,
+  `collection` TINYINT(1) NOT NULL DEFAULT 0 ,
   `downloads` INT NOT NULL DEFAULT 0 ,
   `upload_date` TIMESTAMP NULL ,
   `md5_sum` VARCHAR(32) NULL ,
@@ -359,6 +362,58 @@ CREATE  TABLE IF NOT EXISTS `course_has_course` (
     REFERENCES `course` (`idcourse` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `exam_download_statistic_day`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `exam_download_statistic_day` ;
+
+CREATE  TABLE IF NOT EXISTS `exam_download_statistic_day` (
+  `idexam_download_statistic_day` INT NOT NULL ,
+  `exam_idexam` INT NOT NULL ,
+  `date` DATE NOT NULL ,
+  `downloads` INT NOT NULL ,
+  PRIMARY KEY (`idexam_download_statistic_day`) ,
+  INDEX `fk_exam_download_statistic_day_exam1` (`exam_idexam` ASC) ,
+  CONSTRAINT `fk_exam_download_statistic_day_exam1`
+    FOREIGN KEY (`exam_idexam` )
+    REFERENCES `exam` (`idexam` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `document_download_statistic_day`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `document_download_statistic_day` ;
+
+CREATE  TABLE IF NOT EXISTS `document_download_statistic_day` (
+  `iddocument_download_statistic_day` INT NOT NULL ,
+  `document_iddocument` INT NOT NULL ,
+  `date` DATE NOT NULL ,
+  `downloads` INT NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (`iddocument_download_statistic_day`) ,
+  INDEX `fk_document_download_statistic_day_document1` (`document_iddocument` ASC) ,
+  CONSTRAINT `fk_document_download_statistic_day_document1`
+    FOREIGN KEY (`document_iddocument` )
+    REFERENCES `document` (`iddocument` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `log`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `log` ;
+
+CREATE  TABLE IF NOT EXISTS `log` (
+  `idlog` INT NOT NULL ,
+  `message` TEXT NULL ,
+  PRIMARY KEY (`idlog`) )
 ENGINE = InnoDB;
 
 

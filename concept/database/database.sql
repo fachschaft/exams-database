@@ -136,6 +136,7 @@ CREATE  TABLE IF NOT EXISTS `exam` (
   `university_iduniversity` INT NOT NULL ,
   `comment` TEXT NULL ,
   `autor` TEXT NULL ,
+  `downloads` INT NOT NULL DEFAULT 0 ,
   `create_date` TIMESTAMP NULL ,
   `modified_last_date` TIMESTAMP NULL ,
   PRIMARY KEY (`idexam`) ,
@@ -206,12 +207,14 @@ DROP TABLE IF EXISTS `document` ;
 CREATE  TABLE IF NOT EXISTS `document` (
   `iddocument` INT NOT NULL AUTO_INCREMENT ,
   `exam_idexam` INT NOT NULL ,
-  `extention` VARCHAR(10) NULL ,
-  `submit_file_name` VARCHAR(255) NULL ,
-  `mime_type` VARCHAR(255) NULL ,
+  `display_name` VARCHAR(255) NULL ,
   `file_name` VARCHAR(255) NULL ,
+  `submit_file_name` VARCHAR(255) NULL ,
+  `extention` VARCHAR(10) NULL ,
+  `mime_type` VARCHAR(255) NULL ,
   `deleted` TINYINT(1) NOT NULL DEFAULT 0 ,
   `reviewed` TINYINT(1) NOT NULL DEFAULT 0 ,
+  `collection` TINYINT(1) NOT NULL DEFAULT 0 ,
   `downloads` INT NOT NULL DEFAULT 0 ,
   `upload_date` TIMESTAMP NULL ,
   `md5_sum` VARCHAR(32) NULL ,
@@ -362,6 +365,58 @@ CREATE  TABLE IF NOT EXISTS `course_has_course` (
 ENGINE = InnoDB;
 
 
+-- -----------------------------------------------------
+-- Table `exam_download_statistic_day`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `exam_download_statistic_day` ;
+
+CREATE  TABLE IF NOT EXISTS `exam_download_statistic_day` (
+  `idexam_download_statistic_day` INT NOT NULL ,
+  `exam_idexam` INT NOT NULL ,
+  `date` DATE NOT NULL ,
+  `downloads` INT NOT NULL ,
+  PRIMARY KEY (`idexam_download_statistic_day`) ,
+  INDEX `fk_exam_download_statistic_day_exam1` (`exam_idexam` ASC) ,
+  CONSTRAINT `fk_exam_download_statistic_day_exam1`
+    FOREIGN KEY (`exam_idexam` )
+    REFERENCES `exam` (`idexam` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `document_download_statistic_day`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `document_download_statistic_day` ;
+
+CREATE  TABLE IF NOT EXISTS `document_download_statistic_day` (
+  `iddocument_download_statistic_day` INT NOT NULL ,
+  `document_iddocument` INT NOT NULL ,
+  `date` DATE NOT NULL ,
+  `downloads` INT NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (`iddocument_download_statistic_day`) ,
+  INDEX `fk_document_download_statistic_day_document1` (`document_iddocument` ASC) ,
+  CONSTRAINT `fk_document_download_statistic_day_document1`
+    FOREIGN KEY (`document_iddocument` )
+    REFERENCES `document` (`iddocument` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `log`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `log` ;
+
+CREATE  TABLE IF NOT EXISTS `log` (
+  `idlog` INT NOT NULL ,
+  `message` TEXT NULL ,
+  PRIMARY KEY (`idlog`) )
+ENGINE = InnoDB;
+
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
@@ -467,11 +522,11 @@ COMMIT;
 -- Data for table `exam`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `exam` (`idexam`, `degree_iddegree`, `semester_idsemester`, `exam_type_idexam_type`, `exam_sub_type_idexam_sub_type`, `exam_status_idexam_status`, `exam_degree_idexam_degree`, `university_iduniversity`, `comment`, `autor`, `create_date`, `modified_last_date`) VALUES (1, 2, 1, 1, 2, 2, 1, 1, 'Note:', NULL, '2012-03-17 21:56:40', '2012-03-17 21:56:40');
-INSERT INTO `exam` (`idexam`, `degree_iddegree`, `semester_idsemester`, `exam_type_idexam_type`, `exam_sub_type_idexam_sub_type`, `exam_status_idexam_status`, `exam_degree_idexam_degree`, `university_iduniversity`, `comment`, `autor`, `create_date`, `modified_last_date`) VALUES (2, 1, 2, 1, 2, 2, 2, 2, '-', 'Max Mustermann', '2012-03-17 21:56:40', '2012-03-17 21:56:40');
-INSERT INTO `exam` (`idexam`, `degree_iddegree`, `semester_idsemester`, `exam_type_idexam_type`, `exam_sub_type_idexam_sub_type`, `exam_status_idexam_status`, `exam_degree_idexam_degree`, `university_iduniversity`, `comment`, `autor`, `create_date`, `modified_last_date`) VALUES (3, 3, 1, 2, 2, 2, 1, 3, 'ohne in seiner blinden Begierde zu sehen, welche Schmerzen und Unannehmlichkeiten seiner deshalb warten', '-', '2012-03-17 21:56:40', '2012-03-17 21:56:40');
-INSERT INTO `exam` (`idexam`, `degree_iddegree`, `semester_idsemester`, `exam_type_idexam_type`, `exam_sub_type_idexam_sub_type`, `exam_status_idexam_status`, `exam_degree_idexam_degree`, `university_iduniversity`, `comment`, `autor`, `create_date`, `modified_last_date`) VALUES (4, 3, 3, 1, 1, 2, 3, 1, 'Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus', '', '2012-03-17 21:56:40', '2012-03-17 21:56:40');
-INSERT INTO `exam` (`idexam`, `degree_iddegree`, `semester_idsemester`, `exam_type_idexam_type`, `exam_sub_type_idexam_sub_type`, `exam_status_idexam_status`, `exam_degree_idexam_degree`, `university_iduniversity`, `comment`, `autor`, `create_date`, `modified_last_date`) VALUES (5, 1, 4, 2, 1, 2, 2, 1, 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua', NULL, '2012-03-17 21:56:40', '2012-03-17 21:56:40');
+INSERT INTO `exam` (`idexam`, `degree_iddegree`, `semester_idsemester`, `exam_type_idexam_type`, `exam_sub_type_idexam_sub_type`, `exam_status_idexam_status`, `exam_degree_idexam_degree`, `university_iduniversity`, `comment`, `autor`, `downloads`, `create_date`, `modified_last_date`) VALUES (1, 2, 1, 1, 2, 2, 1, 1, 'Note:', NULL, 0, '2012-03-17 21:56:40', '2012-03-17 21:56:40');
+INSERT INTO `exam` (`idexam`, `degree_iddegree`, `semester_idsemester`, `exam_type_idexam_type`, `exam_sub_type_idexam_sub_type`, `exam_status_idexam_status`, `exam_degree_idexam_degree`, `university_iduniversity`, `comment`, `autor`, `downloads`, `create_date`, `modified_last_date`) VALUES (2, 1, 2, 1, 2, 2, 2, 2, '-', 'Max Mustermann', 0, '2012-03-17 21:56:40', '2012-03-17 21:56:40');
+INSERT INTO `exam` (`idexam`, `degree_iddegree`, `semester_idsemester`, `exam_type_idexam_type`, `exam_sub_type_idexam_sub_type`, `exam_status_idexam_status`, `exam_degree_idexam_degree`, `university_iduniversity`, `comment`, `autor`, `downloads`, `create_date`, `modified_last_date`) VALUES (3, 3, 1, 2, 2, 2, 1, 3, 'ohne in seiner blinden Begierde zu sehen, welche Schmerzen und Unannehmlichkeiten seiner deshalb warten', '-', 0, '2012-03-17 21:56:40', '2012-03-17 21:56:40');
+INSERT INTO `exam` (`idexam`, `degree_iddegree`, `semester_idsemester`, `exam_type_idexam_type`, `exam_sub_type_idexam_sub_type`, `exam_status_idexam_status`, `exam_degree_idexam_degree`, `university_iduniversity`, `comment`, `autor`, `downloads`, `create_date`, `modified_last_date`) VALUES (4, 3, 3, 1, 1, 2, 3, 1, 'Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus', '', 0, '2012-03-17 21:56:40', '2012-03-17 21:56:40');
+INSERT INTO `exam` (`idexam`, `degree_iddegree`, `semester_idsemester`, `exam_type_idexam_type`, `exam_sub_type_idexam_sub_type`, `exam_status_idexam_status`, `exam_degree_idexam_degree`, `university_iduniversity`, `comment`, `autor`, `downloads`, `create_date`, `modified_last_date`) VALUES (5, 1, 4, 2, 1, 2, 2, 1, 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua', NULL, 0, '2012-03-17 21:56:40', '2012-03-17 21:56:40');
 
 COMMIT;
 
@@ -491,12 +546,12 @@ COMMIT;
 -- Data for table `document`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `extention`, `submit_file_name`, `mime_type`, `file_name`, `deleted`, `reviewed`, `downloads`, `upload_date`, `md5_sum`) VALUES (1, 1, 'txt', 'test_exam1.txt', 'text/plain', '1c4e65b8dcdbe17bfe53d298fc0eab4d', 0, 0, 0, '2012-03-17 21:56:40', 'c9faf47132abf2d237a0949dcbc43030');
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `extention`, `submit_file_name`, `mime_type`, `file_name`, `deleted`, `reviewed`, `downloads`, `upload_date`, `md5_sum`) VALUES (2, 2, 'txt', 'test_exam2.txt', 'text/plain', '63db1674260fdb57b7bd3b69b33b1491', 0, 0, 0, '2012-03-17 21:56:40', 'f76097a6979a61b515ccddc4b80ccb59');
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `extention`, `submit_file_name`, `mime_type`, `file_name`, `deleted`, `reviewed`, `downloads`, `upload_date`, `md5_sum`) VALUES (3, 3, 'txt', 'test_exam3.txt', 'text/plain', '08d9a05df222a233efa7f27b90a70f05', 0, 0, 0, '2012-03-17 21:56:40', '277095673fb7f948512648bd69c3607a');
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `extention`, `submit_file_name`, `mime_type`, `file_name`, `deleted`, `reviewed`, `downloads`, `upload_date`, `md5_sum`) VALUES (4, 4, 'txt', 'test_exam4.txt', 'text/plain', 'cf27f120476f898ed1da059d2e7f5234', 0, 0, 0, '2012-03-17 21:56:40', '7a24edad50b029d78b09d09cbf371b71');
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `extention`, `submit_file_name`, `mime_type`, `file_name`, `deleted`, `reviewed`, `downloads`, `upload_date`, `md5_sum`) VALUES (5, 5, 'txt', 'test_exam5.txt', 'text/plain', 'a8c52e04391af64ba6d815199d653783', 0, 0, 0, '2012-03-17 21:56:40', '11fb493d1ac41b079bc4146c56d8cf99');
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `extention`, `submit_file_name`, `mime_type`, `file_name`, `deleted`, `reviewed`, `downloads`, `upload_date`, `md5_sum`) VALUES (6, 5, 'txt', 'test_exam5_2.txt', 'text/plain', 'ab6d161805060de7b390e84c8c0019cf', 0, 0, 0, '2012-03-17 21:56:40', 'bbb7c6c5eb85929f239fd229e04fb1bf');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (1, 1, 'test exam1', '1c4e65b8dcdbe17bfe53d298fc0eab4d', 'test_exam1.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', 'c9faf47132abf2d237a0949dcbc43030');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (2, 2, 'test exam2', '63db1674260fdb57b7bd3b69b33b1491', 'test_exam2.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', 'f76097a6979a61b515ccddc4b80ccb59');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (3, 3, 'test exam3', '08d9a05df222a233efa7f27b90a70f05', 'test_exam3.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', '277095673fb7f948512648bd69c3607a');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (4, 4, 'test exam4', 'cf27f120476f898ed1da059d2e7f5234', 'test_exam4.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', '7a24edad50b029d78b09d09cbf371b71');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (5, 5, 'test exam5', 'a8c52e04391af64ba6d815199d653783', 'test_exam5.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', '11fb493d1ac41b079bc4146c56d8cf99');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (6, 5, 'test exam5_2', 'ab6d161805060de7b390e84c8c0019cf', 'test_exam5_2.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', 'bbb7c6c5eb85929f239fd229e04fb1bf');
 
 COMMIT;
 

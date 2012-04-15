@@ -231,11 +231,6 @@ class Application_Model_ExamMapper
 	{
 		return $this->fetch("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::Unchecked), false);
 	}
-
-	public function fetchPublic(){
-		return $this->fetch("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::PublicExam, Application_Model_ExamStatus::Reported), false);
-	}
-	
 	
 	public function fetchReported()
 	{
