@@ -62,8 +62,6 @@
           <dbTableFile dbTableName="Semester"/>
           <dbTableFile dbTableName="ExamType"/>
           <dbTableFile dbTableName="Exam"/>
-          <dbTableFile dbTableName="CourseGroup"/>
-          <dbTableFile dbTableName="ExamHasCourseGroup"/>
           <dbTableFile dbTableName="DegreeHasCourse"/>
           <dbTableFile dbTableName="Document"/>
           <dbTableFile dbTableName="ExamSubType"/>

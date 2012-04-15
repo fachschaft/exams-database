@@ -97,7 +97,6 @@ class ExamsController extends Zend_Controller_Action {
     {
         $request = $this->getRequest();
         $this->view->exams = array();
-        var_dump($this->getRequest());
         if(isset($this->getRequest()->exam)) {
         	$exams = array();
         	if(!is_array($this->getRequest()->exam)) { $this->getRequest()->setParam('exam', array($this->getRequest()->exam)); }
@@ -357,12 +356,15 @@ class ExamsController extends Zend_Controller_Action {
     	$form = new Application_Form_ExamQuickSearch();
     	if ($this->_request->isPost()) {
     		$formData = $this->_request->getPost();
-    		if (!$form->isValid($formData)) throw new Exception('Invalid Form Data');
-       		$index = new Application_Model_ExamSearch();
-    		$exam = $index->searchIndex($formData['_query']);
-    		if(!empty($exam)) {
-    			$data['exam'] = $exam;
-    			return $this->_helper->Redirector->setGotoSimple ( 'search', null, null, $data );
+    		if ($form->isValid($formData)) {
+	       		$index = new Application_Model_ExamSearch();
+	    		$exam = $index->searchIndex($formData['_query']);
+	    		if(!empty($exam)) {
+	    			$data['exam'] = $exam;
+	    			return $this->_helper->Redirector->setGotoSimple ( 'search', null, null, $data );
+	    		} else {
+	    			$form->getElement("_query")->addError("no results found!");
+	    		}
     		}
     	}
     	$this->view->form = $form;
