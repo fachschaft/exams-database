@@ -70,6 +70,38 @@ class Application_Model_DocumentMapper
 	public function updateDownloadCounter($documentId)
 	{
 		$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `downloads` =  `downloads`+1 WHERE `iddocument` =".$documentId.";");
+		
+		
+		// update document statistic
+		$result = $this->getDbTable()->getAdapter()->query("SELECT iddocument_download_statistic_day FROM `document_download_statistic_day`
+				WHERE `date` = DATE(NOW()) AND `document_iddocument` = '".$documentId."';");
+		
+		$count = 0;
+		foreach ($result as $res) $count++;
+		
+		if($count > 1) {
+			throw new Exception ( 'Inconsistent database, call an admin!', 500 );
+		}
+		if($count == 0)
+		{
+			try {
+				$this->getDbTable()->getAdapter()->query("INSERT INTO `document_download_statistic_day` (`document_iddocument`, `date`, `downloads`)
+						VALUES ('".$documentId."', NOW(), '1');");
+			} catch (Exception $e) {
+				//ToDo(leinfeda): Add log entry, tried to insert and failed, this my be because there was a insert while the result select above and this insert try, this is not threadsafe!
+			}
+			
+		}
+		if($count == 1)
+		{
+			$this->getDbTable()->getAdapter()->query("UPDATE `document_download_statistic_day` SET  `downloads` =  `downloads`+1
+					WHERE `date` = DATE(NOW()) AND `document_iddocument` = '".$documentId."';");
+		}
+		
+		// update exam statistic
+		$doc = $this->fetch($documentId);
+		$examMpper = new Application_Model_ExamMapper();
+		$examMpper->updateDownloadCounter($doc->examId);
 	}
 	
 	

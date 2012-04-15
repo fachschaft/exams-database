@@ -395,6 +395,36 @@ class Application_Model_ExamMapper
 															  VALUES ('".$examId."',  '".$message."')");
 	}
 	
+	public function updateDownloadCounter($examId)
+	{
+		$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET  `downloads` =  `downloads`+1 WHERE `idexam` =".$examId.";");
+		
+		$result = $this->getDbTable()->getAdapter()->query("SELECT idexam_download_statistic_day FROM `exam_download_statistic_day` 
+												  	   		WHERE `date` = DATE(NOW()) AND `exam_idexam` = '".$examId."';");
+
+		$count = 0;
+		foreach ($result as $res) $count++;
+		
+		if($count > 1) {
+			throw new Exception ( 'Inconsistent database, call an admin!', 500 );
+		}
+		if($count == 0)
+		{
+			try {
+				$this->getDbTable()->getAdapter()->query("INSERT INTO `exam_download_statistic_day` (`exam_idexam`, `date`, `downloads`)
+						VALUES ('".$examId."', NOW(), '1');");
+			} catch (Exception $e) {
+				//ToDo(leinfeda): Add log entry, tried to insert and failed, this my be because there was a insert while the result select above and this insert try, this is not threadsafe!
+			}
+			
+		}
+		if($count == 1)
+		{
+			$this->getDbTable()->getAdapter()->query("UPDATE `exam_download_statistic_day` SET  `downloads` =  `downloads`+1 
+													  WHERE `date` = DATE(NOW()) AND `exam_idexam` = '".$examId."';");
+		}
+	}
+	
 	/**
 	 * @return an array containing all the entries from ao1 that are not present in the other arrays by comparing the id of the objects
 	 */ 

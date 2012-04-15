@@ -371,12 +371,13 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `exam_download_statistic_day` ;
 
 CREATE  TABLE IF NOT EXISTS `exam_download_statistic_day` (
-  `idexam_download_statistic_day` INT NOT NULL ,
+  `idexam_download_statistic_day` INT NOT NULL AUTO_INCREMENT ,
   `exam_idexam` INT NOT NULL ,
   `date` DATE NOT NULL ,
   `downloads` INT NOT NULL ,
   PRIMARY KEY (`idexam_download_statistic_day`) ,
   INDEX `fk_exam_download_statistic_day_exam1` (`exam_idexam` ASC) ,
+  UNIQUE INDEX `exam_idexam_date_UNIQUE` (`exam_idexam` ASC, `date` ASC) ,
   CONSTRAINT `fk_exam_download_statistic_day_exam1`
     FOREIGN KEY (`exam_idexam` )
     REFERENCES `exam` (`idexam` )
@@ -391,12 +392,13 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `document_download_statistic_day` ;
 
 CREATE  TABLE IF NOT EXISTS `document_download_statistic_day` (
-  `iddocument_download_statistic_day` INT NOT NULL ,
+  `iddocument_download_statistic_day` INT NOT NULL AUTO_INCREMENT ,
   `document_iddocument` INT NOT NULL ,
   `date` DATE NOT NULL ,
   `downloads` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`iddocument_download_statistic_day`) ,
   INDEX `fk_document_download_statistic_day_document1` (`document_iddocument` ASC) ,
+  UNIQUE INDEX `document_iddocument_date_UNIQUE` (`document_iddocument` ASC, `date` ASC) ,
   CONSTRAINT `fk_document_download_statistic_day_document1`
     FOREIGN KEY (`document_iddocument` )
     REFERENCES `document` (`iddocument` )

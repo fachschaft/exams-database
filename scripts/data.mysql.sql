@@ -1,4 +1,21 @@
 -- -----------------------------------------------------
+-- Table `log`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `log` ;
+
+CREATE  TABLE IF NOT EXISTS `log` (
+  `idlog` INT NOT NULL ,
+  `message` TEXT NULL ,
+  PRIMARY KEY (`idlog`) )
+ENGINE = InnoDB;
+
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
 -- Data for table `degree_group`
 -- -----------------------------------------------------
 START TRANSACTION;
