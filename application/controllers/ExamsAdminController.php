@@ -59,7 +59,9 @@ class ExamsAdminController extends Zend_Controller_Action {
 			}
 		}
 		
-		$this->view->exams = $examMapper->fetchAdmin ();
+		$this->view->exams = $examMapper->fetchUnchecked ();
+		
+		$this->view->exams_reported = $examMapper->fetchReported ();
 	}
 	
 	public function editdetailsAction() {

@@ -43,7 +43,7 @@
 	<p>View script for controller <b>ExamsAdmin</b> and script/action name <b>overview</b></p>
 	<? if($this->form != null): echo $this->form; ?>
         <? else: ?>
-        
+    <h2>Unchecked</h2>
     <table id="gradient-style">
 	
 	<tr>
@@ -174,4 +174,121 @@
     <? endif; ?>
     
     <p>* - connected to the origin Exam(s)</p>
+    
+    
+    <!-- Reported -->
+    
+    	<? if($this->form != null): echo $this->form; ?>
+        <? else: ?>
+        
+    <h2>Reported</h2>
+        
+    <table id="gradient-style">
+	
+	<tr>
+		<th>ID</th>
+		<th>Course</th>
+		<th>Semester</th>
+		<th>Lecturer</th>
+		<th>Type</th>
+		<th>Files</th>
+		<th>Comment</th>
+		<th>Options</th>
+	</tr>
+ 	
+	<?php foreach ($this->exams_reported as $entry): ?>
+	<tr>
+	<td>
+		<div id="exam-id">
+		<?php echo $entry->id ?>
+		</div>
+	</td>
+	<td>
+		<div id="exam-course">
+			<?php 
+			foreach($entry->course as $course)
+			{
+				echo "- ".$course;
+				echo '<br>';
+			} 
+			foreach($entry->CourseConnected as $course)
+			{
+				echo "- ".$course ."*";
+				echo '<br>';
+			}
+			?>
+		</div>
+	</td>
+	<td>
+		<div id="exam-semester">
+			<? 
+				echo $entry->semester;
+			?>
+		</div>
+	</td>
+	<td>
+		<div id="exam-lecturer">    
+			<? foreach($entry->Lecturer as $lecturer)
+			{
+				echo "- ".$lecturer;
+				echo '<br>';
+			} ?>
+		</div>
+	</td>
+	<td>
+	<div id="exam-infos">    
+	<?
+        echo $entry->Type;
+        echo '<br>';
+		echo $entry->SubType;
+		echo '<br>';
+		echo $entry->university;
+		echo '<br>';
+	    echo $entry->Autor;
+    ?>
+    </div>
+	</td>
+	<td>
+	<div id="exam-files">
+	<? foreach ($entry->documents as $id=>$document): ?>
+    <a href="<?php echo $this->url(
+            array('controller'=>'exams',
+                  'action'=>'download',
+                  'admin'=>$document->id),
+            'default',
+            true) ?>">File <? echo $id+1; ?></a> [<? echo $document->mimeType; ?>]<br>
+         <?php endforeach ?>   
+	</div>
+	</td>
+	<td>
+	<div id="exam-comment" style="max-width:150px;">    
+	<?
+        echo $entry->comment;
+    ?>
+    </div>
+	</td>
+	<td>
+		<div id="exam-control">
+		<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'overview',
+                  'do'=>'disapprove',
+                  'id'=>$entry->id),
+            'default',
+            true) ?>">disapprove</a><br>
+		<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'overview',
+                  'do'=>'log',
+                  'id'=>$entry->id),
+            'default',
+            true) ?>">log</a><br>
+		</div>
+	</td>
+	</tr>
+	<?php endforeach ?>
+	</table>
+    
+    <? endif; ?>
+    
 </div>

@@ -97,22 +97,13 @@ class ExamsController extends Zend_Controller_Action {
     {
         $request = $this->getRequest();
         $this->view->exams = array();
-        if(isset($this->getRequest()->exam)) {
-        	$exams = array();
-        	if(!is_array($this->getRequest()->exam)) { $this->getRequest()->setParam('exam', array($this->getRequest()->exam)); }
-        	foreach($this->getRequest()->exam as $id)
-        	{
-        		$examsMapper = new Application_Model_ExamMapper();
-        		$exam = $examsMapper->find($id);
-        		if($exam->status->id == Application_Model_ExamStatus::PublicExam)
-        			$exams[] = $exam;
-        	}
-        	
-        	$this->view->exams = $exams;
+        if(isset($this->getRequest()->request)) {
+        	$index = new Application_Model_ExamSearch();
+        	$this->view->exams = $index->searchExams($this->getRequest()->request);
         } else {
 	        // go back to degree
 	        if(!isset($this->getRequest()->degree)) {
-	            return $this->_helper->redirector('groups');
+	            return $this->_helper->redirector('index');
 	        } else {
 	            //TODO(aritas1): check if the degree is valid (db check)
 	            // check also if the combination of degree / group is valid
@@ -353,20 +344,25 @@ class ExamsController extends Zend_Controller_Action {
 
     public function quickSearchAction()
     {
+    	$found = false;
     	$form = new Application_Form_ExamQuickSearch();
     	if ($this->_request->isPost()) {
     		$formData = $this->_request->getPost();
     		if ($form->isValid($formData)) {
 	       		$index = new Application_Model_ExamSearch();
-	    		$exam = $index->searchIndex($formData['_query']);
-	    		if(!empty($exam)) {
-	    			$data['exam'] = $exam;
-	    			return $this->_helper->Redirector->setGotoSimple ( 'search', null, null, $data );
-	    		} else {
+	       		$found = $index->searchExists($formData['_query']);
+	    		if(!$found) {
 	    			$form->getElement("_query")->addError("no results found!");
 	    		}
     		}
     	}
     	$this->view->form = $form;
+    	
+    	// draw the form first, so ists possible to use the back key from your browser to modify the search
+    	if($found) {
+    		$data['request'] = $formData['_query'];
+    		return $this->_helper->Redirector->setGotoSimple ( 'search', null, null, $data );
+    	}
+    	
     }
 }

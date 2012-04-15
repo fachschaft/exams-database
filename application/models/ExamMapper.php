@@ -227,10 +227,14 @@ class Application_Model_ExamMapper
         return $entries;
     }
 	
-	public function fetchAdmin()
+	public function fetchUnchecked()
 	{
-		// collect all exams with status 2 (unchecked)
-		return $this->fetch("-1", "-1", "-1", "-1", "-1", array(2), false);
+		return $this->fetch("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::Unchecked), false);
+	}
+	
+	public function fetchReported()
+	{
+		return $this->fetch("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::Reported), false);
 	}
 	
 	public function find($id)

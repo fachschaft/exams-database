@@ -86,6 +86,7 @@ class Application_Model_ExamSearch {
 		}
 	}
 	
+	//ToDo(leinfeda): Think about the charset: http://framework.zend.com/manual/en/zend.search.lucene.charset.html
 	public function searchIndex($query) {
 		$index = Zend_Search_Lucene::open ( $this->_indexpath );
 		$hits = $index->find ( $query );
@@ -97,5 +98,33 @@ class Application_Model_ExamSearch {
 			$foundIds[] = $hit->examid;
 		}
 		return $foundIds;
+	}
+	
+	public function searchExists($query) {
+		$index = Zend_Search_Lucene::open ( $this->_indexpath );
+		Zend_Search_Lucene::setResultSetLimit(1);
+		$hits = $index->find ( $query );
+		if(count($hits) > 0) return true;
+		return false;
+	}
+	
+	
+	public function searchExams($query, Application_Model_ExamStatus $status = null) {
+		//Note: Default value for parameters with a class type hint can only be NULL
+		if($status == null) $status = Application_Model_ExamStatus::PublicExam;
+		$examIds = $this->searchIndex($query);
+		$exams = array();
+		if(!is_array($examIds)) {
+			$examIds = array($examIds);
+		}
+		foreach($examIds as $id)
+		{
+			$examsMapper = new Application_Model_ExamMapper();
+			$exam = $examsMapper->find($id);
+			if($exam->status->id == $status)
+				$exams[] = $exam;
+		}
+		
+		return $exams;
 	}
 }
