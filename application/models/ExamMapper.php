@@ -357,11 +357,11 @@ class Application_Model_ExamMapper
 		$this->addLogMessage($examId, 'Exam deleted by %user%.');
     }
     
-    public function updateExamStatusToReported($examId)
+    public function updateExamStatusToReported($examId, $reason)
     {
     	//TODO is changing the last modified date here correct?
     	$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Reported."' WHERE `idexam` =".$examId.";");
-    	$this->addLogMessage($examId, 'Exam was reported.');
+    	$this->addLogMessage($examId, 'Exam was reported with reason ' . $reason . '.');
     }
     
     public function updateExamStatusUnreport($examId)
