@@ -55,16 +55,12 @@ class Application_Model_ExamSearch {
 		if (file_exists ( $this->_indexpath ))
 			$this->deleteIndex ();
 		$index = Zend_Search_Lucene::create ( $this->_indexpath );
-		
-		/*
-		 * TODO(aamuuninen) fill the index with all the exams in the database
-		 * $keywords_array = ...; for ($n = 0; $n < number_of_exams; $n++){ $doc
-		 * = new Zend_Search_Lucene_Document();
-		 * $doc->addField(Zend_Search_Lucene_Field::Text('filename',
-		 * $row['filename']));
-		 * $doc->addField(Zend_Search_Lucene_Field::Keyword('keyword',
-		 * $keywords_array));
-		 */
+		$examMapper = new Application_Model_ExamMapper();
+		$exams = $examMapper->fetchPublic();
+		foreach ($exams as $exam)
+		{
+			$this->addFileToIndex($exam->getId());
+		}
 	}
 	
 	public function addFileToIndex($id) {
@@ -73,7 +69,6 @@ class Application_Model_ExamSearch {
 		$doc = new Zend_Search_Lucene_Document ();
 		$doc->addField ( Zend_Search_Lucene_Field::Keyword( 'examid', $id ) );
 		$keywords = $examMapper->returnQuicksearchIndexKeywords($id);
-		echo $keywords;
 		$doc->addField ( Zend_Search_Lucene_Field::Text ( 'keyword', $keywords ) );
 		$index->addDocument ( $doc );
 	}
