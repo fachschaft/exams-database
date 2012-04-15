@@ -335,8 +335,7 @@ class ExamsController extends Zend_Controller_Action {
 			$formData = $this->_request->getPost ();
 			$examMapper = new Application_Model_ExamMapper ();
 			// TODO check escaping as a get variable is passed to mysql here!!!! Maybe find a nicer way of doing this when it's less late.		
-			// TODO This changes status to 5, meaning the exam disappeares from user search AND admin overwiew :) capt'n, we're losing exams! make the user search show exams status 5 as well as 3.
-			$examMapper->updateExamStatusToReported ( $examid );
+			$examMapper->updateExamStatusToReported ( $examid, $formData['_reason']);
 			echo "Your report was submitted. Thank you for your help.";
 		}
 		$this->view->form = $form;
