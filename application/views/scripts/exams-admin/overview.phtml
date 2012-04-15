@@ -269,6 +269,13 @@
 	</td>
 	<td>
 		<div id="exam-control">
+				<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'overview',
+                  'do'=>'unreport',
+                  'id'=>$entry->id),
+            'default',
+            true) ?>">remove report</a><br>
 		<a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'overview',
