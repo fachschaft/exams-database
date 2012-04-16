@@ -143,14 +143,24 @@ class ExamsController extends Zend_Controller_Action {
 			// For anonymous Users, check if the user is allowed to download
 			// files based on IP
 			if (! Zend_Auth::getInstance ()->hasIdentity ()) {
-				$ip = array ('ip' => $this->getRequest ()->getClientIp ());
-				if (!$authmanager->grantPermission($ip))
-					throw new Exception ( 'Sorry, your not allowed to download a file', 401 );
+				$ip = array (
+						'ip' => $this->getRequest ()->getClientIp () 
+				);
+				if ($authmanager->grantPermission ( $ip )) {
+					// If user is allowed to download, get the fileid for the
+					// download
+					$examMapper = new Application_Model_ExamMapper ();
+					$exam = $examMapper->find ( $this->getRequest ()->id );
+					
+					if ($exam->status->id == Application_Model_ExamStatus::PublicExam || $exam->status->id == Application_Model_ExamStatus::Reported)
+						$fileId = $this->getRequest ()->id;
+					else
+						throw new Exception ( "Sorry, you are not allowed to download that file", 500 );
+				} else
+					throw new Exception ( "Sorry, you are not authorized to download files. Please log in.", 401 );
 			}
-			// If user is allowed to download, get the fileid for the download
-			$fileId = $this->getRequest ()->id;
+		
 		} 
-
 		else if (isset ( $this->getRequest ()->admin )) {
 			// ToDo: check for admin state
 			
@@ -160,7 +170,8 @@ class ExamsController extends Zend_Controller_Action {
 				$fileId = $this->getRequest ()->admin;
 			} else {
 				$data = $this->getRequest ()->getParams ();
-				// save the old controller and action to redirect the user after the login
+				// save the old controller and action to redirect the user after
+				// the login
 				$data = $authmanager->pushParameters ( $data );
 				
 				$this->_helper->Redirector->setGotoSimple ( 'login', 'exams-admin', null, $data );
@@ -168,13 +179,13 @@ class ExamsController extends Zend_Controller_Action {
 		} else
 			throw new Exception ( 'Invalid request', 400 );
 			
-			// Send the User the file he requested for Download.
+		// If all conditions are met, send the User the file he requested for Download.
 		$filemanager = new Application_Model_ExamFileManager ();
 		$filemanager->downloadDocuments ( $fileId );
+		
 		// This exit() is important as php will output a lot of html instead of
 		// just the file contents if it is missing.
 		exit ();
-	
 	}
 	
 	public function uploadAction() {
