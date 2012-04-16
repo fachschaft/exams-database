@@ -37,6 +37,22 @@ class Application_Model_DegreeGroupMapper
         }
         return $entries;
     }
+    
+    public function find($id)
+    {
+    	$res = $this->getDbTable()->find($id)->current();
+    	return new Application_Model_DegreeGroup(array('id'=>$res->iddegree_group, 'name'=>$res->name));
+    }
+    
+    public function addNewGroup($group_name)
+    {
+    	$this->getDbTable()->insert(array('name'=>$group_name));
+    }
+    
+    public function delte($groupId)
+    {
+    	$this->getDbTable()->delete("iddegree_group = ".$groupId);
+    }
 
 }
 

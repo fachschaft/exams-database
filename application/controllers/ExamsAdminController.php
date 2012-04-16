@@ -1,8 +1,10 @@
 <?php
 
-class ExamsAdminController extends Zend_Controller_Action {
-	
-	public function init() {
+class ExamsAdminController extends Zend_Controller_Action
+{
+
+    public function init()
+    {
 		// check if a login exists for admin controller
 		if (! Zend_Auth::getInstance ()->hasIdentity () && $this->getRequest ()->getActionName () != "login") {
 			$data = $this->getRequest ()->getParams ();
@@ -11,14 +13,18 @@ class ExamsAdminController extends Zend_Controller_Action {
 			$data = $authmanager->pushParameters ( $data );
 			
 			$this->_helper->Redirector->setGotoSimple ( 'login', null, null, $data );
+		
+			//
 		}
-	}
-	
-	public function indexAction() {
+    }
+
+    public function indexAction()
+    {
 		// action body
-	}
-	
-	public function overviewAction() {
+    }
+
+    public function overviewAction()
+    {
 		$examMapper = new Application_Model_ExamMapper ();
 		$request = $this->getRequest ();
 		if (isset ( $request->do ) && isset ( $request->id )) {
@@ -66,9 +72,10 @@ class ExamsAdminController extends Zend_Controller_Action {
 		$this->view->exams = $examMapper->fetchUnchecked ();
 		
 		$this->view->exams_reported = $examMapper->fetchReported ();
-	}
-	
-	public function editdetailsAction() {
+    }
+
+    public function editdetailsAction()
+    {
 		if ($this->getRequest ()->isPost ()) {
 			// save changes
 			$form = new Application_Form_AdminDetail ();
@@ -130,9 +137,13 @@ class ExamsAdminController extends Zend_Controller_Action {
 			
 			$this->view->form = $form;
 		
+			//
 		}
-	}
-	public function logAction() {
+		
+    }
+
+    public function logAction()
+    {
 		// action body
 		if (! isset ( $this->getRequest ()->id )) {
 			// TODO Do something here
@@ -141,9 +152,12 @@ class ExamsAdminController extends Zend_Controller_Action {
 			$log = $logMapper->fetchByExam ( $this->getRequest ()->id );
 			$this->view->log = $log->logMessages;
 		
+			//
 		}
-	}
-	public function loginAction() {
+    }
+
+    public function loginAction()
+    {
 		$authmanager = new Application_Model_AuthManager();
 		$request = $this->getRequest ();
 		
@@ -174,9 +188,10 @@ class ExamsAdminController extends Zend_Controller_Action {
 		}
 		
 		$this->view->form = $this->getLoginForm ();
-	}
-	
-	public function editfilesAction() {
+    }
+
+    public function editfilesAction()
+    {
 		// catch post actions
 		if ($this->getRequest ()->isPost ()) {
 			$post = $this->getRequest ()->getPost ();
@@ -271,22 +286,26 @@ class ExamsAdminController extends Zend_Controller_Action {
 			
 			$this->view->form2 = $form2;
 		
+		//
 		}
-	}
-	private function getLoginForm() {
+    }
+
+    private function getLoginForm()
+    {
 		return new Application_Form_AdminLogin ( array (
 				'action' => '',
 				'method' => 'post' 
 		) );
-	}
-	
-	
-	public function logoutAction() {
+    }
+
+    public function logoutAction()
+    {
 		Zend_Auth::getInstance ()->clearIdentity ();
 		$this->_helper->redirector ( 'login' ); // back to login page
-	}
-	
-	public function buildQuicksearchIndexAction() {
+    }
+
+    public function buildQuicksearchIndexAction()
+    {
 		$form = new Application_Form_AdminQuicksearch ();
 		$form->newIndex->setLabel ( 'Create new Index' );
 		$form->rebuildIndex->setLabel ( 'Rebuild Index from Database' );
@@ -322,7 +341,145 @@ class ExamsAdminController extends Zend_Controller_Action {
 				}
 			} else
 				throw new Exception ( "Invalid Form Data" );
+			
+		//
 		}
-	}
+    }
+
+    public function degreeGroupAction()
+    {
+        $form = new Application_Form_AdminDegreeGroup();
+        if($this->getRequest ()->isPost ()) {
+        	$data = $this->getRequest ()->getPost ();
+        	$action = null;
+        	
+        	// remove errors if we look for the select action
+        	if(isset($this->getRequest()->select)) {
+        		$action = 'delete';
+        		$form->getElement('newElement')->setRequired(false);
+        		$form->getElement('newElement')->clearValidators();
+        	}
+        	
+        	// remove form errors if we lool for the add action
+        	if(isset($this->getRequest()->add)) {
+        		$action = 'add';
+        		$form->getElement('group')->setRequired(false);
+        		$form->getElement('group')->clearErrorMessages();
+        	}
+
+        	if ($form->isValid ( $this->getRequest ()->getPost ()) ) {
+        		switch ($action){
+        			case 'delete':
+        				$groupMapper = new Application_Model_DegreeGroupMapper();
+        				foreach($this->getRequest()->group as $groupId)
+        				{
+        					$groupMapper->delte($groupId);
+        				}
+        				$form = new Application_Form_AdminDegreeGroup();        				
+        				break;
+        			case 'add':
+        				$groupMapper = new Application_Model_DegreeGroupMapper();
+        				$groupMapper->addNewGroup($this->getRequest()->newElement);
+        				$form->getElement('newElement')->setValue("");
+        				$form = new Application_Form_AdminDegreeGroup();
+        				break;
+        		}
+        	} else {
+        		
+        	}
+        }
+    	
+        $this->view->form1 =  $form;
+    }
+
+    public function degreeAction()
+    {
+        // action body
+        $form_add = new Application_Form_AdminDegree();
+        $form_edit = new Application_Form_AdminDegreeEdit();
+        
+        
+        
+        if($this->getRequest ()->isPost ()) {
+        	$data = $this->getRequest ()->getPost ();   	 
+        	$action = null;
+
+        	// remove errors if we look for the select action
+        	if(isset($this->getRequest()->select_button)) {
+        		$action = 'select';
+        	}
+        	
+        	if(isset($this->getRequest()->select_save)) {
+        		$action = 'select_save';
+        	}
+        	
+        	if(isset($this->getRequest()->select_delete)) {
+        		$action = 'select_delete';
+        	}
+        	 
+        	// remove form errors if we lool for the add action
+        	if(isset($this->getRequest()->add)) {
+        		$action = 'add';
+        	}
+        	
+        	
+        	
+        	
+        	switch($action){
+        		case 'add':
+        			if ($form_add->isValid ( $this->getRequest ()->getPost ()) ) {
+        				$new_degree = new Application_Model_Degree(array('name'=>$data['newElement'], 'group'=>new Application_Model_DegreeGroup(array('id'=>$data['group']))));
+        				$degreeMapper = new Application_Model_DegreeMapper();
+        				$degreeMapper->add($new_degree);
+        				// leave the form after save
+        				$this->_helper->redirector('degree');
+        			}
+        			
+        			break;
+        		case 'select':
+        			// disable add form
+        			$form_add = null;
+        			$degreeId = $data['select_degree'];
+        			$degreeMapper = new Application_Model_DegreeMapper();
+        			$degree = $degreeMapper->find($degreeId);
+        			$form_edit->showEdit($degree->group->id);
+        			$form_edit->setDegree($degree->id);
+        			break;
+        		case 'select_save':
+        			// disable add form
+        			$form_add = null;
+        			$data['select_degree'] = $data['select_degree_2'];
+        			$form_edit->setDegree($this->getRequest()->select_degree);
+        			$degreeMapper = new Application_Model_DegreeMapper();
+        			$degree = $degreeMapper->find($data['select_degree']);
+        			$form_edit->showEdit($degree->group->id);
+        			
+        			if ($form_edit->isValid ( $data ) ) {
+        				$degree->group = new Application_Model_DegreeGroup(array('id'=>$data['select_group']));
+        				$degreeMapper->updateGroup($degree);
+        				// leave the form after save
+        				$this->_helper->redirector('degree');
+        			}
+        			break;
+        		case 'select_delete':
+        			if ($form_edit->isValid ( $data ) ) {
+        				$degreeMapper = new Application_Model_DegreeMapper();
+        				$degree = $degreeMapper->find($data['select_degree']);
+        				$degreeMapper->delete($degree);
+        				// leave the form after save
+        				$this->_helper->redirector('degree');
+        			}
+        			break;
+        	}
+        
+
+        }
+        if($form_add != null) $this->view->form_add = $form_add;
+        if($form_edit != null) $this->view->form_edit = $form_edit;
+    }
+
 
 }
+
+
+

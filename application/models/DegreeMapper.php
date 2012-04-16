@@ -44,16 +44,40 @@ class Application_Model_DegreeMapper
     {
         $groups = new Application_Model_DbTable_Degree();
         $resultSet = $groups->fetchAll();
+        
+        $groupMapper = new Application_Model_DegreeGroupMapper();
 
         $entries   = array();
         foreach ($resultSet as $row) {
             $entry = new Application_Model_Degree();
             $entry->setId($row->iddegree)
-                  ->setGroup(new Application_Model_DegreeGroup(array('id'=>$row->degree_group_iddegree_group)))
+                  ->setGroup($groupMapper->find($row->degree_group_iddegree_group))
                   ->setName($row->name);
             $entries[] = $entry;
         }
         return $entries;
+    }
+    
+    public function find($id)
+    {
+    	$res = $this->getDbTable()->find($id)->current();
+    	return new Application_Model_Degree(array('id'=>$res->iddegree, 'name'=>$res->name, 'group'=>new Application_Model_DegreeGroup(array('id'=>$res->degree_group_iddegree_group))));
+    }
+    
+    public function add(Application_Model_Degree $degree)
+    {
+    	$this->getDbTable()->insert(array('name'=>$degree->name, 'degree_group_iddegree_group'=>$degree->group->id));
+    }
+    
+    public function updateGroup(Application_Model_Degree $degree)
+    {
+    	$this->getDbTable()->update(array('degree_group_iddegree_group'=>$degree->group->id), 'iddegree = '.$degree->id);
+    }
+    
+    
+    public function delete(Application_Model_Degree $degree)
+    {
+    	$this->getDbTable()->delete('iddegree = '.$degree->id);
     }
 
 }
