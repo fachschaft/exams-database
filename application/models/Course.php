@@ -4,8 +4,23 @@ class Application_Model_Course
 {
     protected $_name;
     protected $_id;
+    protected $_degrees;
     
-    public function __construct(array $options = null)
+    /**
+	 * @return the $_degrees
+	 */
+	public function getDegrees() {
+		return $this->_degrees;
+	}
+
+	/**
+	 * @param field_type $_degrees
+	 */
+	public function setDegrees(array $_degrees) {
+		$this->_degrees = $_degrees;
+	}
+
+	public function __construct(array $options = null)
     {
         if (is_array($options)) {
             $this->setOptions($options);

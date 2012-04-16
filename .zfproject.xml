@@ -33,6 +33,8 @@
           <actionMethod actionName="editfiles"/>
           <actionMethod actionName="degreeGroup"/>
           <actionMethod actionName="degree"/>
+          <actionMethod actionName="courseAdd"/>
+          <actionMethod actionName="courseEdit"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -52,6 +54,8 @@
         <formFile formName="AdminDegreeGroup"/>
         <formFile formName="AdminDegree"/>
         <formFile formName="AdminDegreeEdit"/>
+        <formFile formName="AdminCourseAdd"/>
+        <formFile formName="AdminCourseEdit"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -168,6 +172,12 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
             <viewScriptFile forActionName="degree"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
+            <viewScriptFile forActionName="courseAdd"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
+            <viewScriptFile forActionName="courseEdit"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

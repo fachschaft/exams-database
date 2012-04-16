@@ -14,8 +14,8 @@ class ExamsAdminController extends Zend_Controller_Action
 			
 			$this->_helper->Redirector->setGotoSimple ( 'login', null, null, $data );
 		
-			//
 		}
+		//
     }
 
     public function indexAction()
@@ -152,8 +152,8 @@ class ExamsAdminController extends Zend_Controller_Action
 			$log = $logMapper->fetchByExam ( $this->getRequest ()->id );
 			$this->view->log = $log->logMessages;
 		
-			//
 		}
+		//
     }
 
     public function loginAction()
@@ -286,8 +286,8 @@ class ExamsAdminController extends Zend_Controller_Action
 			
 			$this->view->form2 = $form2;
 		
-		//
 		}
+		//
     }
 
     private function getLoginForm()
@@ -342,8 +342,8 @@ class ExamsAdminController extends Zend_Controller_Action
 			} else
 				throw new Exception ( "Invalid Form Data" );
 			
-		//
 		}
+		//
     }
 
     public function degreeGroupAction()
@@ -360,7 +360,7 @@ class ExamsAdminController extends Zend_Controller_Action
         		$form->getElement('newElement')->clearValidators();
         	}
         	
-        	// remove form errors if we lool for the add action
+        	// remove form errors if we look for the add action
         	if(isset($this->getRequest()->add)) {
         		$action = 'add';
         		$form->getElement('group')->setRequired(false);
@@ -394,7 +394,6 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function degreeAction()
     {
-        // action body
         $form_add = new Application_Form_AdminDegree();
         $form_edit = new Application_Form_AdminDegreeEdit();
         
@@ -404,7 +403,6 @@ class ExamsAdminController extends Zend_Controller_Action
         	$data = $this->getRequest ()->getPost ();   	 
         	$action = null;
 
-        	// remove errors if we look for the select action
         	if(isset($this->getRequest()->select_button)) {
         		$action = 'select';
         	}
@@ -417,7 +415,6 @@ class ExamsAdminController extends Zend_Controller_Action
         		$action = 'select_delete';
         	}
         	 
-        	// remove form errors if we lool for the add action
         	if(isset($this->getRequest()->add)) {
         		$action = 'add';
         	}
@@ -478,8 +475,106 @@ class ExamsAdminController extends Zend_Controller_Action
         if($form_edit != null) $this->view->form_edit = $form_edit;
     }
 
+    public function courseAddAction()
+    {
+        $form = new Application_Form_AdminCourseAdd();
+        
+        if($this->getRequest ()->isPost ()) {
+        	$data = $this->getRequest ()->getPost ();
+        	$action = null;
+        
+        	var_dump($data);
+        	
+        	if(isset($this->getRequest()->add)) {
+        		$action = 'add';
+        	}
+
+        	switch($action){
+        		case 'add':
+        			if ($form->isValid ( $data ) ) {
+        				$new_degrees = array();
+        				foreach ($data['degrees'] as $deg) { $new_degrees[] = new Application_Model_Degree(array('id'=>$deg)); }
+        				$new_course = new Application_Model_Course(array('name'=>$data['newElement'], 'degrees'=>$new_degrees));
+        				$courseMapper = new Application_Model_CourseMapper();
+        				$courseMapper->add($new_course);
+        				
+        				// leave the form after save
+        				$this->_helper->redirector('course-add');
+        			}
+        			break;
+        	}
+        }
+        
+        
+        $this->view->form = $form;
+    }
+
+    public function courseEditAction()
+    {
+       $form = new Application_Form_AdminCourseEdit();
+        
+        if($this->getRequest ()->isPost ()) {
+        	$data = $this->getRequest ()->getPost ();
+        	$action = null;
+        
+        	var_dump($data);
+        	
+        	if(isset($this->getRequest()->select_button)) {
+        		$action = 'select';
+        	}
+        	
+        	if(isset($this->getRequest()->select_delete)) {
+        		$action = 'delete';
+        	}
+        	if(isset($this->getRequest()->select_save)) {
+        		$action = 'save';
+        	}
+
+        	switch($action){
+        		case 'delete':
+        			break;
+        		case 'select':
+        			if ($form->isValid ( $data ) ) {
+	        			$form->setCourseId($data['select_course']);
+	        			$courseMapper = new Application_Model_CourseMapper();
+	        			$course = $courseMapper->find($data['select_course']);
+	        			$ids = array();
+	        			foreach($course->degrees as $deg) { $ids[] = $deg->id; }
+	        			$form->showEdit($ids);
+        			}
+        			break;
+        		case 'save':
+        			$data['select_course'] = $data['select_course_2'];
+        			$form->setCourseId($data['select_course']);
+        			if(!isset($data['select_degrees'])) {
+        				$data['select_degrees'] = array();
+        			}
+        			$form->showEdit($data['select_degrees']);
+        			if ($form->isValid ( $data ) ) {
+        				$degrees = array();
+        				foreach($data['select_degrees'] as $deg) { $degrees[] = new Application_Model_Degree(array('id'=>$deg));  }
+        				$course = new Application_Model_Course(array('id'=>$data['select_course'], 'degrees'=>$degrees));
+        				$courseMapper = new Application_Model_CourseMapper();
+        				$courseMapper->update($course);
+        				
+        				// leave the form after save
+        				$this->_helper->redirector('course-edit');
+        			}     			
+        			$form->getElement('select_degrees')->addError("select at least one degree!");
+        			break;
+        	}
+        }
+        
+        
+        $this->view->form = $form;
+    }
+
 
 }
+
+
+
+
 
 
 
