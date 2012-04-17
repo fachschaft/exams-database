@@ -29,6 +29,14 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         Zend_Layout::startMvc();
         Zend_Layout::getMvcInstance()->getView()->addHelperPath('Custom/View/Helper/', 'Custom_View_Helper');
     }
-
+    
+ 	 public function _initLog() {
+		if ($this->hasPluginResource ( "log" )) {
+			$r = $this->getPluginResource ( "log" );
+			$log = $r->getLog ();
+			Zend_Registry::set ( "log", $log );
+			return $log;
+		}	
+	}  
 }
 
