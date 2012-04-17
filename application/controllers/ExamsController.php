@@ -22,6 +22,7 @@ class ExamsController extends Zend_Controller_Action {
 	}
 	
 	public function indexAction() {
+
 		$this->_helper->redirector ( 'groups' );
 	}
 	
@@ -156,11 +157,17 @@ class ExamsController extends Zend_Controller_Action {
 						$fileId = $this->getRequest ()->id;
 					else
 						throw new Exception ( "Sorry, you are not allowed to download that file", 500 );
-				} else
-					throw new Exception ( "Sorry, you are not authorized to download files. Please log in.", 401 );
+				} else {
+				$data = $this->getRequest ()->getParams ();
+				// save the old controller and action to redirect the user after
+				// the login
+				$data = $authmanager->pushParameters ( $data );
+				
+				$this->_helper->redirector('login', 'exams-admin', NULL, $data);
 			}
-		
-		} 
+			}
+		 
+		 }
 		else if (isset ( $this->getRequest ()->admin )) {
 			// ToDo: check for admin state
 			
@@ -174,7 +181,7 @@ class ExamsController extends Zend_Controller_Action {
 				// the login
 				$data = $authmanager->pushParameters ( $data );
 				
-				$this->_helper->Redirector->setGotoSimple ( 'login', 'exams-admin', null, $data );
+				$this->_helper->redirector('login', 'exams-admin', NULL, $data);
 			}
 		} else
 			throw new Exception ( 'Invalid request', 400 );
