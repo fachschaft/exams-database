@@ -8,6 +8,10 @@ class Application_Form_ExamCourses extends Zend_Form
     protected $_elementExamType = null;
     protected $_elementDegree = null;
     
+    public $_decoratorHidden = array(
+    		'ViewHelper',
+    		array(array('data' => 'HtmlTag'), array('class' => 'hidden_element')),
+    );
 
     public function init()
     {
@@ -128,6 +132,7 @@ class Application_Form_ExamCourses extends Zend_Form
     {
         $this->addElement('hidden', 'degree', array(
             'value' => $id,
+        	'decorators' => $this->_decoratorHidden,
         ));
     }
 }

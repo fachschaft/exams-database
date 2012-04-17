@@ -10,6 +10,11 @@ class Application_Form_UploadDetail extends Zend_Form
     protected $_elementDegree = null;
     protected $_elementExamSubType = null;
     protected $_elementUniversity = null;
+    
+    public $_decoratorHidden = array(
+    		'ViewHelper',
+    		array(array('data' => 'HtmlTag'), array('class' => 'hidden_element')),
+    );
 
     public function init()
     {
@@ -83,6 +88,7 @@ class Application_Form_UploadDetail extends Zend_Form
         
         $this->addElement('hidden', 'step', array(
             'value' => '2',
+        	'decorators' => $this->_decoratorHidden,
         ));
         
         // Add the submit button
@@ -216,6 +222,7 @@ class Application_Form_UploadDetail extends Zend_Form
     {
         $this->addElement('hidden', 'degree', array(
             'value' => $id,
+        	'decorators' => $this->_decoratorHidden,
         ));
     }
     

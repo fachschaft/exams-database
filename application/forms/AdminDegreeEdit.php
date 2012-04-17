@@ -8,6 +8,11 @@ class Application_Form_AdminDegreeEdit extends Zend_Form
 	protected $_degreeDelete = null;
 	protected $_save = null;
 	protected $_cancel = null;
+	
+	public $_decoratorHidden = array(
+			'ViewHelper',
+			array(array('data' => 'HtmlTag'), array('class' => 'hidden_element')),
+	);
 
     public function init()
     {
@@ -48,6 +53,7 @@ class Application_Form_AdminDegreeEdit extends Zend_Form
     	
     	$this->addElement('hidden', 'select_degree_2', array(
     			'value' => $degreeId,
+    			'decorators' => $this->_decoratorHidden,
     	));
     }
     

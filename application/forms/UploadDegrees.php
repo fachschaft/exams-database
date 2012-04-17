@@ -4,6 +4,11 @@ class Application_Form_UploadDegrees extends Zend_Form
 {
 
     protected $_elementSelect = null;
+    
+    public $_decoratorHidden = array(
+    		'ViewHelper',
+    		array(array('data' => 'HtmlTag'), array('class' => 'hidden_element')),
+    );
 
     public function init()
     {
@@ -18,6 +23,7 @@ class Application_Form_UploadDegrees extends Zend_Form
        
         $this->addElement('hidden', 'step', array(
             'value' => '1',
+        	'decorators' => $this->_decoratorHidden,
         ));
         
         // Add the submit button

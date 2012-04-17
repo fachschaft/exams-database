@@ -3,6 +3,11 @@
 class Application_Form_ExamDegrees extends Zend_Form
 {
     protected $_elementSelect = null;
+    
+    public $_decoratorHidden = array(
+    		 'ViewHelper',
+    		array(array('data' => 'HtmlTag'), array('class' => 'hidden_element')),
+    );
 
     public function init()
     {
@@ -40,6 +45,7 @@ class Application_Form_ExamDegrees extends Zend_Form
     {
         $this->addElement('hidden', 'group', array(
             'value' => $id,
+        	'decorators' => $this->_decoratorHidden,
         ));
     }
 
