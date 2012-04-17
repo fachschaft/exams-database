@@ -22,7 +22,7 @@ class ErrorController extends Zend_Controller_Action
                 $this->view->message = 'Page not found';
                 break;
             default:
-                // application error
+                // application error            	
                 $this->getResponse()->setHttpResponseCode(500);
                 $priority = Zend_Log::CRIT;
                 $this->view->message = 'Application error';
@@ -30,10 +30,14 @@ class ErrorController extends Zend_Controller_Action
         }
         
         // Log exception, if logger available
+        $exception = $errors->exception;
+        $trace = $exception->getTraceAsString();
         $log = $this->getLog();
-        if ($log) {
-            $log->log($this->view->message, $priority, $errors->exception);
-            $log->log('Request Parameters', $priority, $errors->request->getParams());
+        if ($log) { 
+            $log->log($this->view->message . 
+            		' : ' . $exception->getMessage() . ' triggered by ' . $this->getRequest()->getClientIp(), $priority, $errors->exception);
+            if ($priority < 3)
+            	$log->log('Stack Trace:'. "\n -------\n"   . $trace . "\n ------- ", $priority);
         }
         
         // conditionally display exceptions
