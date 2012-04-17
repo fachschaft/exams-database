@@ -4,6 +4,12 @@ class Application_Form_AdminFileUpload extends Zend_Form {
 	
 	protected $_file;
 	
+	public $_decoratorHidden = array(
+			'ViewHelper',
+			array(array('data' => 'HtmlTag'), array('class' => 'hidden_element')),
+	);
+	
+	
 	public function init() {
 		$this->setMethod ( 'post' );
 		
@@ -19,7 +25,7 @@ class Application_Form_AdminFileUpload extends Zend_Form {
 		//$this->setMultiFile ( $config ['default_upload_files_count'] );
 		
 		//
-		$this->addElement ( 'hidden', 'action', array ('upload' => 'upload'));
+		$this->addElement ('hidden', 'action', array ('upload' => 'upload', 'decorators' => $this->_decoratorHidden));
 		
 		// Add the submit button
 		$this->addElement ( 'submit', 'submit', array (

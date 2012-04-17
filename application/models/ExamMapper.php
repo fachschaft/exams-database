@@ -134,8 +134,19 @@ class Application_Model_ExamMapper
 	    	foreach ($resultSetCourses2 as $row2) {
 	    		// remove the courses which are allredy in the directly connectet set
 	    		if(!in_array($row2['idcourse'], $courseIds)) {
+	    			$courseIds[] = $row2['idcourse'];
 	    			$entriesCors[] = new Application_Model_Course(array('id'=>$row2['idcourse'],'name'=>$row2['name']));
 	    			//$entriesCors[$row2['idcourse']] = $row2['name'];
+	    		}
+	    	}
+	    	$resultSetCourses3 = $CorseRel
+	    	->findManyToManyRowset(	'Application_Model_DbTable_Course',
+					    			'Application_Model_DbTable_CourseHasCourse',
+					    			'Course1', 'Course');
+	    	foreach ($resultSetCourses3 as $row3) {
+	    		// remove the courses which are allredy in the directly connectet set and ind the indirect connected set from the frist run
+	    		if(!in_array($row3['idcourse'], $courseIds)) {
+	    			$entriesCors[] = new Application_Model_Course(array('id'=>$row3['idcourse'],'name'=>$row3['name']));
 	    		}
 	    	}
     	}

@@ -94,7 +94,27 @@ class Application_Model_CourseMapper
     		$degrees[] = new Application_Model_Degree(array('id'=>$row->iddegree, 'name'=>$row->name));
     	}
     	
-    	return new Application_Model_Course(array('id'=>$res->idcourse, 'name'=>$res->name, 'degrees'=>$degrees));
+    	$connected = array();
+    	$connectedIds = array();
+    	$resultConnected = $this->getDbTable()->find($id)->current()
+										    	->findManyToManyRowset('Application_Model_DbTable_Course',
+										    			'Application_Model_DbTable_CourseHasCourse',
+										    			'Course1', 'Course');
+    	foreach ($resultConnected as $rowCon) {
+    		$connectedIds[] = $rowCon->idcourse;
+    		$connected[] = new Application_Model_Course(array('id'=>$rowCon->idcourse, 'name'=>$rowCon->name));
+    	}
+    	
+    	$resultConnected2 = $this->getDbTable()->find($id)->current()
+									    	->findManyToManyRowset('Application_Model_DbTable_Course',
+									    			'Application_Model_DbTable_CourseHasCourse',
+									    			'Course', 'Course1');
+    	foreach ($resultConnected2 as $rowCon) {
+    		if(!in_array($rowCon->idcourse ,$connectedIds))
+    		$connected[] = new Application_Model_Course(array('id'=>$rowCon->idcourse, 'name'=>$rowCon->name));
+    	}
+    	
+    	return new Application_Model_Course(array('id'=>$res->idcourse, 'name'=>$res->name, 'degrees'=>$degrees, 'connectedCourse'=>$connected));
     	
     }
     
@@ -105,15 +125,26 @@ class Application_Model_CourseMapper
     	
     	
     	// delete foreign
-    	// course
+    	// degree
     	foreach($this->array_object_diff_by_id($course_old->degrees, $course->degrees) as $element) {
     		$this->getDbTable()->getAdapter()->query("DELETE FROM `degree_has_course` WHERE `degree_iddegree` = ".$element->id." AND `course_idcourse` = ".$course->id.";");
     	}
     	
+    	// course
+    	foreach($this->array_object_diff_by_id($course_old->connectedCourse, $course->connectedCourse) as $element) {
+    		$this->getDbTable()->getAdapter()->query("DELETE FROM `course_has_course` WHERE (`course_idcourse` = ".$element->id." AND `course_idcourse1` = ".$course_old->id.") OR (`course_idcourse1` = ".$element->id." AND `course_idcourse` = ".$course_old->id.");");
+    	}
+    	
     	// setup new foreign key
-		// course
+		// degree
 		foreach($this->array_object_diff_by_id($course->degrees, $course_old->degrees) as $element) {
 			$this->getDbTable()->getAdapter()->query("INSERT INTO `degree_has_course` (`degree_iddegree` ,`course_idcourse`) VALUES ('".$element->id."',  '".$course->id."')");
+		}
+		
+		// course
+		foreach($this->array_object_diff_by_id($course->connectedCourse, $course_old->connectedCourse) as $element) {
+			if($course_old->id != $element->id)
+			$this->getDbTable()->getAdapter()->query("INSERT INTO `course_has_course` (`course_idcourse` ,`course_idcourse1`) VALUES ('".$course->id."',  '".$element->id."')");
 		}
     	
     }

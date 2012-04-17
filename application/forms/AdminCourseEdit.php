@@ -4,6 +4,7 @@ class Application_Form_AdminCourseEdit extends Zend_Form
 {
 	protected $_course = null;
 	protected $_group = null;
+	protected $_connected = null;
 	protected $_degreeSelect = null;
 	protected $_degreeDelete = null;
 	protected $_save = null;
@@ -55,9 +56,15 @@ class Application_Form_AdminCourseEdit extends Zend_Form
     	));
     }
     
-    public function showEdit($selectedDegree = -1)
+    public function showEdit($selectedDegree = -1, $selectedCourse = -1)
     {
+    	$this->addElement(new Custom_Form_Element_PlainText('text1', array('value'=>'Select degree')));
+    	
     	$this->displayDegrees($selectedDegree);
+    	
+    	$this->addElement(new Custom_Form_Element_PlainText('text2', array('value'=>'Select connected course')));
+    	
+    	$this->displayConnectedCourse($selectedCourse);
     	 
     	$this->removeElement('select_delete');
     	 
@@ -86,7 +93,7 @@ class Application_Form_AdminCourseEdit extends Zend_Form
     
     	$this->_group->setAttrib('size', '3');
     	$this->_group->setRequired(true);
-    	$this->_group->setAttrib('label','Select one degree');
+    	$this->_group->setAttrib('label','Select degrees');
     	$this->_group->addValidator('NotEmpty', true);
     	 
     	$this->setDegrees($this->_group);
@@ -97,6 +104,43 @@ class Application_Form_AdminCourseEdit extends Zend_Form
     	 
     
     	$this->addElement($this->_group);
+    }
+    
+    public function displayConnectedCourse($selectedCourse)
+    {
+    	$this->_connected = new Zend_Form_Element_Multiselect('select_connected_course');
+    
+    	$this->_connected->setAttrib('size', '3');
+    	$this->_connected->setRequired(false);
+    	$this->_connected->setAttrib('label','Select connected course');
+    	$this->_connected->addValidator('NotEmpty', true);
+    
+    	$this->setConnectedCourse($this->_connected);
+    
+    	 
+    	if(is_array($selectedCourse)) {
+    		$this->_connected->setValue($selectedCourse);
+    	} else { $this->_connected->setValue(array($selectedCourse));
+    	}
+    
+    
+    
+    	$this->addElement($this->_connected);
+    }
+    
+    private function setConnectedCourse($element)
+    {
+    	$groups = new Application_Model_CourseMapper();
+    	$entries = $groups->fetchAll();
+    
+    	$options = array();
+    
+    	foreach($entries as $group)
+    	{
+    		$options[$group->getId()] = $group->getName();
+    	}
+    
+    	$element->setMultiOptions($options);
     }
     
     private function setDegrees($element)

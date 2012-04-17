@@ -5,8 +5,23 @@ class Application_Model_Course
     protected $_name;
     protected $_id;
     protected $_degrees;
+    protected $_connectedCourse;
     
     /**
+	 * @return the $_connectedCourse
+	 */
+	public function getConnectedCourse() {
+		return $this->_connectedCourse;
+	}
+
+	/**
+	 * @param field_type $_connectedCourse
+	 */
+	public function setConnectedCourse(array $_connectedCourse) {
+		$this->_connectedCourse = $_connectedCourse;
+	}
+
+	/**
 	 * @return the $_degrees
 	 */
 	public function getDegrees() {

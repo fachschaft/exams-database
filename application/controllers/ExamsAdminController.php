@@ -516,9 +516,7 @@ class ExamsAdminController extends Zend_Controller_Action
         if($this->getRequest ()->isPost ()) {
         	$data = $this->getRequest ()->getPost ();
         	$action = null;
-        
-        	var_dump($data);
-        	
+
         	if(isset($this->getRequest()->select_button)) {
         		$action = 'select';
         	}
@@ -540,7 +538,9 @@ class ExamsAdminController extends Zend_Controller_Action
 	        			$course = $courseMapper->find($data['select_course']);
 	        			$ids = array();
 	        			foreach($course->degrees as $deg) { $ids[] = $deg->id; }
-	        			$form->showEdit($ids);
+	        			$idsConn = array();
+	        			foreach($course->connectedCourse as $cor) { $idsConn[] = $cor->id; }
+	        			$form->showEdit($ids, $idsConn);
         			}
         			break;
         		case 'save':
@@ -553,7 +553,10 @@ class ExamsAdminController extends Zend_Controller_Action
         			if ($form->isValid ( $data ) ) {
         				$degrees = array();
         				foreach($data['select_degrees'] as $deg) { $degrees[] = new Application_Model_Degree(array('id'=>$deg));  }
-        				$course = new Application_Model_Course(array('id'=>$data['select_course'], 'degrees'=>$degrees));
+        				if(!isset($data['select_connected_course'])) { $data['select_connected_course'] = array(); }
+        				$connected = array();
+        				foreach($data['select_connected_course'] as $cor) { $connected[] = new Application_Model_Course(array('id'=>$cor)); }
+        				$course = new Application_Model_Course(array('id'=>$data['select_course'], 'degrees'=>$degrees, 'connectedCourse'=>$connected));
         				$courseMapper = new Application_Model_CourseMapper();
         				$courseMapper->update($course);
         				
