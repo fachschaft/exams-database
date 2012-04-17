@@ -146,6 +146,8 @@ class Application_Model_CourseMapper
 			if($course_old->id != $element->id)
 			$this->getDbTable()->getAdapter()->query("INSERT INTO `course_has_course` (`course_idcourse` ,`course_idcourse1`) VALUES ('".$course->id."',  '".$element->id."')");
 		}
+		
+		$this->getDbTable()->update(array('name'=>$course->name), 'idcourse = '.$course->id);
     	
     }
     

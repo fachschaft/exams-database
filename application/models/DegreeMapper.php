@@ -71,7 +71,7 @@ class Application_Model_DegreeMapper
     
     public function updateGroup(Application_Model_Degree $degree)
     {
-    	$this->getDbTable()->update(array('degree_group_iddegree_group'=>$degree->group->id), 'iddegree = '.$degree->id);
+    	$this->getDbTable()->update(array('degree_group_iddegree_group'=>$degree->group->id, 'name'=>$degree->name), 'iddegree = '.$degree->id);
     }
     
     

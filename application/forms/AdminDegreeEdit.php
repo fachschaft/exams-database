@@ -8,6 +8,7 @@ class Application_Form_AdminDegreeEdit extends Zend_Form
 	protected $_degreeDelete = null;
 	protected $_save = null;
 	protected $_cancel = null;
+	protected $_newElement = null;
 	
 	public $_decoratorHidden = array(
 			'ViewHelper',
@@ -18,9 +19,9 @@ class Application_Form_AdminDegreeEdit extends Zend_Form
     {
     	$this->setMethod('post');
     	 
-    	$this->_degree = new Zend_Form_Element_Radio('select_degree');
+    	$this->_degree = new Zend_Form_Element_Select('select_degree');
     	 
-    	$this->_degree->setAttrib('size', '3');
+    	$this->_degree->setAttrib('size', '1');
     	$this->_degree->setRequired(true);
     	$this->_degree->setAttrib('label','Select a group to edit');
     	
@@ -57,8 +58,10 @@ class Application_Form_AdminDegreeEdit extends Zend_Form
     	));
     }
     
-    public function showEdit($selectedGroup = -1)
+    public function showEdit($degree_name, $selectedGroup = -1)
     {
+    	$this->displayEditDegree($degree_name);
+    	
     	$this->displayGroups($selectedGroup);
     	
     	$this->removeElement('select_delete');
@@ -80,6 +83,19 @@ class Application_Form_AdminDegreeEdit extends Zend_Form
     			'label'    => 'Cancel',
     	));
     	$this->addElement($this->_cancel);
+    }
+    
+    public function displayEditDegree($old_name)
+    {
+    	$this->_newElement = new Zend_Form_Element_Text('new_degree_name');
+    	$this->_newElement->setOptions(array(
+    			'label'    => 'new degree name:',
+    			'required'	=> true,
+    			'value'		=> $old_name,
+    			'validators' => array(
+    					array('StringLength', false, array(3))),
+    	));
+    	$this->addElement($this->_newElement);
     }
     
     public function displayGroups($selectedGroup)

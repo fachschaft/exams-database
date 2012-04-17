@@ -439,7 +439,7 @@ class ExamsAdminController extends Zend_Controller_Action
         			$degreeId = $data['select_degree'];
         			$degreeMapper = new Application_Model_DegreeMapper();
         			$degree = $degreeMapper->find($degreeId);
-        			$form_edit->showEdit($degree->group->id);
+        			$form_edit->showEdit($degree->name, $degree->group->id);
         			$form_edit->setDegree($degree->id);
         			break;
         		case 'select_save':
@@ -453,6 +453,7 @@ class ExamsAdminController extends Zend_Controller_Action
         			
         			if ($form_edit->isValid ( $data ) ) {
         				$degree->group = new Application_Model_DegreeGroup(array('id'=>$data['select_group']));
+        				$degree->name = $data['new_degree_name'];
         				$degreeMapper->updateGroup($degree);
         				// leave the form after save
         				$this->_helper->redirector('degree');
@@ -540,7 +541,7 @@ class ExamsAdminController extends Zend_Controller_Action
 	        			foreach($course->degrees as $deg) { $ids[] = $deg->id; }
 	        			$idsConn = array();
 	        			foreach($course->connectedCourse as $cor) { $idsConn[] = $cor->id; }
-	        			$form->showEdit($ids, $idsConn);
+	        			$form->showEdit($course->name, $ids, $idsConn);
         			}
         			break;
         		case 'save':
@@ -556,7 +557,7 @@ class ExamsAdminController extends Zend_Controller_Action
         				if(!isset($data['select_connected_course'])) { $data['select_connected_course'] = array(); }
         				$connected = array();
         				foreach($data['select_connected_course'] as $cor) { $connected[] = new Application_Model_Course(array('id'=>$cor)); }
-        				$course = new Application_Model_Course(array('id'=>$data['select_course'], 'degrees'=>$degrees, 'connectedCourse'=>$connected));
+        				$course = new Application_Model_Course(array('id'=>$data['select_course'], 'name'=>$data['new_course_name'], 'degrees'=>$degrees, 'connectedCourse'=>$connected));
         				$courseMapper = new Application_Model_CourseMapper();
         				$courseMapper->update($course);
         				

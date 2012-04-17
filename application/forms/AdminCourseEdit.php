@@ -9,6 +9,7 @@ class Application_Form_AdminCourseEdit extends Zend_Form
 	protected $_degreeDelete = null;
 	protected $_save = null;
 	protected $_cancel = null;
+	protected $_newElement = null;
 	
 	public $_decoratorHidden = array(
 			'ViewHelper',
@@ -56,8 +57,10 @@ class Application_Form_AdminCourseEdit extends Zend_Form
     	));
     }
     
-    public function showEdit($selectedDegree = -1, $selectedCourse = -1)
+    public function showEdit($corsName, $selectedDegree = -1, $selectedCourse = -1)
     {
+    	$this->displayEditCourse($corsName);
+    	
     	$this->addElement(new Custom_Form_Element_PlainText('text1', array('value'=>'Select degree')));
     	
     	$this->displayDegrees($selectedDegree);
@@ -85,6 +88,19 @@ class Application_Form_AdminCourseEdit extends Zend_Form
     			'label'    => 'Cancel',
     	));
     	$this->addElement($this->_cancel);
+    }
+    
+    public function displayEditCourse($old_name)
+    {
+    	$this->_newElement = new Zend_Form_Element_Text('new_course_name');
+    	$this->_newElement->setOptions(array(
+    			'label'    => 'new course name:',
+    			'required'	=> true,
+    			'value'		=> $old_name,
+    			'validators' => array(
+    					array('StringLength', false, array(3))),
+    	));
+    	$this->addElement($this->_newElement);
     }
     
     public function displayDegrees($selectedDegree)
