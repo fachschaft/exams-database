@@ -6,8 +6,23 @@ class Application_Model_Lecturer
     protected $_firstName;
     protected $_name;
     protected $_id;
+    protected $_degrees;
     
-    public function __construct(array $options = null)
+    /**
+	 * @return the $_degrees
+	 */
+	public function getDegrees() {
+		return $this->_degrees;
+	}
+
+	/**
+	 * @param field_type $_degrees
+	 */
+	public function setDegrees(array $_degrees) {
+		$this->_degrees = $_degrees;
+	}
+
+	public function __construct(array $options = null)
     {
         if (is_array($options)) {
             $this->setOptions($options);
@@ -26,7 +41,7 @@ class Application_Model_Lecturer
             throw new Exception('Invalid property in the following model: Lecturer');
         }
         $this->$method($value);
-    }
+    } 
  
     public function __get($name)
     {

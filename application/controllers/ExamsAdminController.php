@@ -483,8 +483,6 @@ class ExamsAdminController extends Zend_Controller_Action
         if($this->getRequest ()->isPost ()) {
         	$data = $this->getRequest ()->getPost ();
         	$action = null;
-        
-        	var_dump($data);
         	
         	if(isset($this->getRequest()->add)) {
         		$action = 'add';
@@ -521,7 +519,6 @@ class ExamsAdminController extends Zend_Controller_Action
         	if(isset($this->getRequest()->select_button)) {
         		$action = 'select';
         	}
-        	
         	if(isset($this->getRequest()->select_delete)) {
         		$action = 'delete';
         	}
@@ -531,6 +528,12 @@ class ExamsAdminController extends Zend_Controller_Action
 
         	switch($action){
         		case 'delete':
+        			if ($form->isValid ( $data ) ) {
+	        			$courseMapper = new Application_Model_CourseMapper();
+	        			$courseMapper->delete(new Application_Model_Course(array('id'=>$data['select_course'])));   
+	        			// leave the form after save
+	        			$this->_helper->redirector('course-edit');
+        			}
         			break;
         		case 'select':
         			if ($form->isValid ( $data ) ) {
@@ -572,9 +575,115 @@ class ExamsAdminController extends Zend_Controller_Action
         
         $this->view->form = $form;
     }
+    
+    public function lecturerAddAction()
+    {
+        $form = new Application_Form_AdminLecturerAdd();
+         
+        if($this->getRequest ()->isPost ()) {
+        	$data = $this->getRequest ()->getPost ();
+        	$action = null;
+        	
+        	if(isset($this->getRequest()->add)) {
+        		$action = 'add';
+        	}
+
+        	switch($action){
+        		case 'add':
+        			if ($form->isValid ( $data ) ) {
+        				$new_degrees = array();
+        				foreach ($data['degrees'] as $deg) {
+        					$new_degrees[] = new Application_Model_Degree(array('id'=>$deg));
+        				}
+        				$new_lecturer = new Application_Model_Lecturer(array('name'=>$data['newElement'], 'firstName'=>$data['newElementFirstName'], 'degree'=>$data['newElementDegree'], 'degrees'=>$new_degrees));
+        				$lecturerMapper = new Application_Model_LecturerMapper();
+        				$lecturerMapper->add($new_lecturer);
+        			
+        				// leave the form after save
+        				$this->_helper->redirector('lecturer-add');
+        			}
+        			break;
+        	}
+        }
+        //
+        $this->view->form = $form;
+    }
+    
+    public function lecturerEditAction()
+    {
+    $form = new Application_Form_AdminLecturerEdit();
+        
+        if($this->getRequest ()->isPost ()) {
+        	$data = $this->getRequest ()->getPost ();
+        	$action = null;
+
+        	if(isset($this->getRequest()->select_button)) {
+        		$action = 'select';
+        	}
+        	if(isset($this->getRequest()->select_save)) {
+        		$action = 'save';
+        	}
+        	if(isset($this->getRequest()->select_delete)) {
+        		$action = 'delete';
+        	}
+
+
+	        	switch($action){
+	        		case 'delete':
+	        			if ($form->isValid ( $data ) ) {
+		        			$courseMapper = new Application_Model_LecturerMapper();
+		        			$courseMapper->delete(new Application_Model_Lecturer(array('id'=>$data['select_lecturer'])));
+		        			// leave the form after save
+		        			$this->_helper->redirector('lecturer-edit');
+	        			}
+	        			break;
+	        		case 'select':
+	        			if ($form->isValid ( $data ) ) {
+	        				$form->setLecturerId($data['select_lecturer']);
+	        				$lecturerMapper = new Application_Model_LecturerMapper();
+	        				$lecturer = $lecturerMapper->find($data['select_lecturer']);
+	        				$idsDegr = array();
+	        				foreach($lecturer->degrees as $degr) {
+	        				$idsDegr[] = $degr->id;
+	        				}
+	        				$form->showEdit($lecturer->name, $lecturer->degree, $lecturer->firstName, $idsDegr);
+	        			}
+	        			break;
+	        		case 'save':
+	        			$data['select_lecturer'] = $data['select_lecturer_2'];
+	        			$form->setLecturerId($data['select_lecturer']);
+	        			if(!isset($data['select_degrees'])) {
+	        				$data['select_degrees'] = array();
+	        			}
+	        			$form->showEdit($data['new_lecturer_name'], $data['newElementDegree'], $data['newElementFirstName'], $data['select_degrees']);
+	        			if ($form->isValid ( $data ) ) {
+	        				$degrees = array();
+	        				foreach($data['select_degrees'] as $deg) {
+	        					$degrees[] = new Application_Model_Degree(array('id'=>$deg));
+	        				}
+
+	        				$lec = new Application_Model_Lecturer(array('id'=>$data['select_lecturer'], 'name'=>$data['new_lecturer_name'],'degree'=>$data['newElementDegree'],'firstName'=>$data['newElementFirstName'], 'degrees'=>$degrees));
+	        				$lecMapper = new Application_Model_LecturerMapper();
+	        				$lecMapper->update($lec);
+	        			
+	        				// leave the form after save
+	        				$this->_helper->redirector('lecturer-edit');
+	        			}
+	        			break;
+	        	
+        		}
+        }
+        //
+        $this->view->form = $form;
+    }
+    
 
 
 }
+
+
+
+
 
 
 

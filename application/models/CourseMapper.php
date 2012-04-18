@@ -69,9 +69,7 @@ class Application_Model_CourseMapper
     
     public function add(Application_Model_Course $course)
     {
-    	$new_course_id = $this->getDbTable()->insert(array('name'=>$course->name));
-    	
-    	var_dump($new_course_id);
+    	$new_course_id = $this->getDbTable()->insert(array('name'=>$course->name)); 
     	
     	// addign degree connections
     	$degHasCou = new Application_Model_DbTable_DegreeHasCourse();
@@ -116,6 +114,11 @@ class Application_Model_CourseMapper
     	
     	return new Application_Model_Course(array('id'=>$res->idcourse, 'name'=>$res->name, 'degrees'=>$degrees, 'connectedCourse'=>$connected));
     	
+    }
+    
+    public function delete(Application_Model_Course $course)
+    {
+    	$this->getDbTable()->delete('idcourse = '.$course->id);
     }
     
     public function update(Application_Model_Course $course)

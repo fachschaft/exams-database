@@ -188,7 +188,7 @@ class Application_Form_AdminCourseEdit extends Zend_Form
     	// for seperateing by degrees have a look: http://stackoverflow.com/questions/7232180/zend-form-select-optgroup-how-to-specify-id
     
     	$element->setMultiOptions($options);
-    }
+    } 
 
 
 }

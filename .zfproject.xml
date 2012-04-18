@@ -35,6 +35,8 @@
           <actionMethod actionName="degree"/>
           <actionMethod actionName="courseAdd"/>
           <actionMethod actionName="courseEdit"/>
+          <actionMethod actionName="lecturerEdit"/>
+          <actionMethod actionName="lecturerAdd"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -56,6 +58,8 @@
         <formFile formName="AdminDegreeEdit"/>
         <formFile formName="AdminCourseAdd"/>
         <formFile formName="AdminCourseEdit"/>
+        <formFile formName="AdminLecturerEdit"/>
+        <formFile formName="AdminLecturerAdd"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -80,6 +84,7 @@
           <dbTableFile dbTableName="ExamHasLecturer"/>
           <dbTableFile dbTableName="ExamHasCourse"/>
           <dbTableFile dbTableName="CourseHasCourse"/>
+          <dbTableFile dbTableName="DegreeHasLecturer"/>
         </dbTableDirectory>
         <modelFile modelName="DegreeGroup"/>
         <modelFile modelName="DegreeGroupMapper"/>
@@ -178,6 +183,12 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
             <viewScriptFile forActionName="courseEdit"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
+            <viewScriptFile forActionName="lecturerEdit"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
+            <viewScriptFile forActionName="lecturerAdd"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

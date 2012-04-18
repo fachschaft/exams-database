@@ -65,6 +65,83 @@ class Application_Model_LecturerMapper
         }
         
         return $entries;
+    } 
+    
+    public function add(Application_Model_Lecturer $lecturer)
+    {
+    	$new_lecturer_id = $this->getDbTable()->insert(array('name'=>$lecturer->name, 'first_name'=>$lecturer->firstName, 'degree'=>$lecturer->degree));
+    	
+        	// addign degree connections
+    	$degHasLec = new Application_Model_DbTable_DegreeHasLecturer();
+    	foreach($lecturer->degrees as $degree)
+    	{
+    		$degHasLec->insert(array('degree_iddegree'=>$degree->id, 'lecturer_idlecturer'=>$new_lecturer_id));
+    	}
+    }
+    
+    public function find($id)
+    {
+    	$cur = $this->getDbTable()->find($id)->current();
+    	$degrees = array();
+    	$resultDegrees = $this->getDbTable()->find($id)->current()
+									    	->findManyToManyRowset('Application_Model_DbTable_Degree',
+									    			'Application_Model_DbTable_DegreeHasLecturer',
+									    			'Lecturer', 'Degree');
+    	foreach ($resultDegrees as $rowDeg) {
+    		$degrees[] = new Application_Model_Course(array('id'=>$rowDeg->iddegree, 'name'=>$rowDeg->name));
+    	}
+    	
+    	
+    	return new Application_Model_Lecturer(array('id'=>$cur->idlecturer, 'name'=>$cur->name, 'firstName'=>$cur->first_name, 'degree'=>$cur->degree, 'degrees'=>$degrees));
+    }
+    
+    public function delete(Application_Model_Lecturer $lecturer)
+    {
+    	$this->getDbTable()->delete('idlecturer = '.$lecturer->id);
+    }
+    
+    public function update(Application_Model_Lecturer $lecturer)
+    {
+    	$this->getDbTable()->update(array('name'=>$lecturer->name, 'first_name'=>$lecturer->firstName, 'degree'=>$lecturer->degree), 'idlecturer = '.$lecturer->id);
+    	
+    	$lecturer_old = $this->find($lecturer->id);
+    	 
+    	 
+    	// delete foreign
+    	// degree
+    	foreach($this->array_object_diff_by_id($lecturer_old->degrees, $lecturer->degrees) as $element) {
+    		$this->getDbTable()->getAdapter()->query("DELETE FROM `degree_has_lecturer` WHERE `degree_iddegree` = ".$element->id." AND `lecturer_idlecturer` = ".$lecturer->id.";");
+    	}
+    	 
+    	// setup new foreign key
+    	// degree
+    	foreach($this->array_object_diff_by_id($lecturer->degrees, $lecturer_old->degrees) as $element) {
+    		$this->getDbTable()->getAdapter()->query("INSERT INTO `degree_has_lecturer` (`degree_iddegree` ,`lecturer_idlecturer`) VALUES ('".$element->id."',  '".$lecturer->id."')");
+    	}
+    }
+    
+    /**
+     * @return an array containing all the entries from ao1 that are not present in the other arrays by comparing the id of the objects
+     */
+    private function array_object_diff_by_id(array $ao1, array $ao2)
+    {
+    	$returnArray = array();
+    	foreach ($ao1 as $a1)
+    	{
+    		$found = false;
+    		foreach ($ao2 as $a2)
+    		{
+    			if($a1->id == $a2->id)
+    			{
+    				$found = true;
+    			}
+    		}
+    		if(!$found)
+    		{
+    			$returnArray[] = $a1;
+    		}
+    	}
+    	return $returnArray;
     }
 
 }
