@@ -21,9 +21,14 @@
             true) ?>">Degree groups</a></li>
    <li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
-                  'action'=>'degree'),
+                  'action'=>'degree-add'),
             'default',
-            true) ?>">Degree</a></li>
+            true) ?>">Add degree</a></li>
+    <li><a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'degree-edit'),
+            'default',
+            true) ?>">Edit degree</a></li>
    <li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'course-add'),

@@ -1,6 +1,6 @@
 <?php
 
-class Application_Form_AdminDegree extends Zend_Form
+class Application_Form_AdminDegreeAdd extends Zend_Form
 {
 	protected $_group = null;
 	protected $_newElement = null;
