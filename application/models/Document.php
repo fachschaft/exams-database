@@ -8,13 +8,43 @@ class Application_Model_Document
     protected $_uploadDate;
     protected $_deleted;
     protected $_fileName;
+    protected $_displayName;
     protected $_mimeType;
     protected $_submitFileName;
 	protected $_checkSum;
 	protected $_reviewed;
 	protected $_downloads;
+	protected $_collection;
     
-    public function __construct(array $options = null)
+    /**
+	 * @return the $_collection
+	 */
+	public function getCollection() {
+		return $this->_collection;
+	}
+
+	/**
+	 * @param field_type $_collection
+	 */
+	public function setCollection($_collection) {
+		$this->_collection = $_collection;
+	}
+
+	/**
+	 * @return the $_displayName
+	 */
+	public function getDisplayName() {
+		return $this->_displayName;
+	}
+
+	/**
+	 * @param field_type $_displayName
+	 */
+	public function setDisplayName($_displayName) {
+		$this->_displayName = $_displayName;
+	}
+
+	public function __construct(array $options = null)
     {
         if (is_array($options)) {
             $this->setOptions($options);
@@ -163,7 +193,7 @@ class Application_Model_Document
 
 	public function setReviewed($bool)
     {
-        $this->_reviewed = (bool) $bool;
+        $this->_reviewed = $bool;
         return $this;
     }
  

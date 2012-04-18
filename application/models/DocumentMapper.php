@@ -37,7 +37,8 @@ class Application_Model_DocumentMapper
                   ->setuploadDate($element['upload_date'])
                   ->setExamId($element['exam_idexam'])
 				  ->setDeleteState($element['deleted'])
-                  ;
+				  ->setDisplayName($element['display_name']);
+		$entry->setCollection($element['collection']);
                   
         return $entry;
     }
@@ -61,7 +62,8 @@ class Application_Model_DocumentMapper
 				  ->setDeleteState($row->deleted)
 				  ->setReviewed($row->reviewed)
 				  ->setDownloads($row->downloads)
-                  ;
+				  ->setDisplayName($row->display_name);
+			$entry->setCollection($row->collection);
             $entries[] = $entry;
         }
         return $entries;
@@ -113,7 +115,7 @@ class Application_Model_DocumentMapper
 	
 	public function deleteDocument($documentId)
 	{
-		$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `deleted` = 1 WHERE `iddocument` =".$documentId.";");
+		$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `deleted` = 1, delete_date = NOW() WHERE `iddocument` =".$documentId.";");
 		$this->addLogMessage($documentId, 'Document (ID: '.$documentId.') deleted by %user%.');
 	}
 
@@ -127,11 +129,23 @@ class Application_Model_DocumentMapper
                     'mime_type'         => $document->mimeType,
                     'upload_date'       => new Zend_Db_Expr('NOW()'),
                     'exam_idexam'       => $document->ExamId,
-					'md5_sum'			=> $document->CheckSum
+					'md5_sum'			=> $document->CheckSum,
+        			'display_name'		=> $document->displayName
                 );
             
             
             $insert = $this->getDbTable()->insert($data);
+            return $insert;
+    }
+    
+    public function updateDisplayName(Application_Model_Document $document)
+    {
+    	$this->getDbTable()->update(array('display_name' => $document->displayName), 'iddocument ='.$document->id);
+    }
+    
+    public function markDocumentToCollection(Application_Model_Document $document)
+    {
+    	$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `collection` = 1 WHERE `iddocument` =".$document->id.";");
     }
 	
 	private function addLogMessage($documentId, $message) {

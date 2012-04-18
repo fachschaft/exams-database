@@ -48,7 +48,7 @@ class Application_Form_AdminFileDetail extends Zend_Form
             'Form',
         ));
 		$actions = new Zend_Form_Element_Select('action', array('value'=>'submit', 'decorators'=>$this->cellDecorator));
-		$actions->setMultiOptions(array('delete'=>'delete', 'pack'=>'pack', 'unpack'=>'unpack'));
+		$actions->setMultiOptions(array('save'=>'save', 'delete'=>'delete', 'pack'=>'pack', 'unpack'=>'unpack'));
 		$this->addElement($actions, 'action');
 		
 		$this->addElement(new Zend_Form_Element_Submit('submit', array('value'=>'submit', 'decorators'=>$this->cellDecorator)), 'submit');
@@ -61,24 +61,28 @@ class Application_Form_AdminFileDetail extends Zend_Form
     
     public function setupDocuments($documents, $lables = array())
     {
-		$lables = array('', 'ID', 'Upload name', 'File name', 'Upload date', 'Mimetype', 'Reviewed', 'Downloads', 'Options');
+		$lables = array('', 'ID','Display Name', 'Upload name', 'File name', 'Upload date', 'Mimetype', 'Collection', 'Reviewed', 'Downloads', 'Options');
 		$this->setupHeader($lables);
 		
         foreach($documents as $doc)
         {
             $checkBox = new Zend_Form_Element_MultiCheckbox('id[]', array(
 															'multiOptions' => array($doc->id => $doc->id),
-															'decorators' => $this->cellDecorator)
+															'decorators' => $this->cellDecorator,
+            												)
 															);
 			//$checkBox->setCheckedValue($doc->id);
             $this->addElement($checkBox, 'box_'.$doc->id);
 			
 			$fileLink = $this->_helperUrl->url(array('controller'=>'exams','action'=>'download','admin'=>$doc->id),'default',true);
 			
-			$this->addElement(new Custom_Form_Element_Link('link_'.$doc->id, array('value'=>$doc->fileName.'.'.$doc->extention, 'link'=>$fileLink, 'decorators' => $this->cellDecorator)));
+			$this->addElement(new Custom_Form_Element_Link('link_'.$doc->id, array('value'=>$doc->displayName.'.'.$doc->extention, 'link'=>$fileLink, 'decorators' => $this->cellDecorator)));
+			
+			// display file name
+			$this->addElement(new Zend_Form_Element_Text('display_'.$doc->id, array('value'=>$doc->displayName, 'decorators' => $this->cellDecorator)));
 			
 			
-			$elements = array($doc->id , $doc->submitFileName , $doc->uploadDate, $doc->mimeType, $doc->Reviewed, $doc->downloads);
+			$elements = array($doc->id , $doc->submitFileName , $doc->uploadDate, $doc->mimeType, $doc->collection, $doc->Reviewed, $doc->downloads);
 			$i = 1;
 			$groupElements = array();
 			foreach($elements as $id => $elemment)
@@ -108,6 +112,8 @@ class Application_Form_AdminFileDetail extends Zend_Form
 			
 			// insert at position 3 the link element
 			array_splice($toRender, 3, 0, 'link_'.$doc->id);
+			
+			array_splice($toRender, 2, 0, 'display_'.$doc->id);
 			
 			array_splice($toRender, 30, 0, 'link_delete');
 

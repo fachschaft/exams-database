@@ -124,7 +124,7 @@
                   'action'=>'download',
                   'id'=>$document->id),
             'default',
-            true) ?>">File <? echo $id+1; ?></a><br>
+            true) ?>"><? echo $document->displayName.'.'.$document->extention; ?></a><?php if($document->collection) echo ' (collection)'; ?><br>
          <?php endforeach ?>   
 	</div>
 	</td>

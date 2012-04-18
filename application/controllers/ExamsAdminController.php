@@ -201,8 +201,13 @@ class ExamsAdminController extends Zend_Controller_Action
 				$fileManger = new Application_Model_ExamFileManager ();
 				$documentMapper = new Application_Model_DocumentMapper ();
 				$documents = $documentMapper->fetchByExamId ( $this->getRequest ()->id );
-				
+
 				switch ($post ['action']) {
+					case 'save' :
+						foreach ( $post['id'] as $id ) {
+							$documentMapper->updateDisplayName(new Application_Model_Document(array('id'=>$id, 'displayName'=>$post['display_'.$id])));
+						}
+						break;
 					case 'delete' :
 						foreach ( $ids as $id ) {
 							$documentMapper->deleteDocument ( $id );

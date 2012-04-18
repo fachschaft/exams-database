@@ -93,7 +93,7 @@ class Application_Model_ExamFileManager
 				// check if file exists
 				if(file_exists($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention)) {
 					// adds a file to the zip archive
-					$zip->addFile($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention, $doc->id .'_'. $doc->submitFileName);
+					$zip->addFile($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention, $doc->id .'_'. $doc->displayName.'.'.$doc->extention);
 				} else {
 					// if add file is not existing, delete temp archive and drop a exception
 					$zip->close();
@@ -123,9 +123,16 @@ class Application_Model_ExamFileManager
 						$document->mimeType = mime_content_type($destination_filename);
 						$document->ExamId = $doc->examId;
 						$document->CheckSum = md5_file($destination_filename);
+						$document->displayName = 'Collection'.$doc->examId;
 						
 						$documentMapper = new Application_Model_DocumentMapper();
-						$documentMapper->saveNew($document);
+						$document->id = $documentMapper->saveNew($document);
+						
+						$document->displayName = 'Collection_'.$document->id;
+						
+						
+						$documentMapper->markDocumentToCollection($document);
+						$documentMapper->updateDisplayName($document);
 					}
 					
 				} else { 
