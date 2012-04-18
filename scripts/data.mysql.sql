@@ -1,21 +1,4 @@
 -- -----------------------------------------------------
--- Table `log`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `log` ;
-
-CREATE  TABLE IF NOT EXISTS `log` (
-  `idlog` INT NOT NULL ,
-  `message` TEXT NULL ,
-  PRIMARY KEY (`idlog`) )
-ENGINE = InnoDB;
-
-
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
--- -----------------------------------------------------
 -- Data for table `degree_group`
 -- -----------------------------------------------------
 START TRANSACTION;
@@ -139,12 +122,12 @@ COMMIT;
 -- Data for table `document`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (1, 1, 'test exam1', '1c4e65b8dcdbe17bfe53d298fc0eab4d', 'test_exam1.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', 'c9faf47132abf2d237a0949dcbc43030');
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (2, 2, 'test exam2', '63db1674260fdb57b7bd3b69b33b1491', 'test_exam2.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', 'f76097a6979a61b515ccddc4b80ccb59');
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (3, 3, 'test exam3', '08d9a05df222a233efa7f27b90a70f05', 'test_exam3.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', '277095673fb7f948512648bd69c3607a');
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (4, 4, 'test exam4', 'cf27f120476f898ed1da059d2e7f5234', 'test_exam4.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', '7a24edad50b029d78b09d09cbf371b71');
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (5, 5, 'test exam5', 'a8c52e04391af64ba6d815199d653783', 'test_exam5.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', '11fb493d1ac41b079bc4146c56d8cf99');
-INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `md5_sum`) VALUES (6, 5, 'test exam5_2', 'ab6d161805060de7b390e84c8c0019cf', 'test_exam5_2.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', 'bbb7c6c5eb85929f239fd229e04fb1bf');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `delete_date`, `md5_sum`) VALUES (1, 1, 'test exam1', '1c4e65b8dcdbe17bfe53d298fc0eab4d', 'test_exam1.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', NULL, 'c9faf47132abf2d237a0949dcbc43030');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `delete_date`, `md5_sum`) VALUES (2, 2, 'test exam2', '63db1674260fdb57b7bd3b69b33b1491', 'test_exam2.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', NULL, 'f76097a6979a61b515ccddc4b80ccb59');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `delete_date`, `md5_sum`) VALUES (3, 3, 'test exam3', '08d9a05df222a233efa7f27b90a70f05', 'test_exam3.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', NULL, '277095673fb7f948512648bd69c3607a');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `delete_date`, `md5_sum`) VALUES (4, 4, 'test exam4', 'cf27f120476f898ed1da059d2e7f5234', 'test_exam4.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', NULL, '7a24edad50b029d78b09d09cbf371b71');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `delete_date`, `md5_sum`) VALUES (5, 5, 'test exam5', 'a8c52e04391af64ba6d815199d653783', 'test_exam5.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', NULL, '11fb493d1ac41b079bc4146c56d8cf99');
+INSERT INTO `document` (`iddocument`, `exam_idexam`, `display_name`, `file_name`, `submit_file_name`, `extention`, `mime_type`, `deleted`, `reviewed`, `collection`, `downloads`, `upload_date`, `delete_date`, `md5_sum`) VALUES (6, 5, 'test exam5_2', 'ab6d161805060de7b390e84c8c0019cf', 'test_exam5_2.txt', 'txt', 'text/plain', 0, 0, 0, 0, '2012-03-17 21:56:40', NULL, 'bbb7c6c5eb85929f239fd229e04fb1bf');
 
 COMMIT;
 

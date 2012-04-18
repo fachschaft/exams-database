@@ -217,6 +217,7 @@ CREATE  TABLE IF NOT EXISTS `document` (
   `collection` TINYINT(1) NOT NULL DEFAULT 0 ,
   `downloads` INT NOT NULL DEFAULT 0 ,
   `upload_date` TIMESTAMP NULL ,
+  `delete_date` TIMESTAMP NULL ,
   `md5_sum` VARCHAR(32) NULL ,
   PRIMARY KEY (`iddocument`) ,
   INDEX `fk_document_exam1` (`exam_idexam` ASC) ,
@@ -405,3 +406,21 @@ CREATE  TABLE IF NOT EXISTS `document_download_statistic_day` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `log`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `log` ;
+
+CREATE  TABLE IF NOT EXISTS `log` (
+  `idlog` INT NOT NULL ,
+  `message` TEXT NULL ,
+  PRIMARY KEY (`idlog`) )
+ENGINE = InnoDB;
+
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

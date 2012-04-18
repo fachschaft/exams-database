@@ -7,13 +7,8 @@
                 	  'action'=>'overview'),
             			'default', true) ?>">
             			Overview</a></li>
-            
-    <li><a href="<?php echo $this->url(
-            array('controller'=>'exams-admin',
-                  'action'=>'build-quicksearch-index'),
-            'default',
-            true) ?>">Quicksearch Index</a></li>
-            
+            			</ul>
+    <ul>        
     <li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'degree-group-add'),
@@ -34,26 +29,32 @@
                   'action'=>'degree-edit'),
             'default',
             true) ?>">Edit degree</a></li>
-   <li><a href="<?php echo $this->url(
+    <li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'course-add'),
             'default',
             true) ?>">Add course</a></li>
-   <li><a href="<?php echo $this->url(
+    <li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'course-edit'),
             'default',
             true) ?>">Edit course</a></li>
-   <li><a href="<?php echo $this->url(
+    <li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'lecturer-add'),
             'default',
             true) ?>">Add lecturer</a></li>
-   <li><a href="<?php echo $this->url(
+    <li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'lecturer-edit'),
             'default',
             true) ?>">Edit lecturer</a></li>
-	
+            </ul>
+	<ul>
+	<li><a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'build-quicksearch-index'),
+            'default',
+            true) ?>">Quicksearch Index</a></li>
 		</ul>
 </div>
