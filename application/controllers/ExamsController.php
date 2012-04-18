@@ -157,7 +157,8 @@ class ExamsController extends Zend_Controller_Action {
 						$fileId = $this->getRequest ()->id;
 					else
 						throw new Exception ( "Sorry, you are not allowed to download that file", 500 );
-				} else {
+				} 
+				else {
 				$data = $this->getRequest ()->getParams ();
 				// save the old controller and action to redirect the user after
 				// the login
@@ -165,10 +166,12 @@ class ExamsController extends Zend_Controller_Action {
 				
 				$this->_helper->redirector('login', 'exams-admin', NULL, $data);
 			}
+			
 			}
-		 
+		 if (Zend_Auth::getInstance()->hasIdentity())
+		 	$fileId = $this->getRequest ()->id;
 		 }
-		else if (isset ( $this->getRequest ()->admin )) {
+		if (isset ( $this->getRequest ()->admin )) {
 			// ToDo: check for admin state
 			
 			// check if a login exists for admin controller
@@ -183,8 +186,9 @@ class ExamsController extends Zend_Controller_Action {
 				
 				$this->_helper->redirector('login', 'exams-admin', NULL, $data);
 			}
-		} else
-			throw new Exception ( 'Invalid request', 400 );
+		} 
+		if (!isset ($fileId))
+			throw new Exception('You are not allowed to download files!');
 			
 		// If all conditions are met, send the User the file he requested for Download.
 		$filemanager = new Application_Model_ExamFileManager ();
