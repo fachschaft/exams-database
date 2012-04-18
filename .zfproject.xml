@@ -31,7 +31,6 @@
           <actionMethod actionName="login"/>
           <actionMethod actionName="logout"/>
           <actionMethod actionName="editfiles"/>
-          <actionMethod actionName="degreeGroup"/>
           <actionMethod actionName="degreeEdit"/>
           <actionMethod actionName="courseAdd"/>
           <actionMethod actionName="courseEdit"/>
@@ -39,6 +38,7 @@
           <actionMethod actionName="lecturerAdd"/>
           <actionMethod actionName="degreeAdd"/>
           <actionMethod actionName="degreeGroupAdd"/>
+          <actionMethod actionName="degreeGroupEdit"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -55,13 +55,14 @@
         <formFile formName="ExamQuickSearch"/>
         <formFile formName="AdminQuicksearch"/>
         <formFile formName="ExamReport"/>
-        <formFile formName="AdminDegreeGroup"/>
+        <formFile formName="AdminDegreeGroupAdd"/>
         <formFile formName="AdminDegreeAdd"/>
         <formFile formName="AdminDegreeEdit"/>
         <formFile formName="AdminCourseAdd"/>
         <formFile formName="AdminCourseEdit"/>
         <formFile formName="AdminLecturerEdit"/>
         <formFile formName="AdminLecturerAdd"/>
+        <formFile formName="AdminDegreeGroupEdit"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>
@@ -175,9 +176,6 @@
             <viewScriptFile forActionName="quickSearch"/>
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
-            <viewScriptFile forActionName="degreeGroup"/>
-          </viewControllerScriptsDirectory>
-          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
             <viewScriptFile forActionName="degreeEdit"/>
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
@@ -197,6 +195,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
             <viewScriptFile forActionName="degreeGroupAdd"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
+            <viewScriptFile forActionName="degreeGroupEdit"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

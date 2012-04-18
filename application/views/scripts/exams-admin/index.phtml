@@ -16,9 +16,14 @@
             
     <li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
-                  'action'=>'degree-group'),
+                  'action'=>'degree-group-add'),
             'default',
-            true) ?>">Degree groups</a></li>
+            true) ?>">Add degree groups</a></li>
+   <li><a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'degree-group-edit'),
+            'default',
+            true) ?>">Edit degree groups</a></li>
    <li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'degree-add'),

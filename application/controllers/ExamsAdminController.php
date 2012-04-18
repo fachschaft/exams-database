@@ -346,52 +346,6 @@ class ExamsAdminController extends Zend_Controller_Action
 		//
     }
 
-    public function degreeGroupAction()
-    {
-        $form = new Application_Form_AdminDegreeGroup();
-        if($this->getRequest ()->isPost ()) {
-        	$data = $this->getRequest ()->getPost ();
-        	$action = null;
-        	
-        	// remove errors if we look for the select action
-        	if(isset($this->getRequest()->select)) {
-        		$action = 'delete';
-        		$form->getElement('newElement')->setRequired(false);
-        		$form->getElement('newElement')->clearValidators();
-        	}
-        	
-        	// remove form errors if we look for the add action
-        	if(isset($this->getRequest()->add)) {
-        		$action = 'add';
-        		$form->getElement('group')->setRequired(false);
-        		$form->getElement('group')->clearErrorMessages();
-        	}
-
-        	if ($form->isValid ( $this->getRequest ()->getPost ()) ) {
-        		switch ($action){
-        			case 'delete':
-        				$groupMapper = new Application_Model_DegreeGroupMapper();
-        				foreach($this->getRequest()->group as $groupId)
-        				{
-        					$groupMapper->delte($groupId);
-        				}
-        				$form = new Application_Form_AdminDegreeGroup();        				
-        				break;
-        			case 'add':
-        				$groupMapper = new Application_Model_DegreeGroupMapper();
-        				$groupMapper->addNewGroup($this->getRequest()->newElement);
-        				$form->getElement('newElement')->setValue("");
-        				$form = new Application_Form_AdminDegreeGroup();
-        				break;
-        		}
-        	} else {
-        		
-        	}
-        }
-    	
-        $this->view->form1 =  $form;
-    }
-    
     public function degreeAddAction()
     {
     	$form = new Application_Form_AdminDegreeAdd();
@@ -677,7 +631,6 @@ class ExamsAdminController extends Zend_Controller_Action
 	        				$this->_helper->redirector('lecturer-edit');
 	        			}
 	        			break;
-	        	
         		}
         }
         //
@@ -686,23 +639,85 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function degreeGroupAddAction()
     {
-        // action body
+        $form = new Application_Form_AdminDegreeGroupAdd();
+        if($this->getRequest ()->isPost ()) {
+        	$data = $this->getRequest ()->getPost ();
+        	$action = null;
+
+        	if(isset($this->getRequest()->add)) {
+        		$action = 'add';
+        	}
+        	
+        	switch ($action){
+        		case 'add':
+        			if ($form->isValid ( $this->getRequest ()->getPost ()) ) {
+        				$groupMapper = new Application_Model_DegreeGroupMapper();
+        				$groupMapper->addNewGroup($this->getRequest()->newElement);
+        				
+
+        				// leave the form after save
+        				$this->_helper->redirector('degree-group-add');
+        			}
+        			break;
+        	}
+        }
+    	
+        $this->view->form =  $form;
     }
 
+    public function degreeGroupEditAction()
+    {
+    	$form = new Application_Form_AdminDegreeGroupEdit();
+    	
+    	if($this->getRequest ()->isPost ()) {
+    		$data = $this->getRequest ()->getPost ();
+    		$action = null;
+    	
+    		if(isset($this->getRequest()->select_button)) {
+    			$action = 'select';
+    		}
+    		if(isset($this->getRequest()->select_delete)) {
+    			$action = 'delete';
+    		}
+    		if(isset($this->getRequest()->select_save)) {
+    			$action = 'save';
+    		}
+    	
+    		switch($action){
+    			case 'delete':
+    				if ($form->isValid ( $data ) ) {
+    					$groupMapper = new Application_Model_DegreeGroupMapper();
+    					$groupMapper->delete(new Application_Model_DegreeGroup(array('id'=>$data['select_degree_group'])));
+    					// leave the form after save
+    					$this->_helper->redirector('degree-group-edit');
+    				}
+    				break;
+    			case 'select':
+    				if ($form->isValid ( $data ) ) {
+    					$form->setGroupId($data['select_degree_group']);
+    					$groupMapper = new Application_Model_DegreeGroupMapper();
+    					$group = $groupMapper->find($data['select_degree_group']);
+    					$form->showEdit($group->name);
+    				}
+    				break;
+    			case 'save':
+    				$data['select_degree_group'] = $data['select_degree_group_2'];
+    				$form->setGroupId($data['select_degree_group']);
+	    			$form->showEdit($data['select_degree_group']);
+	    			if ($form->isValid ( $data ) ) {
+	    				$group = new Application_Model_DegreeGroup(array('id'=>$data['select_degree_group'], 'name'=>$data['new_group_name']));
+	    				$groupMapper = new Application_Model_DegreeGroupMapper();
+	    				$groupMapper->update($group);
+	    	
+	    				// leave the form after save
+	    				$this->_helper->redirector('degree-group-edit');
+	    			}
+	    			break;
+    			}
+    		}
+    	
+    	
+    	$this->view->form = $form;
+    }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

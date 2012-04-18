@@ -49,9 +49,14 @@ class Application_Model_DegreeGroupMapper
     	$this->getDbTable()->insert(array('name'=>$group_name));
     }
     
-    public function delte($groupId)
+    public function delete(Application_Model_DegreeGroup $group)
     {
-    	$this->getDbTable()->delete("iddegree_group = ".$groupId);
+    	$this->getDbTable()->delete("iddegree_group = ".$group->id);
+    }
+    
+    public function update(Application_Model_DegreeGroup $group)
+    {
+    	$this->getDbTable()->update(array('name' => $group->name), 'iddegree_group = '.$group->id);
     }
 
 }
