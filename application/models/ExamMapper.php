@@ -203,7 +203,8 @@ class Application_Model_ExamMapper
               ->join(array('cor' => 'course'),
                      'cor.idcourse = ehcg.course_idcourse')
               ->where($status.$where2)
-              ->group('idexam');
+              ->group('idexam')
+              ->order('semester_idsemester DESC');
 			  
 			  if($withReflexive) $select->join(array('chc' => 'course_has_course'),'');
 

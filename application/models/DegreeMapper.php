@@ -27,7 +27,7 @@ class Application_Model_DegreeMapper
     public function fetchByGroup($groupId)
     {
         $groups = new Application_Model_DbTable_DegreeGroup();
-        $resultSet = $groups->find($groupId)->current()->findDependentRowset('Application_Model_DbTable_Degree', 'Group');
+        $resultSet = $groups->find($groupId)->current()->findDependentRowset('Application_Model_DbTable_Degree', 'Group', $this->getDbTable()->select()->order('order'));
 
         $entries   = array();
         foreach ($resultSet as $row) {
@@ -43,7 +43,7 @@ class Application_Model_DegreeMapper
     public function fetchAll()
     {
         $groups = new Application_Model_DbTable_Degree();
-        $resultSet = $groups->fetchAll();
+        $resultSet = $groups->fetchAll(null, array('order'));
         
         $groupMapper = new Application_Model_DegreeGroupMapper();
 

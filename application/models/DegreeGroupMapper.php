@@ -27,7 +27,7 @@ class Application_Model_DegreeGroupMapper
     
     public function fetchAll()
     {
-        $resultSet = $this->getDbTable()->fetchAll();
+        $resultSet = $this->getDbTable()->fetchAll(null, array('order'));
         $entries   = array();
         foreach ($resultSet as $row) {
             $entry = new Application_Model_DegreeGroup();

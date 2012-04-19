@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS `degree_group` ;
 CREATE  TABLE IF NOT EXISTS `degree_group` (
   `iddegree_group` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
+  `order` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`iddegree_group`) )
 ENGINE = InnoDB;
 
@@ -24,6 +25,7 @@ CREATE  TABLE IF NOT EXISTS `degree` (
   `iddegree` INT NOT NULL AUTO_INCREMENT ,
   `degree_group_iddegree_group` INT NOT NULL ,
   `name` VARCHAR(255) NULL ,
+  `order` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`iddegree`) ,
   INDEX `fk_degree_degree_group` (`degree_group_iddegree_group` ASC) ,
   CONSTRAINT `fk_degree_degree_group`
@@ -42,6 +44,7 @@ DROP TABLE IF EXISTS `course` ;
 CREATE  TABLE IF NOT EXISTS `course` (
   `idcourse` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
+  `name_short` VARCHAR(14) NULL ,
   PRIMARY KEY (`idcourse`) )
 ENGINE = InnoDB
 PACK_KEYS = DEFAULT;
@@ -429,8 +432,8 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- Data for table `degree_group`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `degree_group` (`iddegree_group`, `name`) VALUES (1, 'Informatik');
-INSERT INTO `degree_group` (`iddegree_group`, `name`) VALUES (2, 'Mikrosystemtechnik');
+INSERT INTO `degree_group` (`iddegree_group`, `name`, `order`) VALUES (1, 'Informatik', NULL);
+INSERT INTO `degree_group` (`iddegree_group`, `name`, `order`) VALUES (2, 'Mikrosystemtechnik', NULL);
 
 COMMIT;
 
@@ -438,10 +441,10 @@ COMMIT;
 -- Data for table `degree`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`) VALUES (1, 1, 'Informatik (Bachelor)');
-INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`) VALUES (2, 1, 'Informatik (Master)');
-INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`) VALUES (3, 2, 'Mikrosystemtechnik (Bachelor)');
-INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`) VALUES (4, 2, 'Mikrosystemtechnik (Master)');
+INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`, `order`) VALUES (1, 1, 'Informatik (Bachelor)', NULL);
+INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`, `order`) VALUES (2, 1, 'Informatik (Master)', NULL);
+INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`, `order`) VALUES (3, 2, 'Mikrosystemtechnik (Bachelor)', NULL);
+INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`, `order`) VALUES (4, 2, 'Mikrosystemtechnik (Master)', NULL);
 
 COMMIT;
 
@@ -449,14 +452,14 @@ COMMIT;
 -- Data for table `course`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `course` (`idcourse`, `name`) VALUES (1, 'Datenbanken I');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (2, 'Mustererkennung I');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (3, 'Informatik I');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (4, 'Rechnerarchitektur');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (5, 'Simulation');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (6, 'Messtechnik (Praktikum)');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (7, 'Halbleiter');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (8, 'Nanotechnology');
+INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (1, 'Datenbanken I', NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (2, 'Mustererkennung I', NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (3, 'Informatik I', NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (4, 'Rechnerarchitektur', NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (5, 'Simulation', NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (6, 'Messtechnik (Praktikum)', NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (7, 'Halbleiter', NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (8, 'Nanotechnology', NULL);
 
 COMMIT;
 

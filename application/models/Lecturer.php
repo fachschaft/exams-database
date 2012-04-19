@@ -31,6 +31,9 @@ class Application_Model_Lecturer
     
     public function __toString()
     {
+    	if($this->_degree == '' && $this->_firstName == '') {
+    		return $this->_name;
+    	}
     	return $this->_name . ", " . $this->_degree . " " . $this->_firstName;
     }
  

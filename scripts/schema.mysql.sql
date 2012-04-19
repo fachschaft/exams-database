@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS `degree_group` ;
 CREATE  TABLE IF NOT EXISTS `degree_group` (
   `iddegree_group` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
+  `order` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`iddegree_group`) )
 ENGINE = InnoDB;
 
@@ -24,6 +25,7 @@ CREATE  TABLE IF NOT EXISTS `degree` (
   `iddegree` INT NOT NULL AUTO_INCREMENT ,
   `degree_group_iddegree_group` INT NOT NULL ,
   `name` VARCHAR(255) NULL ,
+  `order` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`iddegree`) ,
   INDEX `fk_degree_degree_group` (`degree_group_iddegree_group` ASC) ,
   CONSTRAINT `fk_degree_degree_group`
@@ -42,6 +44,7 @@ DROP TABLE IF EXISTS `course` ;
 CREATE  TABLE IF NOT EXISTS `course` (
   `idcourse` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
+  `name_short` VARCHAR(14) NULL ,
   PRIMARY KEY (`idcourse`) )
 ENGINE = InnoDB
 PACK_KEYS = DEFAULT;
