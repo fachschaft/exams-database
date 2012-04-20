@@ -39,6 +39,7 @@
           <actionMethod actionName="degreeAdd"/>
           <actionMethod actionName="degreeGroupAdd"/>
           <actionMethod actionName="degreeGroupEdit"/>
+          <actionMethod actionName="maintenance"/>
         </controllerFile>
       </controllersDirectory>
       <formsDirectory>
@@ -198,6 +199,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
             <viewScriptFile forActionName="degreeGroupEdit"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
+            <viewScriptFile forActionName="maintenance"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

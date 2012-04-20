@@ -725,4 +725,21 @@ class ExamsAdminController extends Zend_Controller_Action
     	$this->view->form = $form;
     }
 
+    public function maintenanceAction()
+    {
+    	$request = $this->getRequest ();
+    	if (isset ( $request->do )) {
+    		$do = $request->do;
+    			
+    		switch ($do) {
+    			case "checkInconsistency" :
+    				$examMapper = new Application_Model_ExamMapper();
+    				$examMapper->checkDatabaseForInconsistetExams();
+    				break;
+    		}
+    	}
+    }
+
+
 }
+

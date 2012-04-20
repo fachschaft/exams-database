@@ -1,0 +1,12 @@
+<div id="view-content">
+	<ul>
+	<li><a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'maintenance',
+                  'do'=>'checkInconsistency',
+                  ),
+            'default',
+            true) ?>">Check inconsistency</a> (will throw a exeption on fail)<br><I>Grep all exams and construct there model, will take up to several mins</I></li>
+		</ul>
+	
+</div>

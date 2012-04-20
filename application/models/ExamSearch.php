@@ -52,6 +52,7 @@ class Application_Model_ExamSearch {
 	
 	// Rebuild the index from the database in case of data corruption
 	public function renewIndex() {
+		set_time_limit(0);
 		if (file_exists ( $this->_indexpath ))
 			$this->deleteIndex ();
 		$index = Zend_Search_Lucene::create ( $this->_indexpath );

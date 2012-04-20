@@ -69,7 +69,12 @@ class Application_Model_ExamMapper
     	
     	// if one returns all was nice, if zero rows return there was not every joint partner available, if more than one returns some double entry may be in the database 
     	if (count($result) != 1) {
-    		throw new Exception ( "Inconsistent database for exam id: ".$examId." - Call an admin!" );
+    		$resCount = $this->getDbTable()->find($examId)->count();
+    		if($resCount = 0) {
+    			throw new Exception ( "Tried to call a not existing exam", 404);
+    		} else {
+    			throw new Exception ( "Inconsistent database for exam id: ".$examId." - Call an admin! (count = ".count($result).")" );
+    		}
     	}
     	$row = $result[0];
     	
@@ -439,6 +444,27 @@ class Application_Model_ExamMapper
 			$this->getDbTable()->getAdapter()->query("UPDATE `exam_download_statistic_day` SET  `downloads` =  `downloads`+1 
 													  WHERE `date` = DATE(NOW()) AND `exam_idexam` = '".$examId."';");
 		}
+	}
+	
+	
+	public function checkDatabaseForInconsistetExams()
+	{
+		set_time_limit(0);
+		$res = $this->getDbTable()->fetchAll();
+		
+		echo "<p>cout trough ". count($res) ." exams.</p><br>";
+		
+		foreach($res as $ex)
+		{
+			try {
+				$this->getExam($ex['idexam']);				
+			} catch (Exception $e) {
+				echo '<p>' . $e->getMessage() . '</p>';
+			}
+			
+		}
+		
+		echo "<p>finished</p><br>";
 	}
 	
 	/**
