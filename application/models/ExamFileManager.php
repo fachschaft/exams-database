@@ -69,7 +69,7 @@ class Application_Model_ExamFileManager
 		header ( "Content-Disposition: attachment; filename=" . date ( 'YmdHis' ) . "." . $entries->getExtention () );
 		
 		$path = $this->getFileStoragePath ();
-		$file = $path . $entries->getFileName () . "." . $entries->getextention ();
+		$file = $path . $entries->getFileName () ;//. "." . $entries->getextention ();
 
 		if (is_readable ( $file ))
 			readfile ( $file );
@@ -119,7 +119,7 @@ class Application_Model_ExamFileManager
 						$document = new Application_Model_Document();
 						$document->extention = substr($extention, 1); // trim the leading dot
 						$document->submitFileName = $new_file_name.$extention;
-						$document->fileName = $new_file_name;
+						$document->fileName = $new_file_name.$extention;
 						$document->mimeType = mime_content_type($destination_filename);
 						$document->ExamId = $doc->examId;
 						$document->CheckSum = md5_file($destination_filename);
@@ -269,7 +269,7 @@ class Application_Model_ExamFileManager
 				$document = new Application_Model_Document();
 				$document->extention = $extention;
 				$document->submitFileName = $fileName;
-				$document->fileName = $new_file_name;
+				$document->fileName = $new_file_name.'.'.$extention;
 				$document->mimeType = mime_content_type($destination_filename);
 				$document->ExamId = $examId;
 				$document->CheckSum = md5_file($destination_filename);
