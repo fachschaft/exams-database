@@ -215,12 +215,14 @@ class Application_Model_ExamMapper
     	$where_course = "";
     	
     	// DEGREE
+    	if($degree != -1)
     	$where_base_elements[] = "degree.iddegree = ".$degree;
     	
     	// COURSE
     	if(is_array($courseIds) && !empty($courseIds))
     		$where_base_elements[] = "course.idcourse IN (".implode(',', $courseIds).")";
     	
+    	if(!empty($where_base_elements))
     	$where_course = "WHERE ".implode(" AND ", $where_base_elements);
     	
     	
@@ -639,7 +641,8 @@ class Application_Model_ExamMapper
     
     // this function takes single integer or arrays
     public function fetch($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree, array $status = array(), $withReflexive = true)
-    {  
+    {
+    	return $this->fetchQuick($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree, $status, $withReflexive);
 	
 		if(!empty($status))
 		{
