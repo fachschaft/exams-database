@@ -147,6 +147,11 @@ class Application_Model_DocumentMapper
     {
     	$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `collection` = 1 WHERE `iddocument` =".$document->id.";");
     }
+    
+    public function updateMimeType(Application_Model_Document $document)
+    {
+    	$this->getDbTable()->update(array('mime_type' => $document->mimeType), 'iddocument ='.$document->id);
+    }
 	
 	private function addLogMessage($documentId, $message) {
 		$this->getDbTable()->getAdapter()->query("INSERT INTO `exam_log` (`exam_idexam` ,`message`)

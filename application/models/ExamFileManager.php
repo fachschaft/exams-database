@@ -288,6 +288,68 @@ class Application_Model_ExamFileManager
 		}
 	}
 	
+	public function resetAllMimeTypesInDatabese()
+	{
+		echo "<p>resetAllMimeTypesInDatabese</p>";
+		
+		$documentMapper = new Application_Model_DocumentMapper();
+		
+		$docDb = new Application_Model_DbTable_Document();
+		
+		$data = $docDb->fetchAll();
+		
+		
+		foreach ($data as $doc)
+		{
+			$tmpDoc = $documentMapper->fetch($doc['iddocument']);
+			
+			if(!file_exists($this->getFileStoragePath() . $tmpDoc->getFileName()))
+			{
+				echo "<p> ".$this->getFileStoragePath() . $tmpDoc->getFileName()." dose not exists on the file system! id: ".$tmpDoc->id."</p>";
+				continue;
+			}
+			
+			if(!is_readable($this->getFileStoragePath() . $tmpDoc->getFileName()))
+			{
+				echo "<p> ".$this->getFileStoragePath() . $tmpDoc->getFileName()."  is not readable! id: ".$tmpDoc->id."</p>";
+				continue;
+			}
+			
+			$tmpDoc->setMimeType(mime_content_type($this->getFileStoragePath() . $tmpDoc->getFileName()));
+			$documentMapper->updateMimeType($tmpDoc);
+			
+		}
+	}
+	
+	public function checkAllFilesExistsAndReadable()
+	{
+		echo "<p>checkAllFilesExistsAndReadable</p>";
+		
+		$documentMapper = new Application_Model_DocumentMapper();
+		
+		$docDb = new Application_Model_DbTable_Document();
+		
+		$data = $docDb->fetchAll();
+		
+		
+		foreach ($data as $doc)
+		{
+			$tmpDoc = $documentMapper->fetch($doc['iddocument']);
+			
+			if(!file_exists($this->getFileStoragePath() . $tmpDoc->getFileName()))
+			{
+				echo "<p> ".$this->getFileStoragePath() . $tmpDoc->getFileName()." dose not exists on the file system! id: ".$tmpDoc->id."</p>";
+				continue;
+			}
+				
+			if(!is_readable($this->getFileStoragePath() . $tmpDoc->getFileName()))
+			{
+				echo "<p> ".$this->getFileStoragePath() . $tmpDoc->getFileName()."  is not readable! id: ".$tmpDoc->id."</p>";
+				continue;
+			}
+		}
+	}
+	
 	
 	
 	////////////// HELPER

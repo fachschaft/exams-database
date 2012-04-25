@@ -736,9 +736,17 @@ class ExamsAdminController extends Zend_Controller_Action
     				$examMapper = new Application_Model_ExamMapper();
     				$examMapper->checkDatabaseForInconsistetExams();
     				break;
+    			case "resetAllMimeTypes" :
+    				$docMapper = new Application_Model_ExamFileManager();
+    				$docMapper->resetAllMimeTypesInDatabese();
+    				break;
+    			case "ckeckFiles" :
+    				$docMapper = new Application_Model_ExamFileManager();
+    				$docMapper->checkAllFilesExistsAndReadable();
+    				break;
     		}
     	}
-    }
+    } 
 
 
 }
