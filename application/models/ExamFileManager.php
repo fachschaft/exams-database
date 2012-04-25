@@ -69,12 +69,16 @@ class Application_Model_ExamFileManager
 		header ( "Content-Disposition: attachment; filename=" . date ( 'YmdHis' ) . "." . $entries->getExtention () );
 		
 		$path = $this->getFileStoragePath ();
+		
+		if(!file_exists($path)) throw new Exception ( 'dircetory not found', 404 );
+		if(!is_readable($path))	throw new Exception ( 'no access rights for the configured directory', 403 );
+		
 		$file = $path . $entries->getFileName () ;//. "." . $entries->getextention ();
+		
+		if(!file_exists($file)) throw new Exception ( 'File not found', 404 );
+		if(!is_readable($file))	throw new Exception ( 'no access rights', 403 );
 
-		if (is_readable ( $file ))
-			readfile ( $file );
-		else
-			throw new Exception ( 'File not found', 500 );
+		readfile ( $file );
 	}
     
 

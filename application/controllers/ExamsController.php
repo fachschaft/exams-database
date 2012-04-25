@@ -2,7 +2,14 @@
 
 class ExamsController extends Zend_Controller_Action {
 	
+	private $_profiler;
+	
 	public function init() {
+		
+		/*$db = new Application_Model_DbTable_Course();
+		$this->_profiler = $db->getAdapter()->getProfiler();
+		$this->_profiler->setEnabled(true);*/
+
 	}
 	
 	// Scrub entries from $_POST[] that are not needed
@@ -35,8 +42,7 @@ class ExamsController extends Zend_Controller_Action {
 				$post = $this->scrubPost(array('submit'));
 				return $this->_helper->Redirector->setGotoSimple ( 'degrees', null, null, $post );
 			}
-		}
-	
+		}	
 	}
 	
 	public function degreesAction() {
@@ -127,7 +133,7 @@ class ExamsController extends Zend_Controller_Action {
 	        }
 	        
 	        $exams = new Application_Model_ExamMapper();
-	        $this->view->exams = $exams->fetch(
+	        $this->view->exams = $exams->fetchQuick(
 	                        $this->getRequest()->course,
 	                        $this->getRequest()->lecturer,
 	                        $this->getRequest()->semester,
@@ -135,7 +141,10 @@ class ExamsController extends Zend_Controller_Action {
 	                        $this->getRequest()->degree,
 							array(3,5)	// 3 means public state
 	                        );
+
+	     //   
 	    }
+	    //
     }
 	
 	public function downloadAction() {

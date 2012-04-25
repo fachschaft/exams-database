@@ -155,6 +155,8 @@ class Application_Model_Exam
 	 * @return the $_documents
 	 */
 	public function getDocuments() {
+		if($this->_documents == null)
+			return array();
 		return $this->_documents;
 	}
 
@@ -263,6 +265,61 @@ class Application_Model_Exam
 		$this->_documents = $_documents;
 	}
 	
+	/**
+	 * @param array $options
+	 */
+	public function addCourseConnected(Application_Model_Course $new)
+	{
+		if($this->_courseConnected == null)
+		{
+			$this->_courseConnected = array($new);
+		}
+		else {
+			array_push($this->_courseConnected, $new);
+		}
+	}
+		
+	/**
+	 * @param array $options
+	 */
+	public function addCourse(Application_Model_Course $new)
+	{
+		if($this->_course == null)
+		{
+			$this->_course = array($new);
+		}
+		else {
+			array_push($this->_course, $new);
+		}
+	}
+	
+	/**
+	 * @param array $options
+	 */
+	public function addLecturer(Application_Model_Lecturer $new)
+	{
+		if($this->_lecturer == null)
+		{
+			$this->_lecturer = array($new);
+		}
+		else {
+			array_push($this->_lecturer, $new);
+		}
+	}
+	
+	/**
+	 * @param array $options
+	 */
+	public function addDocuments(Application_Model_Document $new)
+	{
+		if($this->_documents == null)
+		{ 
+			$this->_documents = array($new);
+		}
+		else {
+			array_push($this->_documents, $new);
+		}
+	}
 	
 
 	public function __construct(array $options = null)

@@ -70,7 +70,7 @@ class Application_Model_ExamMapper
     	// if one returns all was nice, if zero rows return there was not every joint partner available, if more than one returns some double entry may be in the database 
     	if (count($result) != 1) {
     		$resCount = $this->getDbTable()->find($examId)->count();
-    		if($resCount = 0) {
+    		if($resCount == 0) {
     			throw new Exception ( "Tried to call a not existing exam", 404);
     		} else {
     			throw new Exception ( "Inconsistent database for exam id: ".$examId." - Call an admin! (count = ".count($result).")" );
@@ -78,28 +78,36 @@ class Application_Model_ExamMapper
     	}
     	$row = $result[0];
     	
-    	// fill the exam
+    	$exam = $this->fillExam ($row);
+ 	
+    	return $exam;
+    }
+    
+	/**
+	 * 
+	 */private function fillExam($data) {
+		// fill the exam
     	$exam = new Application_Model_Exam();
    	
-    	$exam->setId($row['idexam']);
-    	$exam->setAutor($row['autor']);
-    	$exam->setComment($row['comment']);
+    	$exam->setId($data['idexam']);
+    	$exam->setAutor($data['autor']);
+    	$exam->setComment($data['comment']);
 
-    	$exam->setCreated($row['create_date']);
-    	$exam->setModified($row['modified_last_date']);
+    	$exam->setCreated($data['create_date']);
+    	$exam->setModified($data['modified_last_date']);
 
-    	$exam->setDegree(new Application_Model_Degree(array('id'=>$row['degree_iddegree'], 'name'=>$row['degree_name'])));
-    	$exam->setStatus(new Application_Model_ExamStatus(array('id'=>$row['exam_status_idexam_status'], 'name'=>$row['status_name'])));
-    	$exam->setSemester(new Application_Model_Semester(array('id'=>$row['semester_idsemester'], 'name'=>$row['semester_name'])));
-    	$exam->setType(new Application_Model_ExamType(array('id'=>$row['exam_type_idexam_type'], 'name'=>$row['type_name'])));
-    	$exam->setSubType(new Application_Model_ExamSubType(array('id'=>$row['exam_sub_type_idexam_sub_type'], 'name'=>$row['sub_typ_name'])));
-    	$exam->setUniversity(new Application_Model_ExamUniversity(array('id'=>$row['university_iduniversity'], 'name'=>$row['university_name'])));
+    	$exam->setDegree(new Application_Model_Degree(array('id'=>$data['degree_iddegree'], 'name'=>$data['degree_name'])));
+    	$exam->setStatus(new Application_Model_ExamStatus(array('id'=>$data['exam_status_idexam_status'], 'name'=>$data['status_name'])));
+    	$exam->setSemester(new Application_Model_Semester(array('id'=>$data['semester_idsemester'], 'name'=>$data['semester_name'])));
+    	$exam->setType(new Application_Model_ExamType(array('id'=>$data['exam_type_idexam_type'], 'name'=>$data['type_name'])));
+    	$exam->setSubType(new Application_Model_ExamSubType(array('id'=>$data['exam_sub_type_idexam_sub_type'], 'name'=>$data['sub_typ_name'])));
+    	$exam->setUniversity(new Application_Model_ExamUniversity(array('id'=>$data['university_iduniversity'], 'name'=>$data['university_name'])));
 
-    	$exam->setWrittenDegree(new Application_Model_ExamDegree(array('id'=>$row['exam_degree_idexam_degree'], 'name'=>$row['exam_degree_name'])));
+    	$exam->setWrittenDegree(new Application_Model_ExamDegree(array('id'=>$data['exam_degree_idexam_degree'], 'name'=>$data['exam_degree_name'])));
 
     	
     	// collect all lecturer
-    	$resultSetLecturer = $this->getDbTable()->find($row['idexam'])->current()
+    	$resultSetLecturer = $this->getDbTable()->find($data['idexam'])->current()
 							    	->findManyToManyRowset(	'Application_Model_DbTable_Lecturer',
 							    							'Application_Model_DbTable_ExamHasLecturer',
 							    							'Exam', 'Lecturer');
@@ -112,7 +120,7 @@ class Application_Model_ExamMapper
     	
     	
     	// collect all courses which directly connected to the exam
-    	$resultSetCourse = $this->getDbTable()->find($row['idexam'])->current()
+    	$resultSetCourse = $this->getDbTable()->find($data['idexam'])->current()
     	->findManyToManyRowset(	'Application_Model_DbTable_Course',
     							'Application_Model_DbTable_ExamHasCourse',
     							'Exam', 'Course');
@@ -160,16 +168,472 @@ class Application_Model_ExamMapper
     	
     	// grab all documents and store them
     	$mapper = new Application_Model_DocumentMapper();
-    	$docs = $mapper->fetchByExamId($row['idexam']);
+    	$docs = $mapper->fetchByExamId($data['idexam']);
     	$entry = array();
     	foreach ($docs as $doc)
     	{
     		$entry[] = $doc;
     	}
     	$exam->setDocuments($entry);
+		return $exam;
+	}
+
+    /**
+     * @param unknown_type $courseIds
+     * @param unknown_type $lecturerIds
+     * @param unknown_type $semesterIds
+     * @param unknown_type $examTypeIds
+     * @param unknown_type $degree
+     * @param array $status
+     * @param unknown_type $withReflexive
+     * @return Application_Model_Exam
+     */
+    public function fetchQuick($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree, array $status = array(), $withReflexive = true)
+    {
+    	$explode_Group_Concat_Delimiter = "#&$#§"; // this string will be used to seperate the strings in the database, e.G. " prof 1 # prof 2 " use a string which will NOT be in an string from the selected fields
     	
-    	    	
-    	return $exam;
+    	
+    	if(!is_array($courseIds) && $courseIds == "-1") $courseIds = array(); // course is "-1" so we want select all
+    	if(!is_array($courseIds) && $courseIds != "-1") $courseIds = array($courseIds); // couse id is a single number, so wrap
+    	if(is_array($courseIds) && in_array("-1", $courseIds)) $courseIds = array(); // in the given array is the value -1, we want selet all
+    	
+    	if(!is_array($lecturerIds) && $lecturerIds == "-1") $lecturerIds = array();
+    	if(!is_array($lecturerIds) && $lecturerIds != "-1") $lecturerIds = array($lecturerIds);
+    	if(is_array($lecturerIds) && in_array("-1", $lecturerIds)) $lecturerIds = array();
+    	
+    	if(!is_array($semesterIds) && $semesterIds == "-1") $semesterIds = array();
+    	if(!is_array($semesterIds) && $semesterIds != "-1") $semesterIds = array($semesterIds);
+    	if(is_array($semesterIds) && in_array("-1", $semesterIds)) $semesterIds = array();
+    	
+    	if(!is_array($examTypeIds) && $examTypeIds == "-1") $examTypeIds = array();
+    	if(!is_array($examTypeIds) && $examTypeIds != "-1") $examTypeIds = array($examTypeIds);
+    	if(is_array($examTypeIds) && in_array("-1", $examTypeIds)) $examTypeIds = array();
+
+    	
+    	// WHERE COURSE
+    	$where_base_elements = array();
+    	$where_course = "";
+    	
+    	// DEGREE
+    	$where_base_elements[] = "degree.iddegree = ".$degree;
+    	
+    	// COURSE
+    	if(is_array($courseIds) && !empty($courseIds))
+    		$where_base_elements[] = "course.idcourse IN (".implode(',', $courseIds).")";
+    	
+    	$where_course = "WHERE ".implode(" AND ", $where_base_elements);
+    	
+    	
+    	// WHERE BASE   	
+    	$where_base = "";
+    	$where_lecturer_emelents = array();
+    	$join_lecturer = "";
+    	
+    	// LECTURER
+    	if(is_array($lecturerIds) && !empty($lecturerIds)) {
+    		$where_lecturer_emelents[] = "lecturer.idlecturer IN (".implode(',', $lecturerIds).")";
+    		$join_lecturer =   "JOIN exam_has_lecturer ON exam_has_lecturer.exam_idexam = exam.idexam
+    							JOIN lecturer ON lecturer.idlecturer = exam_has_lecturer.lecturer_idlecturer";
+    	}
+    	
+    	// SEMESTER
+    	if(is_array($semesterIds) && !empty($semesterIds))
+    		$where_lecturer_emelents[] = "semester.idsemester IN (".implode(',', $semesterIds).")";
+    	
+    	// EXAM TYPE
+    	if(is_array($examTypeIds) && !empty($examTypeIds))
+    		$where_lecturer_emelents[] = "exam_type.idexam_type IN (".implode(',', $examTypeIds).")";
+    	
+    	// EXAM Status
+    	if(!empty($status))
+    		$where_lecturer_emelents[] = "exam.exam_status_idexam_status IN (".implode(',', $status).")";
+    	
+    	if(!empty($where_lecturer_emelents))
+    		$where_base = "WHERE ".implode(" AND ", $where_lecturer_emelents);
+    	
+    	
+    	
+    	// DEFINE REFLEXIV COURSE TO COURSE SELECT
+    	$reflexiv_part = "
+    		UNION
+			
+				Select course.idcourse, course.idcourse as course1 FROM ( SELECT idcourse FROM `course`
+				JOIN `degree_has_course` ON course.idcourse = degree_has_course.course_idcourse 
+				JOIN degree ON degree.iddegree = degree_has_course.degree_iddegree
+			
+				".$where_course."
+				GROUP BY course.idcourse ) AS base_courses
+			
+				# JOIN THE BASE COURSE WITH THE COURSE HAS COURSE TABLE
+				LEFT JOIN course_has_course ON base_courses.idcourse = course_has_course.course_idcourse
+				LEFT JOIN course ON course_has_course.course_idcourse1 = course.idcourse
+				WHERE course.idcourse IS NOT NULL
+			
+			UNION
+			
+				Select course.idcourse, course.idcourse as course1 FROM ( SELECT idcourse FROM `course`
+				JOIN `degree_has_course` ON course.idcourse = degree_has_course.course_idcourse 
+				JOIN degree ON degree.iddegree = degree_has_course.degree_iddegree
+			
+				".$where_course."
+				GROUP BY course.idcourse ) AS base_courses
+			
+				# JOIN THE BASE COURSE WITH THE COURSE HAS COURSE TABLE
+				LEFT JOIN course_has_course ON base_courses.idcourse = course_has_course.course_idcourse1
+				LEFT JOIN course ON course_has_course.course_idcourse = course.idcourse
+				WHERE course.idcourse IS NOT NULL
+		";
+    	
+    	if(!$withReflexive) $reflexiv_part = "";
+    	
+    	/*
+    	 SELECT idexam, 
+			autor, 
+			comment,
+			create_date,
+			modified_last_date,
+			degree_iddegree,
+			exam_status_idexam_status,
+			semester_idsemester,
+			exam_type_idexam_type,
+			exam_sub_type_idexam_sub_type,
+			university_iduniversity,
+			exam_degree_idexam_degree,
+			semester.name as semester_name,
+			university.name as university_name, 
+			exam_type.name as type_name,
+			degree.name as degree_name,
+			exam_sub_type.name as sub_typ_name,
+			exam_status.name as status_name,
+			exam_degree.name as exam_degree_name,
+			
+			GROUP_CONCAT(idcourse SEPARATOR ',') as course_idsX,
+			GROUP_CONCAT(course_ids SEPARATOR ',') as course_idsX2
+			    				
+			FROM
+			(	
+
+			SELECT course_union.idcourse , GROUP_CONCAT(course_union.course1 SEPARATOR ',') as course_ids, count(course_union.course1) as count FROM 
+				(
+			
+					SELECT idcourse, NULL as course1 FROM `course`
+						JOIN `degree_has_course` ON course.idcourse = degree_has_course.course_idcourse 
+						JOIN degree ON degree.iddegree = degree_has_course.degree_iddegree
+						WHERE degree.iddegree = 14
+						GROUP BY course.idcourse
+					
+					UNION
+					
+						SELECT course.idcourse,  course.idcourse as course1 FROM 
+							( 
+							SELECT idcourse FROM `course`
+								JOIN `degree_has_course` ON course.idcourse = degree_has_course.course_idcourse 
+								JOIN degree ON degree.iddegree = degree_has_course.degree_iddegree
+								WHERE degree.iddegree = 14
+								GROUP BY course.idcourse 
+							) AS base_courses
+								
+						# JOIN THE BASE COURSE WITH THE COURSE HAS COURSE TABLE
+						LEFT JOIN course_has_course ON base_courses.idcourse = course_has_course.course_idcourse
+						LEFT JOIN course ON course_has_course.course_idcourse1 = course.idcourse
+						WHERE course.idcourse IS NOT NULL
+								
+					UNION
+								
+						SELECT course.idcourse, course.idcourse as course1 FROM 
+							( 
+							SELECT idcourse FROM `course`
+								JOIN `degree_has_course` ON course.idcourse = degree_has_course.course_idcourse 
+								JOIN degree ON degree.iddegree = degree_has_course.degree_iddegree
+								WHERE degree.iddegree = 14
+								GROUP BY course.idcourse 
+							) AS base_courses
+								
+						# JOIN THE BASE COURSE WITH THE COURSE HAS COURSE TABLE
+						LEFT JOIN course_has_course ON base_courses.idcourse = course_has_course.course_idcourse1
+						LEFT JOIN course ON course_has_course.course_idcourse = course.idcourse
+						WHERE course.idcourse IS NOT NULL
+					) as course_union
+					GROUP BY idcourse
+			) as course
+			
+			# JOIN THE COURSES WITH THE EXAMS
+			JOIN exam_has_course ON exam_has_course.course_idcourse = course.idcourse
+			JOIN exam ON exam.idexam = exam_has_course.exam_idexam
+			  				
+			# JOIN WITH ALL 1:N ATTRIBUTES
+			JOIN semester ON semester.idsemester = exam.semester_idsemester
+			JOIN university ON university.iduniversity = exam.university_iduniversity
+			JOIN exam_type ON exam_type.idexam_type = exam.exam_type_idexam_type
+			JOIN exam_sub_type ON exam_sub_type.idexam_sub_type = exam.exam_sub_type_idexam_sub_type
+			JOIN exam_status ON exam_status.idexam_status = exam.exam_status_idexam_status
+			JOIN exam_degree ON exam_degree.idexam_degree = exam.exam_degree_idexam_degree
+			JOIN degree ON degree.iddegree = exam.degree_iddegree
+			
+			GROUP BY exam.idexam
+			
+			ORDER BY semester.idsemester DESC
+    	 */
+    	
+    	$resultSet = $this->getDbTable()->getAdapter()->query("
+    			SELECT
+    			idexam,
+    			autor,
+    			comment,
+    			create_date,
+    			modified_last_date,
+    			degree_iddegree,
+    			exam_status_idexam_status,
+    			semester_idsemester,
+    			exam_type_idexam_type,
+    			exam_sub_type_idexam_sub_type,
+    			university_iduniversity,
+    			exam_degree_idexam_degree,
+    			semester.name as semester_name,
+    			university.name as university_name,
+    			exam_type.name as type_name,
+    			degree.name as degree_name,
+    			exam_sub_type.name as sub_typ_name,
+    			exam_status.name as status_name,
+    			exam_degree.name as exam_degree_name,
+    			
+    			GROUP_CONCAT(course.idcourse SEPARATOR '".$explode_Group_Concat_Delimiter."') as course_ids,
+    			
+    			GROUP_CONCAT(lecturer.idlecturer SEPARATOR '".$explode_Group_Concat_Delimiter."') as lecturer_ids,
+    			
+    			GROUP_CONCAT(document.iddocument SEPARATOR '".$explode_Group_Concat_Delimiter."') as document_ids,
+    			
+    			GROUP_CONCAT(idcourse SEPARATOR '".$explode_Group_Concat_Delimiter."') as course_idsX,
+    			GROUP_CONCAT(course_ids2 SEPARATOR '".$explode_Group_Concat_Delimiter."') as course_idsX2
+    				
+    			FROM
+    				
+    			(
+    			#SELECT idcourse, course_ids2 FROM
+				#(
+    			
+    			SELECT course_union.idcourse, GROUP_CONCAT(course_union.course1 SEPARATOR '".$explode_Group_Concat_Delimiter."') as course_ids2 
+					FROM 
+    				(
+    			
+	    			SELECT 
+	    			idcourse,
+    				NULL as course1
+	    			
+	
+	    			FROM `course`
+	    			JOIN `degree_has_course` ON course.idcourse = degree_has_course.course_idcourse
+	    			JOIN degree ON degree.iddegree = degree_has_course.degree_iddegree
+	    				
+	    			".$where_course."
+	    			GROUP BY course.idcourse
+	    				
+	    			".$reflexiv_part."
+	    				
+	    			
+    			
+    			) as course_union
+    			GROUP BY idcourse
+    			#) as course
+    			) as course
+    			
+    				
+    			# JOIN THE COURSES WITH THE EXAMS
+    			JOIN exam_has_course ON exam_has_course.course_idcourse = course.idcourse
+    			JOIN exam ON exam.idexam = exam_has_course.exam_idexam
+    				
+    			# JOIN WITH ALL 1:N ATTRIBUTES
+    			JOIN semester ON semester.idsemester = exam.semester_idsemester
+    			JOIN university ON university.iduniversity = exam.university_iduniversity
+    			JOIN exam_type ON exam_type.idexam_type = exam.exam_type_idexam_type
+    			JOIN exam_sub_type ON exam_sub_type.idexam_sub_type = exam.exam_sub_type_idexam_sub_type
+    			JOIN exam_status ON exam_status.idexam_status = exam.exam_status_idexam_status
+    			JOIN exam_degree ON exam_degree.idexam_degree = exam.exam_degree_idexam_degree
+    			JOIN degree ON degree.iddegree = exam.degree_iddegree
+    			 
+    			JOIN exam_has_lecturer ON exam_has_lecturer.exam_idexam = exam.idexam
+    			JOIN lecturer ON lecturer.idlecturer = exam_has_lecturer.lecturer_idlecturer
+    			
+    			JOIN document ON document.exam_idexam = exam.idexam
+    			
+    			 
+    			".$where_base."
+    				
+    				
+    			GROUP BY exam.idexam
+    			 
+    			ORDER BY semester.idsemester DESC, exam.idexam DESC
+    			");
+    	
+		
+    	$entries	= array();
+    	$cor_ids	= array();
+    	$corC_ids	= array();
+    	$lec_ids	= array();
+    	$doc_ids 	= array();
+    	
+    	// fill the exam
+    	foreach ($resultSet as $data) {
+	    	$exam = new Application_Model_Exam();
+	    	
+	    	$exam->setId($data['idexam']);
+	    	$exam->setAutor($data['autor']);
+	    	$exam->setComment($data['comment']);
+	    	
+	    	$exam->setCreated($data['create_date']);
+	    	$exam->setModified($data['modified_last_date']);
+	    	
+	    	$exam->setDegree(new Application_Model_Degree(array('id'=>$data['degree_iddegree'], 'name'=>$data['degree_name'])));
+	    	$exam->setStatus(new Application_Model_ExamStatus(array('id'=>$data['exam_status_idexam_status'], 'name'=>$data['status_name'])));
+	    	$exam->setSemester(new Application_Model_Semester(array('id'=>$data['semester_idsemester'], 'name'=>$data['semester_name'])));
+	    	$exam->setType(new Application_Model_ExamType(array('id'=>$data['exam_type_idexam_type'], 'name'=>$data['type_name'])));
+	    	$exam->setSubType(new Application_Model_ExamSubType(array('id'=>$data['exam_sub_type_idexam_sub_type'], 'name'=>$data['sub_typ_name'])));
+	    	$exam->setUniversity(new Application_Model_ExamUniversity(array('id'=>$data['university_iduniversity'], 'name'=>$data['university_name'])));
+	    	
+	    	$exam->setWrittenDegree(new Application_Model_ExamDegree(array('id'=>$data['exam_degree_idexam_degree'], 'name'=>$data['exam_degree_name'])));
+	    	
+	    	$exam->setCourse(array());
+	    	$exam->setCourseConnected(array());
+	    	
+	    	
+	    	$entries[$data['idexam']] = $exam;
+	    	
+	    	$cor_ids[$data['idexam']] = explode($explode_Group_Concat_Delimiter, $data['course_idsX']);
+	    	
+	    	$corC_ids[$data['idexam']] = explode($explode_Group_Concat_Delimiter, $data['course_idsX2']);
+	    	
+	    	$lec_ids[$data['idexam']] = explode($explode_Group_Concat_Delimiter, $data['lecturer_ids']);
+	    	
+	    	$doc_ids[$data['idexam']] = explode($explode_Group_Concat_Delimiter, $data['document_ids']);
+	    	
+	    	
+	    	
+    	}
+    	
+    	// grab all course and store them
+    	if(isset($cor_ids) && !empty($cor_ids)) {
+	    	$cor_idsX = array();
+	    	foreach ($cor_ids as $ids)
+	    	{
+	    		foreach($ids as $id)
+	    		{
+	    			$cor_idsX[] = $id;
+	    		}
+	    	}
+	
+	    	if(!empty($cor_idsX)) {
+		    	$resCor = $this->getDbTable()->getAdapter()->query("SELECT * FROM `course` WHERE `idcourse` IN (".implode(',', $cor_idsX).")");
+		    	
+		    	foreach($resCor as $lec)
+		    	{
+		    		foreach ($cor_ids as $key => $ids)
+		    		{
+		    			if(in_array($lec['idcourse'], $ids))
+		    			{
+		    				$entries[$key]->addCourse(new Application_Model_Course(
+		    						array('id'=>$lec['idcourse'], 'name'=>$lec['name'])
+		    				)
+		    				);
+		    			}
+		    		}
+		    	}
+	    	}    	
+    	}
+    	
+    	// grab all connected course and store them
+    	if(isset($corC_ids) && !empty($corC_ids)) {
+	    	$corC_idsX = array();
+	    	foreach ($corC_ids as $ids)
+	    	{
+	    		foreach($ids as $id)
+	    		{
+	    			if($id != "")
+	    				$corC_idsX[] = $id;
+	    		}
+	    	}
+	    	
+	    	if(!empty($corC_idsX)) {
+		    	$resCorC = $this->getDbTable()->getAdapter()->query("SELECT * FROM `course` WHERE `idcourse` IN (".implode(',', $corC_idsX).")");
+		    	 
+		    	foreach($resCorC as $lec)
+		    	{
+		    		foreach ($corC_ids as $key => $ids)
+		    		{
+		    			if(in_array($lec['idcourse'], $ids))
+		    			{
+		    				$entries[$key]->addCourseConnected(new Application_Model_Course(
+		    						array('id'=>$lec['idcourse'], 'name'=>$lec['name'])
+		    				)
+		    				);
+		    			}
+		    		}
+		    	}
+	    	}
+    	}
+    	
+    	// grab all lecturer and store them
+    	if(isset($lec_ids) && !empty($lec_ids)) {
+	    	$lec_idsX = array();
+	    	foreach ($lec_ids as $ids)
+	    	{
+	    		foreach($ids as $id)
+	    		{
+	    			$lec_idsX[] = $id;
+	    		}
+	    	}
+	    	
+	    	if(!empty($lec_idsX)) {
+		    	$resLec = $this->getDbTable()->getAdapter()->query("SELECT * FROM `lecturer` WHERE `idlecturer` IN (".implode(',', $lec_idsX).")");
+		    	
+		    	foreach($resLec as $lec)
+		    	{
+		    		foreach ($lec_ids as $key => $ids)
+		    		{
+		    			if(in_array($lec['idlecturer'], $ids))
+		    			{
+		    				$entries[$key]->addLecturer(new Application_Model_Lecturer(
+		    						array('id'=>$lec['idlecturer'], 'name'=>$lec['name'], 'degree'=>$lec['degree'], 'firstName'=>$lec['first_name'])
+		    				)
+		    				);
+		    			}
+		    		}
+		    	}
+	    	}
+    	}
+    	
+    	// grab all documents and store them
+    	if(isset($doc_ids) && !empty($doc_ids)) {
+	    	$doc_idsX = array();
+	    	foreach ($doc_ids as $ids)
+	    	{
+	    		foreach($ids as $id)
+	    		{
+	    			$doc_idsX[] = $id;
+	    		}
+	    	}
+	    	
+	    	if(!empty($doc_idsX)) {
+		    	$resDocs = $this->getDbTable()->getAdapter()->query("SELECT * FROM `document` WHERE `iddocument` IN (".implode(',', $doc_idsX).")");
+		    	
+		    	foreach($resDocs as $doc)
+		    	{
+		    		foreach ($doc_ids as $key => $ids)
+		    		{
+		    			if(in_array($doc['iddocument'], $ids))
+		    			{ 
+		    				$entries[$key]->addDocuments(new Application_Model_Document(
+		    					array('id'=>$doc['iddocument'], 'extention'=>$doc['extention'], 'submitFileName'=>$doc['submit_file_name'],
+		    							'fileName'=>$doc['file_name'], 'mimeType'=>$doc['mime_type'], 'uploadDate'=>$doc['upload_date'],
+		    							'ExamId'=>$doc['exam_idexam'], 'DeleteState'=>$doc['deleted'],'DisplayName'=>$doc['display_name'], 'Collection'=>$doc['collection'])
+		    					)
+		    				); 
+		    			}
+		    		}
+	    		}
+	    	}
+    	}
+    	
+    	return $entries;
     }
     
     
