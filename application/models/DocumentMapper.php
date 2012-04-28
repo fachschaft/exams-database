@@ -28,6 +28,8 @@ class Application_Model_DocumentMapper
     {
        $element = $this->getDbTable()->find($documentId)->current();
        $entry = new Application_Model_Document();
+       
+       $examMapper = new Application_Model_ExamMapper();
 
        $entry->setId($element['iddocument'])
                   ->setExtention($element['extention'])
@@ -39,6 +41,7 @@ class Application_Model_DocumentMapper
 				  ->setDeleteState($element['deleted'])
 				  ->setDisplayName($element['display_name']);
 		$entry->setCollection($element['collection']);
+		$entry->setExam($examMapper->find($element['exam_idexam']));
                   
         return $entry;
     }

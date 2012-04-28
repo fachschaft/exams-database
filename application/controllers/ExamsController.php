@@ -159,10 +159,10 @@ class ExamsController extends Zend_Controller_Action {
 				if ($authmanager->grantPermission ( $ip )) {
 					// If user is allowed to download, get the fileid for the
 					// download
-					$examMapper = new Application_Model_ExamMapper ();
-					$exam = $examMapper->find ( $this->getRequest ()->id );
+					$documentMapper = new Application_Model_DocumentMapper ();
+					$document = $documentMapper->fetch ( $this->getRequest ()->id );
 					
-					if ($exam->status->id == Application_Model_ExamStatus::PublicExam || $exam->status->id == Application_Model_ExamStatus::Reported)
+					if ($document->exam->status->id == Application_Model_ExamStatus::PublicExam || $document->exam->status->id == Application_Model_ExamStatus::Reported)
 						$fileId = $this->getRequest ()->id;
 					else
 						throw new Exception ( "Sorry, you are not allowed to download that file", 500 );

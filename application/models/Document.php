@@ -5,6 +5,9 @@ class Application_Model_Document
     protected $_extention;
     protected $_id;
     protected $_examId;
+    
+    protected $_exam;
+    
     protected $_uploadDate;
     protected $_deleted;
     protected $_fileName;
@@ -17,6 +20,20 @@ class Application_Model_Document
 	protected $_collection;
     
     /**
+	 * @return the $_exam
+	 */
+	public function getExam() {
+		return $this->_exam;
+	}
+
+	/**
+	 * @param field_type $_exam
+	 */
+	public function setExam(Application_Model_Exam $_exam) {
+		$this->_exam = $_exam;
+	}
+
+	/**
 	 * @return the $_collection
 	 */
 	public function getCollection() {
