@@ -155,6 +155,19 @@ class Application_Model_DocumentMapper
     {
     	$this->getDbTable()->update(array('mime_type' => $document->mimeType), 'iddocument ='.$document->id);
     }
+    
+    public function checkDocumentExtentions()
+    {
+    	$data = $this->getDbTable()->fetchAll();
+    	
+    	foreach ($data as $doc)
+    	{
+    		if(!preg_match('%^[0-9a-zA-Z]{2,3}$%' ,$doc->extention))
+    		{
+    			echo "Exam (".$doc->iddocument.") extension dose not match the pattern: ".$doc->extention ."<br>";
+    		}
+    	}
+    }
 	
 	private function addLogMessage($documentId, $message) {
 		$this->getDbTable()->getAdapter()->query("INSERT INTO `exam_log` (`exam_idexam` ,`message`)

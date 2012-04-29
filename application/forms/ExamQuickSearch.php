@@ -1,6 +1,6 @@
 <?php
 
-class Application_Form_ExamQuickSearch extends Zend_Form
+class Application_Form_ExamQuickSearch extends Application_Form_ExamTemplate
 {
 
 	protected $_query = NULL;
@@ -19,13 +19,21 @@ class Application_Form_ExamQuickSearch extends Zend_Form
 		->addValidator( new Zend_Validate_StringLength(array('min'=>3)), true)
 		->addValidator($validator);
 		
+		$this->_query->setDecorators($this->_decoratorDiv);
+		
+		$this->addElement($this->_query);
+		
 		$submit = new Zend_Form_Element_Submit('submit');
 		$submit->setLabel('Search');
 		
-		$this->addElements ( array (
-				$this->_query,
-				$submit 
-		) );
+		
+		
+		// Add the submit button
+		$this->addElement('submit', 'submit', array(
+				'ignore'   => true,
+				'label'    => 'Weiter',
+				'decorators' =>$this->_decoratorDivButton,
+		));
     }
 
 }

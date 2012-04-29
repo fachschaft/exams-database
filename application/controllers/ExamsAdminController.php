@@ -744,6 +744,10 @@ class ExamsAdminController extends Zend_Controller_Action
     				$docMapper = new Application_Model_ExamFileManager();
     				$docMapper->checkAllFilesExistsAndReadable();
     				break;
+    			case "checkExtention" :
+    				$docMapper = new Application_Model_DocumentMapper();
+    				$docMapper->checkDocumentExtentions();
+    				break;
     		}
     	}
     } 
