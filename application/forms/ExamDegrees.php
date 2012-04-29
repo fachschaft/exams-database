@@ -1,6 +1,6 @@
 <?php
 
-class Application_Form_ExamDegrees extends Zend_Form
+class Application_Form_ExamDegrees extends Application_Form_ExamTemplate
 {
     protected $_elementSelect = null;
     
@@ -17,13 +17,16 @@ class Application_Form_ExamDegrees extends Zend_Form
         //
         $this->_elementSelect = new Zend_Form_Element_Select('degree');
         $this->_elementSelect->setAttrib('size', '4')
-                             ->setRequired(true);
+                             ->setRequired(true)
+                             ->setLabel('Degree')
+        					 ->setDecorators($this->_decoratorDiv);
         $this->addElement($this->_elementSelect);
         
         // Add the submit button
         $this->addElement('submit', 'submit', array(
             'ignore'   => true,
             'label'    => 'Weiter',
+        	'decorators' =>$this->_decoratorDivButton,
         ));
     }
     

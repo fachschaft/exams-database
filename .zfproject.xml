@@ -64,6 +64,7 @@
         <formFile formName="AdminLecturerEdit"/>
         <formFile formName="AdminLecturerAdd"/>
         <formFile formName="AdminDegreeGroupEdit"/>
+        <formFile formName="ExamTemplate"/>
       </formsDirectory>
       <layoutsDirectory>
         <layoutScriptsDirectory>

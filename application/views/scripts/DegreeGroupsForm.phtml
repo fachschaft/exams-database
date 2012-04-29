@@ -1,0 +1,12 @@
+<?php //var_dump($this->element); ?>
+
+<h4>Please register with us!</h4>
+<form action="<?= $this->escape($this->element->getAction()) ?> "
+      method="<?= $this->escape($this->element->getMethod()) ?> ">
+      
+      <?php var_dump($this->element->group->options); ?>
+      
+<?= $this->element->group ?>
+
+<?= $this->element->submit ?>
+</form>

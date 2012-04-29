@@ -1,6 +1,6 @@
 <?php
 
-class Application_Form_DegreeGroups extends Zend_Form
+class Application_Form_DegreeGroups extends Application_Form_ExamTemplate
 {
     protected $_elementSelect = null;
 
@@ -13,6 +13,8 @@ class Application_Form_DegreeGroups extends Zend_Form
         
         $this->_elementSelect->setAttrib('size', '3');
         $this->_elementSelect->setRequired(true);
+        //$this->_elementSelect->setLabel('Groups');
+        $this->_elementSelect->setDecorators($this->_decoratorDivWithoutLabel);
         
         $this->setMultiOptions();
         
@@ -22,7 +24,22 @@ class Application_Form_DegreeGroups extends Zend_Form
         $this->addElement('submit', 'submit', array(
             'ignore'   => true,
             'label'    => 'Weiter',
+        	'decorators' =>$this->_decoratorDivButton,
         ));
+        
+        /*$this->setDecorators(array(
+						  array('ViewScript', array(
+						    'viewScript'=>'DegreeGroupsForm.phtml'
+						  ),)
+						));*/
+        
+       /* $this->clearDecorators();
+        
+        
+        $this->setDecorators(array(
+        		//'FormElements',
+        		array('ViewScript', array('viewScript' => 'DegreeGroupsForm.phtml'))
+        ));*/
     }
     
     public function setMultiOptions()

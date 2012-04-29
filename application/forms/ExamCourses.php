@@ -1,6 +1,6 @@
 <?php
 
-class Application_Form_ExamCourses extends Zend_Form
+class Application_Form_ExamCourses extends Application_Form_ExamTemplate
 {
     protected $_elementCourse = null;
     protected $_elementSemester = null;
@@ -8,10 +8,6 @@ class Application_Form_ExamCourses extends Zend_Form
     protected $_elementExamType = null;
     protected $_elementDegree = null;
     
-    public $_decoratorHidden = array(
-    		'ViewHelper',
-    		array(array('data' => 'HtmlTag'), array('class' => 'hidden_element')),
-    );
 
     public function init()
     {
@@ -22,7 +18,8 @@ class Application_Form_ExamCourses extends Zend_Form
         $this->_elementCourse = new Zend_Form_Element_Multiselect('course');
         $this->_elementCourse->setAttrib('size', '10')
                              ->setRequired(true)
-                             ->setLabel('Vorlesung');
+                             ->setLabel('Vorlesung')
+        					 ->setDecorators($this->_decoratorDiv);
         $this->setCourseOptions(array());
         $this->addElement($this->_elementCourse);
         
@@ -30,7 +27,8 @@ class Application_Form_ExamCourses extends Zend_Form
         $this->_elementLecturer = new Zend_Form_Element_Multiselect('lecturer');
         $this->_elementLecturer->setAttrib('size', '10')
                                ->setRequired(true)
-                               ->setLabel('Dozent');
+                               ->setLabel('Dozent')
+        ->setDecorators($this->_decoratorDiv);
         $this->setLecturerOptions(array());
         $this->addElement($this->_elementLecturer);
         
@@ -38,7 +36,8 @@ class Application_Form_ExamCourses extends Zend_Form
         $this->_elementSemester = new Zend_Form_Element_Multiselect('semester');
         $this->_elementSemester->setAttrib('size', '10')
                                ->setRequired(true)
-                               ->setLabel('Semester');
+                               ->setLabel('Semester')
+        ->setDecorators($this->_decoratorDiv);
         $this->setSemesterOptions();
         $this->addElement($this->_elementSemester);
         
@@ -46,7 +45,8 @@ class Application_Form_ExamCourses extends Zend_Form
         $this->_elementExamType = new Zend_Form_Element_Multiselect('examType');
         $this->_elementExamType->setAttrib('size', '5')
                                ->setRequired(true)
-                               ->setLabel('Typ');
+                               ->setLabel('Typ')
+                               ->setDecorators($this->_decoratorDiv);
         $this->setExamTypeOptions();
         $this->addElement($this->_elementExamType);
 
@@ -54,6 +54,7 @@ class Application_Form_ExamCourses extends Zend_Form
         $this->addElement('submit', 'submit', array(
             'ignore'   => true,
             'label'    => 'Weiter',
+        	'decorators' =>$this->_decoratorDivButton,
         ));
     }
     
