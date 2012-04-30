@@ -130,7 +130,7 @@ class Application_Model_ExamMapper
     		$entriesCor[] = new Application_Model_Course(array('id'=>$row2['idcourse'],'name'=>$row2['name']));
     		//$entriesCor[$row2['idcourse']] = $row2['name'];
     		$courseIds[] = $row2['idcourse'];
-    	}    	
+    	}
     	$exam->setCourse($entriesCor);
     	
     	
@@ -259,7 +259,7 @@ class Application_Model_ExamMapper
     	$reflexiv_part = "
     		UNION
 			
-				Select course.idcourse, course.idcourse as course1 FROM ( SELECT idcourse FROM `course`
+				Select base_courses.idcourse, course.idcourse as course1 FROM ( SELECT idcourse FROM `course`
 				JOIN `degree_has_course` ON course.idcourse = degree_has_course.course_idcourse 
 				JOIN degree ON degree.iddegree = degree_has_course.degree_iddegree
 			
@@ -273,7 +273,7 @@ class Application_Model_ExamMapper
 			
 			UNION
 			
-				Select course.idcourse, course.idcourse as course1 FROM ( SELECT idcourse FROM `course`
+				Select base_courses.idcourse, course.idcourse as course1 FROM ( SELECT idcourse FROM `course`
 				JOIN `degree_has_course` ON course.idcourse = degree_has_course.course_idcourse 
 				JOIN degree ON degree.iddegree = degree_has_course.degree_iddegree
 			
@@ -532,6 +532,7 @@ class Application_Model_ExamMapper
 		    		{
 		    			if(in_array($lec['idcourse'], $ids))
 		    			{
+		    				$origin_courses[] = $lec['idcourse']; // collect all origin courses
 		    				$entries[$key]->addCourse(new Application_Model_Course(
 		    						array('id'=>$lec['idcourse'], 'name'=>$lec['name'])
 		    				)
@@ -541,6 +542,8 @@ class Application_Model_ExamMapper
 		    	}
 	    	}    	
     	}
+    	
+    	
     	
     	// grab all connected course and store them
     	if(isset($corC_ids) && !empty($corC_ids)) {
@@ -563,10 +566,18 @@ class Application_Model_ExamMapper
 		    		{
 		    			if(in_array($lec['idcourse'], $ids))
 		    			{
-		    				$entries[$key]->addCourseConnected(new Application_Model_Course(
-		    						array('id'=>$lec['idcourse'], 'name'=>$lec['name'])
-		    				)
-		    				);
+		    				// check if the cours is not in the origin courses
+		    				$found = false;
+		    				foreach($entries[$key]->getCourse() as $cors)
+		    				{
+		    					if($cors->id == $lec['idcourse']) $found = true;
+		    				}
+		    				if(!$found) {
+			    				$entries[$key]->addCourseConnected(new Application_Model_Course(
+			    						array('id'=>$lec['idcourse'], 'name'=>$lec['name'])
+			    				)
+			    				);
+		    				}
 		    			}
 		    		}
 		    	}
