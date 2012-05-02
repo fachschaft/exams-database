@@ -107,18 +107,18 @@ class Application_Model_ExamSearch {
 	
 	public function searchExams($query, Application_Model_ExamStatus $status = null) {
 		//Note: Default value for parameters with a class type hint can only be NULL
-		if($status == null) $status = Application_Model_ExamStatus::PublicExam;
+		if($status == null) $status = array(Application_Model_ExamStatus::PublicExam);
 		$examIds = $this->searchIndex($query);
 		$exams = array();
 		if(!is_array($examIds)) {
 			$examIds = array($examIds);
 		}
-		foreach($examIds as $id)
-		{
+		
+		if(!empty($examIds)) {
 			$examsMapper = new Application_Model_ExamMapper();
-			$exam = $examsMapper->find($id);
-			if($exam->status->id == $status)
-				$exams[] = $exam;
+			$exams = $examsMapper->fetchQuick(-1, -1, -1, -1, -1, $status, true, $examIds);
+		} else {
+			return array();
 		}
 		
 		return $exams;

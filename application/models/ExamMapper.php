@@ -188,8 +188,9 @@ class Application_Model_ExamMapper
      * @param unknown_type $withReflexive
      * @return Application_Model_Exam
      */
-    public function fetchQuick($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree, array $status = array(), $withReflexive = true)
+    public function fetchQuick($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree, array $status = array(), $withReflexive = true, array $examId = array('-1'))
     {
+
     	$explode_Group_Concat_Delimiter = "#&$#§"; // this string will be used to seperate the strings in the database, e.G. " prof 1 # prof 2 " use a string which will NOT be in an string from the selected fields
     	
     	
@@ -208,7 +209,10 @@ class Application_Model_ExamMapper
     	if(!is_array($examTypeIds) && $examTypeIds == "-1") $examTypeIds = array();
     	if(!is_array($examTypeIds) && $examTypeIds != "-1") $examTypeIds = array($examTypeIds);
     	if(is_array($examTypeIds) && in_array("-1", $examTypeIds)) $examTypeIds = array();
-
+    	
+    	if(!is_array($examId) && $examId == "-1") $examId = array();
+    	if(!is_array($examId) && $examId != "-1") $examId = array($examId);
+    	if(is_array($examId) && in_array("-1", $examId)) $examId = array();
     	
     	// WHERE COURSE
     	$where_base_elements = array();
@@ -249,6 +253,14 @@ class Application_Model_ExamMapper
     	// EXAM Status
     	if(!empty($status))
     		$where_lecturer_emelents[] = "exam.exam_status_idexam_status IN (".implode(',', $status).")";
+    	
+    	// for single Exams only:
+    	if(!empty($examId))
+    	{
+    		$where_course = "";
+    		$where_lecturer_emelents = array();
+    		$where_lecturer_emelents[] = "exam.idexam IN (".implode(',', $examId).")";
+    	}
     	
     	if(!empty($where_lecturer_emelents))
     		$where_base = "WHERE ".implode(" AND ", $where_lecturer_emelents);
@@ -326,7 +338,7 @@ class Application_Model_ExamMapper
 					
 					UNION
 					
-						SELECT course.idcourse,  course.idcourse as course1 FROM 
+						SELECT base_courses.idcourse,  course.idcourse as course1 FROM 
 							( 
 							SELECT idcourse FROM `course`
 								JOIN `degree_has_course` ON course.idcourse = degree_has_course.course_idcourse 
@@ -342,7 +354,7 @@ class Application_Model_ExamMapper
 								
 					UNION
 								
-						SELECT course.idcourse, course.idcourse as course1 FROM 
+						SELECT base_courses.idcourse, course.idcourse as course1 FROM 
 							( 
 							SELECT idcourse FROM `course`
 								JOIN `degree_has_course` ON course.idcourse = degree_has_course.course_idcourse 
@@ -648,97 +660,34 @@ class Application_Model_ExamMapper
     	
     	return $entries;
     }
-    
-    
-    // this function takes single integer or arrays
-    public function fetch($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree, array $status = array(), $withReflexive = true)
-    {
-    	return $this->fetchQuick($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree, $status, $withReflexive);
-	
-		if(!empty($status))
-		{
-			$status = "x.exam_status_idexam_status IN (" . implode(",", $status).") ";
-		}
-		
-		$where2 = "";
-		if($withReflexive) {
-			$status .= " AND ";
-			$where2 = '((cor.idcourse = chc.course_idcourse1) OR (cor.idcourse = chc.course_idcourse))';
-		}
-
-        $select = $this->getDbTable()->getAdapter()->select()
-              ->from(array('x' => 'exam'),
-                     array('idexam'))
-              ->join(array('uni' => 'university'),
-                     'uni.iduniversity = x.university_iduniversity')
-			  ->join(array('ehl' => 'exam_has_lecturer'),
-                     'ehl.exam_idexam = x.idexam')
-              ->join(array('lec' => 'lecturer'),
-                     'lec.idlecturer = ehl.lecturer_idlecturer')
-              ->join(array('sem' => 'semester'),
-                     'sem.idsemester = x.semester_idsemester')
-              ->join(array('ext' => 'exam_type'),
-                     'ext.idexam_type = x.exam_type_idexam_type')
-              ->join(array('est' => 'exam_sub_type'),
-                     'est.idexam_sub_type = x.exam_sub_type_idexam_sub_type')
-              ->join(array('ehcg' => 'exam_has_course'),
-                     'ehcg.exam_idexam = x.idexam')
-              ->join(array('cor' => 'course'),
-                     'cor.idcourse = ehcg.course_idcourse')
-              ->where($status.$where2)
-              ->group('idexam')
-              ->order('semester_idsemester DESC');
-			  
-			  if($withReflexive) $select->join(array('chc' => 'course_has_course'),'');
-
-        if((!is_array($courseIds) && $courseIds != -1) || (is_array($courseIds) && !in_array(-1, $courseIds)))
-        {
-            $select->where('chc.course_idcourse1 IN (?) OR chc.course_idcourse in (?)', $courseIds);
-        } else if($degree == -1) {
-		}
-		else {
-            // if there is no corse id set, we select by degree
-            $select->join(array('dhc' => 'degree_has_course'),
-                                'cor.idcourse = dhc.course_idcourse')
-                    ->join(array('deg' => 'degree'),
-                                'dhc.degree_iddegree = deg.iddegree')
-                    ->where('deg.iddegree IN (?)', $degree);
-        }
-        if((!is_array($lecturerIds) && $lecturerIds != -1) || (is_array($lecturerIds) && !in_array(-1, $lecturerIds)))
-            $select->where('lec.idlecturer IN (?)', $lecturerIds);
-        if((!is_array($semesterIds) && $semesterIds != -1) || (is_array($semesterIds) && !in_array(-1, $semesterIds)))
-            $select->where('sem.idsemester IN (?)', $semesterIds);
-        if((!is_array($examTypeIds) && $examTypeIds != -1) || (is_array($examTypeIds) && !in_array(-1, $examTypeIds)))
-            $select->where('ext.idexam_type IN (?)', $examTypeIds);
-              
-        
-        $resultSet = $this->getDbTable()->getAdapter()->fetchAll($select);
-
-        $entries   = array();
-        foreach ($resultSet as $row) {
-        	$entries[] = $this->getExam($row['idexam']);
-        }
-
-        return $entries;
-    }
 	
 	public function fetchUnchecked()
 	{
-		return $this->fetch("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::Unchecked), false);
+		return $this->fetchQuick("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::Unchecked), false);
 	}
 	
 	public function fetchReported()
 	{
-		return $this->fetch("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::Reported), false);
+		return $this->fetchQuick("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::Reported), false);
 	}
 	
 	public function fetchPublic(){
-		return $this->fetch("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::PublicExam, Application_Model_ExamStatus::Reported), false);
+		return $this->fetchQuick("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::PublicExam, Application_Model_ExamStatus::Reported), false);
 	}
 	
 	public function find($id)
     {
-        return $this->getExam($id);
+        //return $this->getExam($id);
+        $entrys = $this->fetchQuick(-1, -1, -1, -1, -1, array(), true, array($id));
+        if (count($entrys) != 1) {
+        	$resCount = $this->getDbTable()->find($id)->count();
+        	if($resCount == 0) {
+        		throw new Exception ( "Tried to call a not existing exam", 404);
+        	} else {
+        		throw new Exception ( "Inconsistent database for exam id: ".$id." - Call an admin! (count = ".count($entrys).")" );
+        	}
+    	}
+    	return current($entrys);
     }
 		
 	public function saveAsNewExam($exam) {
