@@ -117,7 +117,7 @@ class Application_Form_AdminCourseEdit extends Zend_Form
     {
     	$this->_group = new Zend_Form_Element_Multiselect('select_degrees');
     
-    	$this->_group->setAttrib('size', '3');
+    	$this->_group->setAttrib('size', '15');
     	$this->_group->setRequired(true);
     	$this->_group->setAttrib('label','Select degrees');
     	$this->_group->addValidator('NotEmpty', true);
@@ -136,7 +136,7 @@ class Application_Form_AdminCourseEdit extends Zend_Form
     {
     	$this->_connected = new Zend_Form_Element_Multiselect('select_connected_course');
     
-    	$this->_connected->setAttrib('size', '3');
+    	$this->_connected->setAttrib('size', '20');
     	$this->_connected->setRequired(false);
     	$this->_connected->setAttrib('label','Select connected course');
     	$this->_connected->addValidator('NotEmpty', true);

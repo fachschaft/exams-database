@@ -24,4 +24,4 @@ For using the unrar function install *PECL rar*:
 requires: *php5-dev dh-make-php build-essential*
 
 # License
-This project is licensed under [CC BY-SA](http://creativecommons.org/licenses/by-sa/3.0/)
+This project is licensed under [CC BY-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/)

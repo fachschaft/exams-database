@@ -64,7 +64,7 @@ class Application_Model_CourseMapper
 	
 	public function fetchAll()
     {    
-        $resultSet = $this->GetDbTable()->fetchAll();
+        $resultSet = $this->GetDbTable()->fetchAll(null, array('name ASC'));
 
         $entries = array();
         foreach ($resultSet as $row) {
