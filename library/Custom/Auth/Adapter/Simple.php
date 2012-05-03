@@ -1,4 +1,15 @@
 <?
+/**
+ * exams-database
+ * @copyright   Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @link		https://github.com/aritas1/exams-database/
+ * @author		Daniel Leinfelder <mail@aritas.de>
+ * @author		William Glover <william@aamu-uninen.de>
+ * @version		1.0
+ * @since     	1.0
+ * @todo        -
+ */
+
 class Custom_Auth_Adapter_Simple implements Zend_Auth_Adapter_Interface
 {
 	protected $_username;
