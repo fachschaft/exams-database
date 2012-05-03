@@ -22,3 +22,6 @@ Ensure that *zlibc* is installed! (PECL zip depends on zlibc)
 For using the unrar function install *PECL rar*:
 `pecl -v install rar`
 requires: *php5-dev dh-make-php build-essential*
+
+# License
+This project is licensed under [CC BY-SA](http://creativecommons.org/licenses/by-sa/3.0/)
