@@ -699,6 +699,36 @@ class Application_Model_ExamMapper
     	}
     	return current($entrys);
     }
+    
+    public function findUpload($id)
+    {
+    	$data = $this->getDbTable()->find($id)->current();
+    	
+    	$exam = new Application_Model_Exam();
+    	
+    	$exam->setId($data['idexam']);
+    	$exam->setAutor($data['autor']);
+    	$exam->setComment($data['comment']);
+    	
+    	$exam->setCreated($data['create_date']);
+    	$exam->setModified($data['modified_last_date']);
+    	
+    	$exam->setDegree(new Application_Model_Degree(array('id'=>$data['degree_iddegree'])));
+    	$exam->setStatus(new Application_Model_ExamStatus(array('id'=>$data['exam_status_idexam_status'])));
+    	$exam->setSemester(new Application_Model_Semester(array('id'=>$data['semester_idsemester'])));
+    	$exam->setType(new Application_Model_ExamType(array('id'=>$data['exam_type_idexam_type'])));
+    	$exam->setSubType(new Application_Model_ExamSubType(array('id'=>$data['exam_sub_type_idexam_sub_type'])));
+    	$exam->setUniversity(new Application_Model_ExamUniversity(array('id'=>$data['university_iduniversity'])));
+    	
+    	$exam->setWrittenDegree(new Application_Model_ExamDegree(array('id'=>$data['exam_degree_idexam_degree'])));
+    	
+    	$exam->setCourse(array());
+    	$exam->setCourseConnected(array());
+    	
+    	return $exam;
+    	
+    	
+    }
 		
 	public function saveAsNewExam($exam) {
 		$data = array (

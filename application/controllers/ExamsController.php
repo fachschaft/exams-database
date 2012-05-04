@@ -311,7 +311,7 @@ class ExamsController extends Zend_Controller_Action {
 				case 3 :
 					$examMapper = new Application_Model_ExamMapper ();
 					if (! $this->getRequest ()->isPost ()) {
-						$exam = $examMapper->find ( $this->getRequest ()->exam );
+						$exam = $examMapper->findUpload ( $this->getRequest ()->exam );
 						if ($exam->id != $this->getRequest ()->exam) {
 							throw new Zend_Exception ( "Sorry, no exam found." );
 							// the status id is save as key, so if stauts[1] isset exam, hase sthe status 1
@@ -334,7 +334,7 @@ class ExamsController extends Zend_Controller_Action {
 						if ($form->isValid ( $this->getRequest ()->getPost () )) {
 							$post = $this->getRequest ()->getPost ();
 							
-							$exam = $examMapper->find ( $post ['examId'] );
+							$exam = $examMapper->findUpload ( $post ['examId'] );
 							if ($exam->id != $post ['examId'] || $exam->status != Application_Model_ExamStatus::NothingUploaded) {
 								throw new Zend_Exception ( "Sorry, you can't upload twice!" );
 							}
