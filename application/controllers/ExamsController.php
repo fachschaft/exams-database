@@ -283,7 +283,7 @@ class ExamsController extends Zend_Controller_Action {
 						$exam->setSemester(new Application_Model_Semester(array('id'=>$post['semester'])));
 						$exam->setType(new Application_Model_ExamType(array('id'=>$post['type'])));
 						$exam->setSubType(new Application_Model_ExamSubType(array('id'=>$post['subType'])));
-						$exam->setDegree ( new Application_Model_Degree(array('id'=>$this->getRequest ()->degree)) );
+						$exam->setDegree ( new Application_Model_Degree(array('id'=>$post['degree'])) );
 						$exam->setWrittenDegree(new Application_Model_ExamDegree(array('id'=>$post['degree_exam'])));
 						$exam->setUniversity(new Application_Model_ExamUniversity(array('id'=>$post['university'])));
 						$exam->setComment($post['comment']);

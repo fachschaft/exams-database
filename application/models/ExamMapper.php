@@ -738,7 +738,7 @@ class Application_Model_ExamMapper
 				'degree_iddegree' 				=> $exam->degree->id,
 				'autor'							=> $exam->autor,
 				'exam_status_idexam_status' 	=> Application_Model_ExamStatus::NothingUploaded,
-				'exam_degree_idexam_degree' 	=> $exam->degree->id,
+				'exam_degree_idexam_degree' 	=> $exam->writtenDegree->id,
 				'university_iduniversity' 		=> $exam->university->id,
 				'comment' 						=> $exam->comment,
 				'create_date' 					=> new Zend_Db_Expr ( 'NOW()' ),
