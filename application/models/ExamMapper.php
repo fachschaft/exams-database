@@ -272,6 +272,8 @@ class Application_Model_ExamMapper
     		$where_lecturer_emelents[] = "exam.idexam IN (".implode(',', $examId).")";
     	}
     	
+    	$where_lecturer_emelents[] = "document.deleted != 1";
+    	
     	if(!empty($where_lecturer_emelents))
     		$where_base = "WHERE ".implode(" AND ", $where_lecturer_emelents);
     	
