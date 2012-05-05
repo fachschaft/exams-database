@@ -23,25 +23,22 @@ class Application_Form_ExamQuickSearch extends Application_Form_ExamTemplate
     	$this->setMethod('post');
     	$this->setAction('/exams/quick-search');
 		$this->_query = new Zend_Form_Element_Text('_query');
-		$this->_query->setLabel('Keyword Search')
-		->setRequired(true)
-		->addValidator('NotEmpty', true)
-		->addValidator( new Zend_Validate_StringLength(array('min'=>3)), true)
-		->addValidator($validator);
+		$this->_query->setLabel('Keyword Search');
+		$this->_query->setRequired(true);
+		$this->_query->addValidator('NotEmpty', true);
+		$this->_query->addValidator( new Zend_Validate_StringLength(array('min'=>3)), true);
+		$this->_query->addValidator($validator);
 		
 		$this->_query->setDecorators($this->_decoratorDiv);
 		
 		$this->addElement($this->_query);
-		
-		$submit = new Zend_Form_Element_Submit('submit');
-		$submit->setLabel('Search');
 		
 		
 		
 		// Add the submit button
 		$this->addElement('submit', 'submit', array(
 				'ignore'   => true,
-				'label'    => 'Weiter',
+				'label'    => 'Search',
 				'decorators' =>$this->_decoratorDivButton,
 		));
     }

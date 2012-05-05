@@ -20,6 +20,8 @@ class Application_Form_ExamTemplate extends Zend_Form
 	
 	public $_decoratorDiv = array(
 			'ViewHelper',
+			//'Errors',
+			array('Errors', array('class' => 'element_error')),
 			//'Label',
 			array('Label', array('tag' => 'div', 'class' => 'element_lable')),
 			array(array('data' => 'HtmlTag'), array('class' => 'element_form')),
@@ -27,6 +29,8 @@ class Application_Form_ExamTemplate extends Zend_Form
 	
 	public $_decoratorDivWithoutLabel = array(
 			'ViewHelper',
+			//'Errors',
+			array('Errors', array('class' => 'element_error')),
 			//'Label',
 			//array('Label', array('tag' => 'div', 'class' => 'element_lable')),
 			array(array('data' => 'HtmlTag'), array('class' => 'element_form')),
@@ -34,6 +38,7 @@ class Application_Form_ExamTemplate extends Zend_Form
 	
 	public $_decoratorDivButton = array(
 			'ViewHelper',
+			array('Errors', array('class' => 'element_error')),
 			//'Label',
 			//array('Label', array('tag' => 'div', 'class' => 'element_lable')),
 			array(array('data' => 'HtmlTag'), array('class' => 'element_button')),

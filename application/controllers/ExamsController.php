@@ -14,17 +14,150 @@ class ExamsController extends Zend_Controller_Action {
 	
 	private $_profiler;
 	
+	private $_allowedFileds;
+	private $_inputFilter;
+	private $_inputValidator;
+	
+	private $_inputUnescaped; 
+	
 	public function init() {
 		
-		/*$db = new Application_Model_DbTable_Course();
-		$this->_profiler = $db->getAdapter()->getProfiler();
-		$this->_profiler->setEnabled(true);*/
+		// define all allowed fields
+		$this->_allowedFileds = array(
+				// default rule
+				'*' =>array(
+						'filter' 	=> array('StripTags'),//'HtmlEntities'),
+						'validator' => array()),
 
+				// ??
+				'id' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				
+				// Group select to degree
+				'group' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				
+				// Degree select to detail search mask (courses)
+				'degree' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				
+				// Search with regualr parms
+				'course' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),				
+				'lecturer' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				'semester' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				'examType' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				
+				// Search with quicksearch query string
+				'request' =>array(
+						'filter' 	=> array('StripTags'),
+						'validator' => array()),
+
+				/*'submit' =>array(
+						'filter' 	=> array('Alnum'),
+						'validator' => array()),*/
+				
+				// Quicksearch
+				'_query' =>array(
+						'filter' 	=> array('StripTags'),
+						'validator' => array()),
+						
+				// Reporting
+				'_reason' =>array(
+						'filter' 	=> array('Alnum'),
+						'validator' => array('Alnum')),
+						
+				// Upload step 2
+				'exam' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				'step' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				'type' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				'subType' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				'degree_exam' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				'university' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				'comment' =>array(
+						'filter' 	=> array('StripTags', 'StringTrim'),
+						'validator' => array()),
+				'autor' =>array(
+						'filter' 	=> array('StripTags', 'StringTrim'),
+						'validator' => array()),	
+						
+				// Upload step 3		
+				'examId' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				'files' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),	
+		);
+				
+		$this->setFilterAndValidator();
+		$this->applyFilterAndValidators();
 	}
+	
+	private function setFilterAndValidator()
+	{
+		foreach ($this->_allowedFileds as $filed=>$options)
+		{
+			$this->_inputFilter[$filed] = $options['filter'];
+			$this->_inputValidator[$filed] = $options['validator'];
+		}
+	}
+	
+	private function applyFilterAndValidators()
+	{
+		$allowedParms = array();
+		foreach ($this->getRequest()->getParams() as $key=>$parm)
+		{
+			if(array_key_exists($key, $this->_allowedFileds))
+			{
+				$allowedParms[$key] = $parm;
+			} else {
+				if(isset($_GET[$key])) unset($_GET[$key]);
+				if(isset($_POST[$key])) unset($_POST[$key]);
+			}
+		}
+		
+		// filter the given params
+		$input = new Zend_Filter_Input(
+				$this->_inputFilter,
+				$this->_inputValidator,
+				$allowedParms);
+		
+		$escaped = $input->getEscaped();
+
+		$this->_inputUnescaped = $input->getUnescaped();
+		
+		$this->getRequest()->clearParams();
+		
+		$this->getRequest()->setParams($escaped);
+	}
+	
 	
 	// Scrub entries from $_POST[] that are not needed
 	private function scrubPost(array $scrubEntries, array $scrubIfAllSelected = NULL) {
-		$_post = $this->getRequest ()->getPost ();
+		$_post = $this->getRequest ()->getParams ();
 		foreach ( $scrubEntries as $entry ) {
 			if (isset ( $_post [$entry] ))
 				unset ( $_post [$entry] );
@@ -48,22 +181,22 @@ class ExamsController extends Zend_Controller_Action {
 		$this->view->form = $form;
 		
 		if ($this->getRequest ()->isPost ()) {
-			if ($form->isValid ( $this->getRequest ()->getPost () )) {
+			if ($form->isValid ( $this->getRequest ()->getParams() )) {
 				$post = $this->scrubPost(array('submit'));
 				return $this->_helper->Redirector->setGotoSimple ( 'degrees', null, null, $post );
 			}
 		}	
 	}
 	
-	public function degreesAction() {
+public function degreesAction() {
 	$form = new Application_Form_ExamDegrees();
         
         if ($this->getRequest()->isPost()) {
             $form->setMultiOptions($this->getRequest()->group);
             $form->setGroup($this->getRequest()->group);
             
-            if($form->isValid($this->getRequest()->getPost())) {
-            	$post = $this->scrubPost(array(submit, group));
+            if($form->isValid($this->getRequest()->getParams())) {
+            	$post = $this->scrubPost(array('submit', 'group'));
                 return $this->_helper->Redirector->setGotoSimple('courses', null, null, $post);
             }
         }
@@ -97,7 +230,7 @@ class ExamsController extends Zend_Controller_Action {
         
         
         if ($this->getRequest()->isPost()) {
-            if($form->isValid($this->getRequest()->getPost())) {
+            if($form->isValid($this->getRequest()->getParams())) {
             	$post = $this->scrubPost(array('submit'), array('lecturer', 'course', 'semester', 'examType'));
   
                  return $this->_helper->Redirector->setGotoSimple('search', null, null, $post);
@@ -259,8 +392,8 @@ class ExamsController extends Zend_Controller_Action {
 			switch ($step) {
 				case 1 :
 					$form = new Application_Form_UploadDegrees ();
-					if ($form->isValid ( $this->getRequest ()->getPost () )) {
-						$post = $this->getRequest ()->getPost ();
+					if ($form->isValid ( $this->getRequest()->getParams() )) {
+						$post = $this->getRequest ()->getParams ();
 						unset ( $post ['submit'] );
 						unset ( $post ['step'] );
 						$this->_helper->Redirector->setGotoSimple ( 'upload', null, null, $post );
@@ -270,16 +403,19 @@ class ExamsController extends Zend_Controller_Action {
 					$form = new Application_Form_UploadDetail ();
 					$form->setCourseOptions ( new Application_Model_Degree(array('id'=>$this->getRequest ()->degree)) );
 					$form->setLecturerOptions ( new Application_Model_Degree(array('id'=>$this->getRequest ()->degree)) );
-					$form->setDegree ( $this->getRequest ()->degree );
-					if ($form->isValid ( $this->getRequest ()->getPost () )) {
-						$post = $this->getRequest ()->getPost ();
+					$form->setDegree ( $this->getRequest ()->degree );		
+					
+					//Note: SECURETY, we use _inputUnescaped for Validation!
+					//		This only includes FILTERD and VALID defined parms from the init()
+					//		Ensure all passed Strings are secure
+					if ($form->isValid ( $this->_inputUnescaped )) {
+						$post = $this->getRequest ()->getParams (); //for insert we use escaped strings
 						
 						// insert the new exam to into the database and mark the
 						// exam as not uploaded
 						$exam = new Application_Model_Exam ();
 						$examMapper = new Application_Model_ExamMapper ();
 						
-						var_dump($post);
 						$exam->setSemester(new Application_Model_Semester(array('id'=>$post['semester'])));
 						$exam->setType(new Application_Model_ExamType(array('id'=>$post['type'])));
 						$exam->setSubType(new Application_Model_ExamSubType(array('id'=>$post['subType'])));
@@ -306,6 +442,8 @@ class ExamsController extends Zend_Controller_Action {
 						$data = array ();
 						$data ['exam'] = $examId;
 						$this->_helper->Redirector->setGotoSimple ( 'upload', null, null, $data );
+					} else {
+						
 					}
 					break;
 				case 3 :
@@ -331,8 +469,8 @@ class ExamsController extends Zend_Controller_Action {
 					$form->setMultiFile ( $this->getRequest ()->files );
 					
 					if ($this->getRequest ()->isPost ()) {
-						if ($form->isValid ( $this->getRequest ()->getPost () )) {
-							$post = $this->getRequest ()->getPost ();
+						if ($form->isValid ( $this->getRequest ()->getParams () )) {
+							$post = $this->getRequest ()->getParams ();
 							
 							$exam = $examMapper->findUpload ( $post ['examId'] );
 							if ($exam->id != $post ['examId'] || $exam->status != Application_Model_ExamStatus::NothingUploaded) {
@@ -373,7 +511,7 @@ class ExamsController extends Zend_Controller_Action {
 		$form = new Application_Form_ExamReport ();
 		$form->setAction ( $examid );
 		if ($this->_request->isPost ()) {
-			$formData = $this->_request->getPost ();
+			$formData = $this->_request->getParams ();
 			$examMapper = new Application_Model_ExamMapper ();
 			// TODO check escaping as a get variable is passed to mysql here!!!! Maybe find a nicer way of doing this when it's less late.		
 			$examMapper->updateExamStatusToReported ( $examid, $formData['_reason']);
@@ -387,14 +525,14 @@ class ExamsController extends Zend_Controller_Action {
     	$found = false;
     	$form = new Application_Form_ExamQuickSearch();
     	if ($this->_request->isPost()) {
-    		$formData = $this->_request->getPost();
-    		if ($form->isValid($formData)) {
+    		$formData = $this->_request->getParams();
+    		if ($form->isValid($this->getRequest()->getParams())) {
 	       		$index = new Application_Model_ExamSearch();
 	       		$found = $index->searchExists($formData['_query']);
 	    		if(!$found) {
 	    			$form->getElement("_query")->addError("no results found!");
 	    		}
-    		}
+    		} else { var_dump($form->getErrors()); }
     	}
     	$this->view->form = $form;
     	
