@@ -45,6 +45,7 @@ CREATE  TABLE IF NOT EXISTS `course` (
   `idcourse` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
   `name_short` VARCHAR(14) NULL ,
+  `order` INT NOT NULL DEFAULT 1 ,
   PRIMARY KEY (`idcourse`) )
 ENGINE = InnoDB
 PACK_KEYS = DEFAULT;
@@ -198,6 +199,7 @@ CREATE  TABLE IF NOT EXISTS `lecturer` (
   `name` VARCHAR(255) NULL ,
   `first_name` VARCHAR(255) NULL ,
   `degree` VARCHAR(255) NULL ,
+  `order` INT NOT NULL DEFAULT 1 ,
   PRIMARY KEY (`idlecturer`) )
 ENGINE = InnoDB;
 
@@ -452,14 +454,14 @@ COMMIT;
 -- Data for table `course`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (1, 'Datenbanken I', NULL);
-INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (2, 'Mustererkennung I', NULL);
-INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (3, 'Informatik I', NULL);
-INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (4, 'Rechnerarchitektur', NULL);
-INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (5, 'Simulation', NULL);
-INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (6, 'Messtechnik (Praktikum)', NULL);
-INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (7, 'Halbleiter', NULL);
-INSERT INTO `course` (`idcourse`, `name`, `name_short`) VALUES (8, 'Nanotechnology', NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (1, 'Datenbanken I', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (2, 'Mustererkennung I', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (3, 'Informatik I', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (4, 'Rechnerarchitektur', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (5, 'Simulation', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (6, 'Messtechnik (Praktikum)', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (7, 'Halbleiter', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (8, 'Nanotechnology', NULL, NULL);
 
 COMMIT;
 
@@ -540,11 +542,11 @@ COMMIT;
 -- Data for table `lecturer`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`) VALUES (1, 'Huber', 'D. R.', 'Prof.');
-INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`) VALUES (2, 'Schwerkel', 'A.', 'Prof. Dr.');
-INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`) VALUES (3, 'Nubra', 'W.', 'Dr.');
-INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`) VALUES (4, 'Adams', 'S. G.', 'Prof. Dr.');
-INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`) VALUES (5, 'Gerbert', '', '');
+INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`, `order`) VALUES (1, 'Huber', 'D. R.', 'Prof.', NULL);
+INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`, `order`) VALUES (2, 'Schwerkel', 'A.', 'Prof. Dr.', NULL);
+INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`, `order`) VALUES (3, 'Nubra', 'W.', 'Dr.', NULL);
+INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`, `order`) VALUES (4, 'Adams', 'S. G.', 'Prof. Dr.', NULL);
+INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`, `order`) VALUES (5, 'Gerbert', '', '', NULL);
 
 COMMIT;
 

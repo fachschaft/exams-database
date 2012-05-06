@@ -45,6 +45,7 @@ CREATE  TABLE IF NOT EXISTS `course` (
   `idcourse` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
   `name_short` VARCHAR(14) NULL ,
+  `order` INT NOT NULL DEFAULT 1 ,
   PRIMARY KEY (`idcourse`) )
 ENGINE = InnoDB
 PACK_KEYS = DEFAULT;
@@ -198,6 +199,7 @@ CREATE  TABLE IF NOT EXISTS `lecturer` (
   `name` VARCHAR(255) NULL ,
   `first_name` VARCHAR(255) NULL ,
   `degree` VARCHAR(255) NULL ,
+  `order` INT NOT NULL DEFAULT 1 ,
   PRIMARY KEY (`idlecturer`) )
 ENGINE = InnoDB;
 

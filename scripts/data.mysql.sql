@@ -2,8 +2,8 @@
 -- Data for table `degree_group`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `degree_group` (`iddegree_group`, `name`) VALUES (1, 'Informatik');
-INSERT INTO `degree_group` (`iddegree_group`, `name`) VALUES (2, 'Mikrosystemtechnik');
+INSERT INTO `degree_group` (`iddegree_group`, `name`, `order`) VALUES (1, 'Informatik', NULL);
+INSERT INTO `degree_group` (`iddegree_group`, `name`, `order`) VALUES (2, 'Mikrosystemtechnik', NULL);
 
 COMMIT;
 
@@ -11,10 +11,10 @@ COMMIT;
 -- Data for table `degree`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`) VALUES (1, 1, 'Informatik (Bachelor)');
-INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`) VALUES (2, 1, 'Informatik (Master)');
-INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`) VALUES (3, 2, 'Mikrosystemtechnik (Bachelor)');
-INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`) VALUES (4, 2, 'Mikrosystemtechnik (Master)');
+INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`, `order`) VALUES (1, 1, 'Informatik (Bachelor)', NULL);
+INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`, `order`) VALUES (2, 1, 'Informatik (Master)', NULL);
+INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`, `order`) VALUES (3, 2, 'Mikrosystemtechnik (Bachelor)', NULL);
+INSERT INTO `degree` (`iddegree`, `degree_group_iddegree_group`, `name`, `order`) VALUES (4, 2, 'Mikrosystemtechnik (Master)', NULL);
 
 COMMIT;
 
@@ -22,14 +22,14 @@ COMMIT;
 -- Data for table `course`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `course` (`idcourse`, `name`) VALUES (1, 'Datenbanken I');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (2, 'Mustererkennung I');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (3, 'Informatik I');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (4, 'Rechnerarchitektur');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (5, 'Simulation');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (6, 'Messtechnik (Praktikum)');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (7, 'Halbleiter');
-INSERT INTO `course` (`idcourse`, `name`) VALUES (8, 'Nanotechnology');
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (1, 'Datenbanken I', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (2, 'Mustererkennung I', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (3, 'Informatik I', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (4, 'Rechnerarchitektur', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (5, 'Simulation', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (6, 'Messtechnik (Praktikum)', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (7, 'Halbleiter', NULL, NULL);
+INSERT INTO `course` (`idcourse`, `name`, `name_short`, `order`) VALUES (8, 'Nanotechnology', NULL, NULL);
 
 COMMIT;
 
@@ -110,11 +110,11 @@ COMMIT;
 -- Data for table `lecturer`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`) VALUES (1, 'Huber', 'D. R.', 'Prof.');
-INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`) VALUES (2, 'Schwerkel', 'A.', 'Prof. Dr.');
-INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`) VALUES (3, 'Nubra', 'W.', 'Dr.');
-INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`) VALUES (4, 'Adams', 'S. G.', 'Prof. Dr.');
-INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`) VALUES (5, 'Gerbert', '', '');
+INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`, `order`) VALUES (1, 'Huber', 'D. R.', 'Prof.', NULL);
+INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`, `order`) VALUES (2, 'Schwerkel', 'A.', 'Prof. Dr.', NULL);
+INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`, `order`) VALUES (3, 'Nubra', 'W.', 'Dr.', NULL);
+INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`, `order`) VALUES (4, 'Adams', 'S. G.', 'Prof. Dr.', NULL);
+INSERT INTO `lecturer` (`idlecturer`, `name`, `first_name`, `degree`, `order`) VALUES (5, 'Gerbert', '', '', NULL);
 
 COMMIT;
 
