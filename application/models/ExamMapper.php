@@ -881,6 +881,9 @@ class Application_Model_ExamMapper
 	}
     
 	private function addLogMessage($examId, $message) {
+			
+		$message = preg_replace("/%user%/", Application_Model_AuthManager::getIdentity(), $message);
+		
 		$this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_log` (`exam_idexam` ,`message`)
 															  VALUES ('".$examId."',  '".$message."')");
 	}

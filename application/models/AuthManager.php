@@ -57,6 +57,22 @@ class Application_Model_AuthManager {
 			return false;
 	}
 	
+	public static function getIdentity()
+	{
+		$auth = Zend_Auth::getInstance ();
+		$result = $auth->getIdentity();
+		
+		return $result;
+	}
+	
+	public static function hasIdentity()
+	{
+		$auth = Zend_Auth::getInstance ();
+		$result = $auth->hasIdentity();
+	
+		return $result;
+	}
+	
 	private function getAuthAdapter(array $params) {
 		// Set up the authentication adapter
 		// $config = Zend_Registry::get ( 'authenticate' );

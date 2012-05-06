@@ -7,7 +7,7 @@
   <?php echo $this->headLink()->appendStylesheet('/css/global.css') ?>
 </head>
 <body>
-<div id="header" style="background-color: #EEEEEE; height: 30px;">
+<div id="header" style="background-color: #EEEEEE; height: <? if(!Application_Model_AuthManager::hasIdentity()): echo "30px";  else: echo "45px"; endif; ?>;">
     <div id="header-logo" style="float: left">
         <b>Exam Database</b>
     </div>
@@ -32,19 +32,23 @@
                   'action'=>'index'),
             'default',
             true) ?>">Admin</a>
-		<? if(!Zend_Auth::getInstance()->hasIdentity()): ?>
-		<a href="<?php echo $this->url(
+        <br>
+         <div id="header-navigation-2" style="float: right">
+		<? if(!Application_Model_AuthManager::hasIdentity()): ?>
+		<!-- <a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'login'),
             'default',
-            true) ?>">Login</a>
+            true) ?>">Login</a>-->
 		<? else: ?>	
-		<a href="<?php echo $this->url(
+		
+		<?php echo Application_Model_AuthManager::getIdentity() ?> - (<a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'logout'),
             'default',
-            true) ?>">Logout</a>
+            true) ?>">Logout</a>)
 			<? endif; ?>
+			</div>
     </div>
 </div>
  
