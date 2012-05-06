@@ -36,20 +36,29 @@ class Application_Model_CourseMapper
     
     public function fetchByDegree(Application_Model_Degree $degree)
     {    
-        $degreeTb = new Application_Model_DbTable_Degree();
-
-        //$profiler = new Zend_Db_Profiler();
-        //$profiler->setEnabled(true);
-        //$degree->getAdapter()->setProfiler($profiler);
-
+        $degreeTb = new Application_Model_DbTable_Degree();       
         
-        $resultSet = $degreeTb->find($degree->id)->current()
-                            ->findManyToManyRowset('Application_Model_DbTable_Course',
-                                                   'Application_Model_DbTable_DegreeHasCourse',
-                                                   'Degree', 'Course');
-                                                   
-        
-        //var_dump($profiler);
+        $resultSet = $this->getDbTable()->getAdapter()->query("
+        SELECT course.idcourse, course.name, 
+		replace(
+		replace(
+		replace(
+		replace(
+		replace(
+		replace( course.name,
+		'&auml;', 'a'),
+		'&Auml;', 'A'),
+		'&ouml;', 'o'),
+		'&Ouml;', 'O'),
+		'&uuml;', 'u'),
+		'&Uuml;', 'U')
+		as unescaped_name FROM 
+		course JOIN degree_has_course 
+		ON degree_has_course.course_idcourse = course.idcourse
+		JOIN degree ON degree_has_course.degree_iddegree = degree.iddegree
+		WHERE degree.iddegree = ".$degree->id."
+		ORDER BY unescaped_name;
+        ");
          
         $entries   = array();
         foreach ($resultSet as $row) {

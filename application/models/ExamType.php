@@ -24,7 +24,7 @@ class Application_Model_ExamType
     
     public function __toString()
     {
-    	return $this->_name;
+    	return $this->getName();
     }
  
     public function __set($name, $value)
@@ -66,7 +66,7 @@ class Application_Model_ExamType
  
     public function getName()
     {
-        return $this->_name;
+        return html_entity_decode($this->_name);
     }   
     
     public function setId($id)

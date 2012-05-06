@@ -44,7 +44,7 @@ class Application_Model_Lecturer
     	if($this->_degree == '' && $this->_firstName == '') {
     		return $this->_name;
     	}
-    	return $this->_name . ", " . $this->_degree . " " . $this->_firstName;
+    	return $this->getName() . ", " . $this->getDegree() . " " . $this->getFirstName();
     }
  
     public function __set($name, $value)
@@ -86,7 +86,7 @@ class Application_Model_Lecturer
  
     public function getName()
     {
-        return $this->_name;
+        return html_entity_decode($this->_name);
     }
 
     public function setFirstName($text)
@@ -97,7 +97,7 @@ class Application_Model_Lecturer
  
     public function getFirstName()
     {
-        return $this->_firstName;
+        return html_entity_decode($this->_firstName);
     } 
 
     public function setDegree($text)
@@ -108,7 +108,7 @@ class Application_Model_Lecturer
  
     public function getDegree()
     {
-        return $this->_degree;
+        return html_entity_decode($this->_degree);
     }     
     
     public function setId($id)

@@ -186,7 +186,7 @@ class Application_Form_UploadDetail extends Zend_Form
 
         foreach($entries as $group)
         {
-            $options[$group->getId()] = $group->getName();
+            $options[$group->getId()] = $group;
         }
         
     

@@ -60,7 +60,7 @@ class Application_Model_DegreeGroup
  
     public function getName()
     {
-        return $this->_name;
+        return html_entity_decode($this->_name);
     }
     
     public function setId($id)

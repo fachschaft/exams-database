@@ -38,14 +38,38 @@ class Application_Model_LecturerMapper
     {   
         //$adapter = $this->getDbTable()->getAdapter();
         
-        $select = $this->getDbTable()->getAdapter()->select()
+        /*$select = $this->getDbTable()->getAdapter()->select()
               ->from(array('l' => 'lecturer'),
                      array('idlecturer', 'name', 'first_name',	'degree'))
               ->join(array('dhl' => 'degree_has_lecturer'),
                      'dhl.lecturer_idlecturer = l.idlecturer')
-              ->where('dhl.degree_iddegree = ?', $degree->id);
+              ->where('dhl.degree_iddegree = ?', $degree->id)
+              ->order(array('order', 'name'));
         
-        $resultSet = $this->getDbTable()->getAdapter()->fetchAll($select);
+        
+        $resultSet = $this->getDbTable()->getAdapter()->fetchAll($select);*/
+        
+        $resultSet = $this->getDbTable()->getAdapter()->query("
+        		SELECT lecturer.idlecturer, lecturer.degree, lecturer.first_name, lecturer.name,
+        		replace(
+        		replace(
+        		replace(
+        		replace(
+        		replace(
+        		replace( lecturer.name,
+        		'&auml;', 'a'),
+        		'&Auml;', 'A'),
+        		'&ouml;', 'o'),
+        		'&Ouml;', 'O'),
+        		'&uuml;', 'u'),
+        		'&Uuml;', 'U')
+        		as unescaped_name FROM
+        		lecturer JOIN degree_has_lecturer
+        		ON degree_has_lecturer.lecturer_idlecturer = lecturer.idlecturer
+        		JOIN degree ON degree_has_lecturer.degree_iddegree = degree.iddegree
+        		WHERE degree.iddegree = ".$degree->id."
+        		ORDER BY unescaped_name;
+        		");
          
         $entries   = array();
         foreach ($resultSet as $row) {

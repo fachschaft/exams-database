@@ -129,7 +129,7 @@ class Application_Form_ExamCourses extends Application_Form_ExamTemplate
 
             foreach($entries as $group)
             {
-                $options[$group->getId()] = $group->getName();
+                $options[$group->getId()] = $group;
             }
         }
     
