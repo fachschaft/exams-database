@@ -811,20 +811,20 @@ class Application_Model_ExamMapper
 												WHERE  `idexam` =".$exam->id.";");
 												
 		
-		$this->addLogMessage($exam->id, 'Exam details updated by %user%.');	
+		Application_Model_ExamLogManager::addLogMessage($exam->id, 'Exam details updated by %user%.');	
 
 	}
 	
 	public function updateExamStatusToUnchecked($examId) 
 	{
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Unchecked."', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
-		$this->addLogMessage($examId, 'Exam files uploaded by user.');
+		Application_Model_ExamLogManager::addLogMessage($examId, 'Exam files uploaded by %user%.');
     }
 	
 	public function updateExamStatusToDisapprove($examId) 
 	{
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Unchecked."', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
-		$this->addLogMessage($examId, 'Exam disapproved by %user%.');
+		Application_Model_ExamLogManager::addLogMessage($examId, 'Exam disapproved by %user%.');
 		//remove the exam from the search index
 		$index = new Application_Model_ExamSearch();
 		$index->removeFileFromIndex($examId);
@@ -833,7 +833,7 @@ class Application_Model_ExamMapper
 	public function updateExamStatusToChecked($examId) 
 	{
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::PublicExam."', `modified_last_date` = NOW() WHERE `idexam` =".$examId." AND `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Unchecked."';");
-		$this->addLogMessage($examId, 'Exam approved by %user%.');
+		Application_Model_ExamLogManager::addLogMessage($examId, 'Exam approved by %user%.');
 		// Add the exam to the search index
 		$index = new Application_Model_ExamSearch();
 		//TODO(aamuuninen) wait for "entmurxing", then utilize sensible keywords
@@ -844,20 +844,20 @@ class Application_Model_ExamMapper
 	{
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Deleted."', `modified_last_date` = NOW() WHERE `idexam` =".$examId." AND `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Unchecked."';");
 		$this->getDbTable()->getAdapter()->query("UPDATE `document` SET  `deleted` =  '1' WHERE  `exam_idexam` =".$examId.";");
-		$this->addLogMessage($examId, 'Exam deleted by %user%.');
+		Application_Model_ExamLogManager::addLogMessage($examId, 'Exam deleted by %user%.');
     }
     
     public function updateExamStatusToReported($examId, $reason)
     {
     	//TODO is changing the last modified date here correct?
     	$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Reported."' WHERE `idexam` =".$examId.";");
-    	$this->addLogMessage($examId, 'Exam was reported with reason ' . $reason . '.');
+    	Application_Model_ExamLogManager::addLogMessage($examId, 'Exam was reported with reason ' . $reason . '.');
     }
     
     public function updateExamStatusUnreport($examId)
     {
     	$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::PublicExam."', `modified_last_date` = NOW() WHERE `idexam` =".$examId." AND `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Reported."';");
-    	$this->addLogMessage($examId, 'Exam unreport by %user%.');
+    	Application_Model_ExamLogManager::addLogMessage($examId, 'Exam unreport by %user%.');
     }
 	
 	public function returnQuicksearchIndexKeywords($id) {
@@ -878,14 +878,6 @@ class Application_Model_ExamMapper
 		}
 		
 		return implode ( ' ', $keywordsArray);
-	}
-    
-	private function addLogMessage($examId, $message) {
-			
-		$message = preg_replace("/%user%/", Application_Model_AuthManager::getIdentity(), $message);
-		
-		$this->getDbTable()->getAdapter()->query("INSERT INTO  `exam_log` (`exam_idexam` ,`message`)
-															  VALUES ('".$examId."',  '".$message."')");
 	}
 	
 	public function updateDownloadCounter($examId)

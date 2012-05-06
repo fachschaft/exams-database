@@ -119,6 +119,7 @@
         <modelFile modelName="ExamSearch"/>
         <modelFile modelName="ExamStatus"/>
         <modelFile modelName="AuthManager"/>
+        <modelFile modelName="ExamLogManager"/>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
       <viewsDirectory>
