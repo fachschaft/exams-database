@@ -51,7 +51,9 @@ class Application_Model_DocumentMapper
 				  ->setDeleteState($element['deleted'])
 				  ->setDisplayName($element['display_name']);
 		$entry->setCollection($element['collection']);
+		$entry->setCheckSum($element['md5_sum']);
 		$entry->setExam($examMapper->find($element['exam_idexam']));
+		
                   
         return $entry;
     }

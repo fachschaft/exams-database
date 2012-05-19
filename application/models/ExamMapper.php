@@ -271,9 +271,7 @@ class Application_Model_ExamMapper
     		$where_lecturer_emelents = array();
     		$where_lecturer_emelents[] = "exam.idexam IN (".implode(',', $examId).")";
     	}
-    	
-    	$where_lecturer_emelents[] = "document.deleted != 1";
-    	
+
     	if(!empty($where_lecturer_emelents))
     		$where_base = "WHERE ".implode(" AND ", $where_lecturer_emelents);
     	
@@ -428,7 +426,7 @@ class Application_Model_ExamMapper
     			GROUP_CONCAT(lecturer.idlecturer SEPARATOR '".$explode_Group_Concat_Delimiter."') as lecturer_ids,
     			
     			GROUP_CONCAT(document.iddocument SEPARATOR '".$explode_Group_Concat_Delimiter."') as document_ids,
-    			
+    			    			
     			GROUP_CONCAT(idcourse SEPARATOR '".$explode_Group_Concat_Delimiter."') as course_idsX,
     			GROUP_CONCAT(course_ids2 SEPARATOR '".$explode_Group_Concat_Delimiter."') as course_idsX2
     				
@@ -480,7 +478,7 @@ class Application_Model_ExamMapper
     			JOIN exam_has_lecturer ON exam_has_lecturer.exam_idexam = exam.idexam
     			JOIN lecturer ON lecturer.idlecturer = exam_has_lecturer.lecturer_idlecturer
     			
-    			JOIN document ON document.exam_idexam = exam.idexam
+    			LEFT JOIN document ON document.exam_idexam = exam.idexam
     			
     			 
     			".$where_base."
@@ -500,7 +498,7 @@ class Application_Model_ExamMapper
     	
     	// fill the exam
     	foreach ($resultSet as $data) {
-	    	$exam = new Application_Model_Exam();
+    		$exam = new Application_Model_Exam();
 	    	
 	    	$exam->setId($data['idexam']);
 	    	$exam->setAutor($data['autor']);
@@ -530,11 +528,14 @@ class Application_Model_ExamMapper
 	    	
 	    	$lec_ids[$data['idexam']] = explode($explode_Group_Concat_Delimiter, $data['lecturer_ids']);
 	    	
-	    	$doc_ids[$data['idexam']] = explode($explode_Group_Concat_Delimiter, $data['document_ids']);
+	    	if(isset($data['document_ids'])) {
+	    		$doc_ids[$data['idexam']] = explode($explode_Group_Concat_Delimiter, $data['document_ids']);
+	    	}
 	    	
 	    	
 	    	
     	}
+    	
     	
     	// grab all course and store them
     	if(isset($cor_ids) && !empty($cor_ids)) {
@@ -639,7 +640,7 @@ class Application_Model_ExamMapper
     	}
     	
     	// grab all documents and store them
-    	if(isset($doc_ids) && !empty($doc_ids)) {
+    	if(isset($doc_ids) && !empty($doc_ids) && $doc_ids != "") {
 	    	$doc_idsX = array();
 	    	foreach ($doc_ids as $ids)
 	    	{
@@ -648,9 +649,9 @@ class Application_Model_ExamMapper
 	    			$doc_idsX[] = $id;
 	    		}
 	    	}
-	    	
+
 	    	if(!empty($doc_idsX)) {
-		    	$resDocs = $this->getDbTable()->getAdapter()->query("SELECT * FROM `document` WHERE `iddocument` IN (".implode(',', $doc_idsX).")");
+		    	$resDocs = $this->getDbTable()->getAdapter()->query("SELECT * FROM `document` WHERE `deleted` = 0 AND `iddocument` IN (".implode(',', $doc_idsX).")");
 		    	
 		    	foreach($resDocs as $doc)
 		    	{
@@ -905,7 +906,7 @@ class Application_Model_ExamMapper
 		}
 		if($count == 1)
 		{
-			$this->getDbTable()->getAdapter()->query("UPDATE `exam_download_statistic_day` SET  `downloads` =  `downloads`+1 
+			$this->getDbTable()->getAdapter()->query("UPDATE `exam_download_statistic_day` SET  `downloads` =  `downloads`+1
 													  WHERE `date` = DATE(NOW()) AND `exam_idexam` = '".$examId."';");
 		}
 	}
@@ -916,14 +917,104 @@ class Application_Model_ExamMapper
 		set_time_limit(0);
 		$res = $this->getDbTable()->fetchAll();
 		
-		echo "<p>cout trough ". count($res) ." exams.</p><br>";
+		echo "<p>checked trough ". count($res) ." exams.</p><br>";
 		
 		foreach($res as $ex)
 		{
 			try {
-				$this->getExam($ex['idexam']);				
+				$this->find($ex['idexam']);
 			} catch (Exception $e) {
-				echo '<p>' . $e->getMessage() . '</p>';
+				echo '<p>' . $e->getMessage() . '</p><lu>';
+				
+				if($ex['exam_status_idexam_status'] == 1) {
+					echo "<li>no files uploaded</li>";
+					$doc = new Application_Model_DbTable_Document();
+					$doc_elements = $doc->fetchAll("exam_idexam = ". $ex['idexam']);
+					if(count($doc_elements) != 0) {
+						echo "<li>status is no files uploaded, but there connected files!</li>";
+					}
+				}
+				
+				// check if lecturer relation is ok
+				$ehl = new Application_Model_DbTable_ExamHasLecturer();
+				$ehl_elements = $ehl->fetchAll("exam_idexam = " . $ex['idexam']);
+ 				
+					// check if ExamHasLecturer as wrong entrys
+					if(count($ehl_elements) == 0)
+					{
+						echo ("<li>no connection in ExamHasLecturer table</li>");
+					} else {
+						// check if the found lecturer exists
+						foreach ($ehl_elements as $ehl_element)
+						{
+							$lec = new Application_Model_DbTable_Lecturer();
+							$lec_elements = $lec->find($ehl_element['lecturer_idlecturer']);
+							if(count($lec_elements) == 0) {
+								echo "<li>no lecturer found with id (".$ehl_element['lecturer_idlecturer'].") wrong entry in ExamHasLecturer?</li>";
+							} else {
+								if(count($lec_elements) > 1) {
+									echo "<li>more than one lecturer? this can't be! (".$ehl_element['lecturer_idlecturer'].")</li>";
+								} else {
+									// check if the lecturer is connected to one or more degrees
+									$dhl = new Application_Model_DbTable_DegreeHasLecturer();
+									$lec_element = $lec_elements->current();
+									$dhl_elements = $dhl->fetchAll("lecturer_idlecturer = " . $lec_element['idlecturer']);
+									if(count($dhl_elements) == 0) {
+										echo ("<li>no connection in DegreeHasLecturer table for lecturer id: (".$lec_element['idlecturer'].")</li>");
+									} else {
+									
+									}
+									
+								}
+							}
+						}
+					}
+					
+					// check if the relation to a cours is ok
+					$ehc = new Application_Model_DbTable_ExamHasCourse();
+					$ehc_elements = $ehc->fetchAll("exam_idexam = " . $ex['idexam']);
+					if(count($ehc_elements) == 0)
+					{
+						echo ("<li>no connection in ExamHasCourse table</li>");
+					} else {
+						// check if the found course exists
+						foreach ($ehc_elements as $ehc_element)
+						{
+							$cor = new Application_Model_DbTable_Course();
+							$cor_elements = $cor->find($ehc_element['course_idcourse']);
+							if(count($cor_elements) == 0) {
+								echo "<li>no course found with id (".$ehc_element['course_idcourse'].") wrong entry in ExamHasCourse?</li>";
+							} else {
+								if(count($cor_elements) > 1) {
+									echo "<li>more than one course? this can't be! (".$ehc_element['course_idcourse'].")</li>";
+								} else {
+									// ther is one course so check if the connections to the degrees exists
+									$dhc = new Application_Model_DbTable_DegreeHasCourse();
+									$cor_element = $cor_elements->current();
+									$dhc_elements = $dhc->fetchAll("course_idcourse = " . $cor_element['idcourse']);
+									if(count($dhc_elements) == 0) {
+										echo ("<li>no connection in DegreeHasCourse table for course id: (".$cor_element['idcourse'].")</li>");
+									} else {
+										foreach($dhc_elements as $dhc_element)
+										{
+											$deg = new Application_Model_DbTable_Degree();
+											$deg_elements = $deg->find($dhc_element['degree_iddegree']);
+											if(count($deg_elements) == 0) {
+												echo "<li>no degree found with id (".$dhc_element['degree_iddegree'].") wrong entry in DegreeHasCourse?</li>";
+											}
+										}
+									}
+								}
+								
+							}
+						}
+					}
+					
+					
+
+					
+				
+				echo '</lu><br>';
 			}
 			
 		}

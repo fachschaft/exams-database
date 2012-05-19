@@ -361,6 +361,64 @@ class Application_Model_ExamFileManager
 	}
 	
 	
+	public function checkFilesMD5()
+	{
+		echo "<p>checkFilesMD5</p>";
+	
+		$documentMapper = new Application_Model_DocumentMapper();
+	
+		$docDb = new Application_Model_DbTable_Document();
+	
+		$data = $docDb->fetchAll();
+	
+		$diffs = 0;
+		foreach ($data as $doc)
+		{
+			$tmpDoc = $documentMapper->fetch($doc['iddocument']);
+				
+			
+			$md5Now = md5_file($this->getFileStoragePath() . $tmpDoc->getFileName());
+			
+			if($md5Now != $tmpDoc->getCheckSum())
+			{
+				echo "<p> ".$this->getFileStoragePath() . $tmpDoc->getFileName()." ha a different check sum stored in the database (". $tmpDoc->getCheckSum() ."), id: ".$tmpDoc->id."</p>";
+			}
+			
+		}
+		
+		echo "<p>" . $diffs . " file(s) are damaged?</p>";
+	}
+	
+	public function restorMD5SumIfMising()
+	{
+		echo "<p>checkFilesMD5</p>";
+	
+		$documentMapper = new Application_Model_DocumentMapper();
+	
+		$docDb = new Application_Model_DbTable_Document();
+	
+		$data = $docDb->fetchAll();
+	
+		$updated = 0;
+		foreach ($data as $doc)
+		{
+			$tmpDoc = $documentMapper->fetch($doc['iddocument']);
+			
+			if($tmpDoc->getCheckSum() == NULL)
+			{
+				$md5Now = md5_file($this->getFileStoragePath() . $tmpDoc->getFileName());
+				$docDb->update(array('md5_sum' => $md5Now), 'iddocument = ' .$doc['iddocument']);
+				
+				echo "<p> ".$this->getFileStoragePath() . $tmpDoc->getFileName()." store new check sum (". $md5Now ."), id: ".$tmpDoc->id."</p>";
+				$updated++;
+			}
+				
+		}
+		echo "<p>" . $updated . " file(s) md5 sums updated</p>";
+	}
+	
+	
+	
 	
 	////////////// HELPER
 	

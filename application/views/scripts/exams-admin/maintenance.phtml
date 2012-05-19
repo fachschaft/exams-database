@@ -36,6 +36,25 @@
             'default',
             true) ?>">Ckeck all file extention</a></li>
 		</ul>
+		<ul>
+	<li><a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'maintenance',
+                  'do'=>'checkFileDamaged',
+                  ),
+            'default',
+            true) ?>">Check for damaged files</a></li>
+		</ul>
+		<ul>
+	<li><a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'maintenance',
+                  'do'=>'generateMd5',
+                  ),
+            'default',
+            true) ?>">Generate md5 sums (if missing)</a></li>
+		</ul>
+		
 		
 		
 	

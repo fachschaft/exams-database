@@ -758,6 +758,16 @@ class ExamsAdminController extends Zend_Controller_Action
     				$docMapper = new Application_Model_DocumentMapper();
     				$docMapper->checkDocumentExtentions();
     				break;
+    			case "checkFileDamaged" :
+    				$docMapper = new Application_Model_ExamFileManager();
+    				$docMapper->checkFilesMD5();
+    				break;
+    			case "generateMd5" :
+    				$docMapper = new Application_Model_ExamFileManager();
+    				$docMapper->restorMD5SumIfMising();
+    				break;
+    				
+    				
     		}
     	}
     } 
