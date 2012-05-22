@@ -16,7 +16,6 @@ class LoginController extends Zend_Controller_Action
     		$this->_helper->Redirector->setGotoSimple ( 'index', 'default');
     	}
     	
-		$authmanager = new Application_Model_AuthManager();
 		$request = $this->getRequest ();
 		
 		// Check if we have a POST request
@@ -29,7 +28,7 @@ class LoginController extends Zend_Controller_Action
 			}
 			// Check if credentials provided are valid 
 			$formdata = $form->getValues ();			
-			if (!$authmanager->grantPermission($formdata)) {
+			if (!$this->_authManager->grantPermission($formdata)) {
 				$form->setDescription ( 'Invalid credentials provided' );
 				$this->view->form = $form;
 				return $this->render ( 'login' ); // re-render the login form
@@ -39,7 +38,7 @@ class LoginController extends Zend_Controller_Action
 			$data = $this->getRequest ()->getParams ();
 			
 			// reconstruct the old parameters
-			$data = $authmanager->popParameters($data);
+			$data = $this->_authManager->popParameters($data);
 			
 			$this->_helper->Redirector->setGotoSimple ( $data ['action'], $data ['controller'], null, $data );
 			}
