@@ -295,7 +295,7 @@ public function degreesAction() {
 		if (isset ( $this->getRequest ()->id )) {
 			// For anonymous Users, check if the user is allowed to download
 			// files based on IP
-			if (! Zend_Auth::getInstance ()->hasIdentity ()) {
+			if (! Application_Model_AuthManager::hasIdentity()) {
 				$ip = array (
 						'ip' => $this->getRequest ()->getClientIp () 
 				);
@@ -320,14 +320,14 @@ public function degreesAction() {
 			}
 			
 			}
-		 if (Zend_Auth::getInstance()->hasIdentity())
+		 if (Application_Model_AuthManager::hasIdentity())
 		 	$fileId = $this->getRequest ()->id;
 		 }
 		if (isset ( $this->getRequest ()->admin )) {
 			// ToDo: check for admin state
 			
 			// check if a login exists for admin controller
-			if (Zend_Auth::getInstance ()->hasIdentity ()) {
+			if (Application_Model_AuthManager::hasIdentity ()) {
 				// If user is logged in, get the fileid for the download
 				$fileId = $this->getRequest ()->admin;
 			} else {

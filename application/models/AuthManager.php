@@ -59,18 +59,18 @@ class Application_Model_AuthManager {
 	
 	public static function getIdentity()
 	{
-		$auth = Zend_Auth::getInstance ();
-		$result = $auth->getIdentity();
-		
-		return $result;
+		return Zend_Auth::getInstance ()->getIdentity();
+
 	}
 	
 	public static function hasIdentity()
 	{
-		$auth = Zend_Auth::getInstance ();
-		$result = $auth->hasIdentity();
+		return Zend_Auth::getInstance ()->hasIdentity();
+	}
 	
-		return $result;
+	public static function clearIdentity()
+	{
+		return Zend_Auth::getInstance ()->clearIdentity();
 	}
 	
 	private function getAuthAdapter(array $params) {

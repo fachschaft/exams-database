@@ -16,7 +16,7 @@ class ExamsAdminController extends Zend_Controller_Action
     public function init()
     {
 		// check if a login exists for admin controller
-		if (! Zend_Auth::getInstance ()->hasIdentity () && $this->getRequest ()->getActionName () != "login") {
+		if (! Application_Model_AuthManager::hasIdentity() && $this->getRequest ()->getActionName () != "login") {
 			$data = $this->getRequest ()->getParams ();
 			// save the old controller and action to redirect the user after the login
 			$authmanager = new Application_Model_AuthManager ();
@@ -315,7 +315,7 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function logoutAction()
     {
-		Zend_Auth::getInstance ()->clearIdentity ();
+		Application_Model_AuthManager::clearIdentity();
 		$this->_helper->redirector ( 'login' ); // back to login page
     }
 
