@@ -1,7 +1,7 @@
 <?php 
 /**
  * exams-database
- * @copyright	Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @copyright	Written for Fachschaft Technische Fakultï¿½t Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
@@ -21,7 +21,7 @@ class Application_Form_AdminQuicksearch extends Zend_Form {
 	public function init() {
 		
 		$this->setMethod ( 'post' );
-		$this->setAction ( '/exams-admin/build-quicksearch-index' );
+		//$this->setAction ( '/exams-admin/quicksearch-index' );
 		
 		$this->_buttonNewIndex = new Zend_Form_Element_Submit ( 'newIndex' );
 		$this->_buttonNewIndex->setAttrib('id', 'newindex');

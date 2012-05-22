@@ -301,7 +301,7 @@ class ExamsAdminController extends Zend_Controller_Action
 		//
     }
 
-    public function buildQuicksearchIndexAction()
+    public function quicksearchIndexAction()
     {
 		$form = new Application_Form_AdminQuicksearch ();
 		$form->newIndex->setLabel ( 'Create new Index' );
