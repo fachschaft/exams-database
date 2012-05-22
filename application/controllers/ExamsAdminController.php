@@ -317,24 +317,39 @@ class ExamsAdminController extends Zend_Controller_Action
 				$index = new Application_Model_ExamSearch ();
 				
 				if ($form->newIndex->isChecked ()) {
+					if($this->_authManager->isAllowed(null, 'maintenance_quicksearch_new_index')){
 					$index->createIndex ();
 					echo "Index created";
+					}
+					else echo "You can't do that!";
 				
 				} else if ($form->rebuildIndex->isChecked ()) {
+					if(!$this->_authManager->isAllowed(null, 'maintenance_quickseach_rebuild_index')){
 					$index->renewIndex ();
 					echo "Index rebuilt";
+					}
+					else echo "You can't do that!";
 				
 				} else if ($form->deleteIndex->isChecked ()) {
+					if($this->_authManager->isAllowed(null, 'maintenance_quicksearch_delete_index')){
 					$index->deleteIndex ();
 					echo "Index deleted";
+					}
+					else echo "You can't do that!";
 				
 				} else if ($form->optimizeIndex->isChecked ()) {
+					if($this->_authManager->isAllowed(null, 'maintenance_quicksearch_exec_garbage')){
 					$index->optimizeIndex ();
 					echo "Garbage removed, index optimized";
+					}
+					else echo "you can't do that";
 				
 				} else if ($form->indexSize->isChecked()){
+					if($this->_authManager->isAllowed(null, 'maintenance_quicksearch_file_count')){
 					$size = $index->getIndexSize();
 					echo "There are $size files in the Index";
+					}
+					else echo "You can't do that!";
 				}
 			} else
 				throw new Exception ( "Invalid Form Data" );
