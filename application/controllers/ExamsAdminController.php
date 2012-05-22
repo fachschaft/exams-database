@@ -1,7 +1,7 @@
 <?php 
 /**
  * exams-database
- * @copyright	Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @copyright	Written for Fachschaft Technische Fakultï¿½t Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
@@ -50,18 +50,34 @@ class ExamsAdminController extends Zend_Controller_Action
 			
 			switch ($do) {
 				case "approve" :
+					if(!$this->_authManager->isAllowed(null, 'approve_exam')) {
+						echo "You can't do that!";
+								break;
+					}
 					$examMapper->updateExamStatusToChecked ( $id );
 					$this->_helper->Redirector->setGotoSimple ( 'overview' );
 					break;
 				case "disapprove" :
+					if(!$this->_authManager->isAllowed(null, 'approve_exam')) {
+						echo "You can't do that!";
+						break;
+					}
 					$examMapper->updateExamStatusToDisapprove ( $id );
 					$this->_helper->Redirector->setGotoSimple ( 'overview' );
 					break;
 				case "unreport" :
+					if(!$this->_authManager->isAllowed(null, 'approve_exam')) {
+						echo "You can't do that!";
+						break;
+					}
 					$examMapper->updateExamStatusUnreport ( $id );
 					$this->_helper->Redirector->setGotoSimple ( 'overview' );
 				break;
 				case "delete" :
+					if(!$this->_authManager->isAllowed(null, 'modify_exam')) {
+						echo "You can't do that!";
+						break;
+					}
 					$examMapper->updateExamStatusToDelete ( $id );
 					$this->_helper->Redirector->setGotoSimple ( 'overview' );
 					break;
@@ -93,6 +109,10 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function editdetailsAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'modify_exam')) 
+    		$this->_helper->Redirector->setGotoSimple ( 'overview' );
+    		
+
 		if ($this->getRequest ()->isPost ()) {
 			// save changes
 			$form = new Application_Form_AdminDetail ();
@@ -104,16 +124,15 @@ class ExamsAdminController extends Zend_Controller_Action
 			$form->setDegree ( $post ['degree'] );
 			if ($form->isValid ( $this->getRequest ()->getPost () )) {
 				$exam = new Application_Model_Exam ();
-				var_dump($exam);
 				$exam->setId ( $post ['exam_id'] );
-				$corses = array();
-				foreach ($post ['course'] as $cor) { $corses[] = new Application_Model_Course(array('id'=>$cor));  }
-				$exam->setCourse ( $corses );
+				$courses = array();
+				foreach ($post ['course'] as $cor) { $courses[] = new Application_Model_Course(array('id'=>$cor));  }
+				$exam->setCourse ( $courses );
 				$lecturer = array();
 				foreach ($post ['lecturer'] as $lec) {
 					$lecturer[] = new Application_Model_Lecturer(array('id'=>$lec));
 				}
-				$exam->setCourse ( $corses );
+				$exam->setCourse ( $courses );
 				$exam->setLecturer ( $lecturer );
 				$exam->setSemester ( new Application_Model_Semester(array('id'=>$post ['semester'])) );
 				$exam->setType ( new Application_Model_ExamType(array('id'=>$post ['type'])) );
@@ -161,6 +180,8 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function logAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'view_log'))
+    		$this->_helper->Redirector->setGotoSimple ( 'overview' );
 		// action body
 		if (! isset ( $this->getRequest ()->id )) {
 			// TODO Do something here
@@ -175,6 +196,8 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function editfilesAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'modify_exam'))
+    		$this->_helper->Redirector->setGotoSimple ( 'overview' );
 		// catch post actions
 		if ($this->getRequest ()->isPost ()) {
 			$post = $this->getRequest ()->getPost ();
@@ -322,6 +345,9 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function degreeAddAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'add_degree'))
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );
+    	
     	$form = new Application_Form_AdminDegreeAdd();
 
     	if($this->getRequest ()->isPost ()) {
@@ -350,6 +376,8 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function degreeEditAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'modify_degree'))
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );
         $form = new Application_Form_AdminDegreeEdit();
 
         if($this->getRequest ()->isPost ()) {
@@ -413,6 +441,9 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function courseAddAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'add_course'))
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );
+    	
         $form = new Application_Form_AdminCourseAdd();
         
         if($this->getRequest ()->isPost ()) {
@@ -445,6 +476,9 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function courseEditAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );
+    	
        $form = new Application_Form_AdminCourseEdit();
         
         if($this->getRequest ()->isPost ()) {
@@ -513,6 +547,9 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function lecturerAddAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'add_lecturer'))
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );
+    	
         $form = new Application_Form_AdminLecturerAdd();
          
         if($this->getRequest ()->isPost ()) {
@@ -546,6 +583,9 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function lecturerEditAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'modify_lecturer'))
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );
+    	
     $form = new Application_Form_AdminLecturerEdit();
         
         if($this->getRequest ()->isPost ()) {
@@ -613,6 +653,9 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function degreeGroupAddAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'add_degree_groups'))
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );
+    	
         $form = new Application_Form_AdminDegreeGroupAdd();
         if($this->getRequest ()->isPost ()) {
         	$data = $this->getRequest ()->getPost ();
@@ -641,6 +684,9 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function degreeGroupEditAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'modify_degree_groups'))
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );
+    	
     	$form = new Application_Form_AdminDegreeGroupEdit();
     	
     	if($this->getRequest ()->isPost ()) {
