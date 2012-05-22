@@ -12,19 +12,22 @@
 
 class ExamsAdminController extends Zend_Controller_Action
 {
+	private $_authManager;
 
     public function init()
-    {
+    {	
+    	$this->_authManager = new Application_Model_AuthManager();
 		// check if a login exists for admin controller
-		if (! Application_Model_AuthManager::hasIdentity() && $this->getRequest ()->getActionName () != "login") {
+		if ((!$this->_authManager->isAllowed(null, 'view_admin_interface'))) {
 			$data = $this->getRequest ()->getParams ();
 			// save the old controller and action to redirect the user after the login
 			$authmanager = new Application_Model_AuthManager ();
 			$data = $authmanager->pushParameters ( $data );
 			
-			$this->_helper->Redirector->setGotoSimple ( 'login', null, null, $data );
+			$this->_helper->Redirector->setGotoSimple ( 'index', 'login', null, $data );
 		
 		}
+		
 		//
     }
 
@@ -35,6 +38,10 @@ class ExamsAdminController extends Zend_Controller_Action
 
     public function overviewAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'view_admin_interface')) {
+    		$this->_helper->Redirector->setGotoSimple ('index');
+    	}
+    	
 		$examMapper = new Application_Model_ExamMapper ();
 		$request = $this->getRequest ();
 		if (isset ( $request->do ) && isset ( $request->id )) {
@@ -166,40 +173,6 @@ class ExamsAdminController extends Zend_Controller_Action
 		//
     }
 
-    public function loginAction()
-    {
-		$authmanager = new Application_Model_AuthManager();
-		$request = $this->getRequest ();
-		
-		// Check if we have a POST request
-		if ($request->isPost ()) {
-			// Get our form and validate it
-			$form = $this->getLoginForm ();
-			if (! $form->isValid ( $request->getPost () )) {
-				$this->view->form = $form;
-				return $this->render ( 'login' ); // re-render the login form
-			}
-			// Check if credentials provided are valid 
-			$formdata = $form->getValues ();			
-			if (!$authmanager->grantPermission($formdata)) {
-				$form->setDescription ( 'Invalid credentials provided' );
-				$this->view->form = $form;
-				return $this->render ( 'login' ); // re-render the login form
-			}
-			
-			else {
-			$data = $this->getRequest ()->getParams ();
-			
-			// reconstruct the old parameters
-			$data = $authmanager->popParameters($data);
-			
-			$this->_helper->Redirector->setGotoSimple ( $data ['action'], $data ['controller'], null, $data );
-			}
-		}
-		
-		$this->view->form = $this->getLoginForm ();
-    }
-
     public function editfilesAction()
     {
 		// catch post actions
@@ -303,20 +276,6 @@ class ExamsAdminController extends Zend_Controller_Action
 		
 		}
 		//
-    }
-
-    private function getLoginForm()
-    {
-		return new Application_Form_AdminLogin ( array (
-				'action' => '',
-				'method' => 'post' 
-		) );
-    }
-
-    public function logoutAction()
-    {
-		Application_Model_AuthManager::clearIdentity();
-		$this->_helper->redirector ( 'login' ); // back to login page
     }
 
     public function buildQuicksearchIndexAction()
@@ -743,28 +702,45 @@ class ExamsAdminController extends Zend_Controller_Action
     			
     		switch ($do) {
     			case "checkInconsistency" :
-    				$examMapper = new Application_Model_ExamMapper();
-    				$examMapper->checkDatabaseForInconsistetExams();
+    				
+    				if($this->_authManager->isAllowed(null, 'maintenance_check_inconsistency')) {
+    					$examMapper = new Application_Model_ExamMapper();
+    					$examMapper->checkDatabaseForInconsistetExams();
+    				} else { echo "Sorry, not allowed!"; }
     				break;
     			case "resetAllMimeTypes" :
-    				$docMapper = new Application_Model_ExamFileManager();
-    				$docMapper->resetAllMimeTypesInDatabese();
+    				if($this->_authManager->isAllowed(null, 'maintenance_determine_mime_types')) {
+    					$docMapper = new Application_Model_ExamFileManager();
+    					$docMapper->resetAllMimeTypesInDatabese();
+    				} else { echo "Sorry, not allowed!"; }
     				break;
     			case "ckeckFiles" :
-    				$docMapper = new Application_Model_ExamFileManager();
-    				$docMapper->checkAllFilesExistsAndReadable();
+    				if($this->_authManager->isAllowed(null, 'maintenance_check_files_exist_and_readable')) {
+    					$docMapper = new Application_Model_ExamFileManager();
+    					$docMapper->checkAllFilesExistsAndReadable();
+    				} else { echo "Sorry, not allowed!";
+    				}
     				break;
     			case "checkExtention" :
-    				$docMapper = new Application_Model_DocumentMapper();
-    				$docMapper->checkDocumentExtentions();
+    				if($this->_authManager->isAllowed(null, 'maintenance_check_files_extention')) {
+    					$docMapper = new Application_Model_DocumentMapper();
+    					$docMapper->checkDocumentExtentions();
+    				} else { echo "Sorry, not allowed!";
+    				}
     				break;
     			case "checkFileDamaged" :
-    				$docMapper = new Application_Model_ExamFileManager();
-    				$docMapper->checkFilesMD5();
+    				if($this->_authManager->isAllowed(null, 'maintenance_check_damaged_files')) {
+    					$docMapper = new Application_Model_ExamFileManager();
+    					$docMapper->checkFilesMD5();
+    				} else { echo "Sorry, not allowed!";
+    				}
     				break;
     			case "generateMd5" :
-    				$docMapper = new Application_Model_ExamFileManager();
-    				$docMapper->restorMD5SumIfMising();
+    				if($this->_authManager->isAllowed(null, 'maintenance_generate_missing_md5sums')) {
+    					$docMapper = new Application_Model_ExamFileManager();
+    					$docMapper->restorMD5SumIfMising();
+    				} else { echo "Sorry, not allowed!";
+    				}
     				break;
     				
     				

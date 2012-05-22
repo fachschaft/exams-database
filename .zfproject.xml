@@ -41,6 +41,10 @@
           <actionMethod actionName="degreeGroupEdit"/>
           <actionMethod actionName="maintenance"/>
         </controllerFile>
+        <controllerFile controllerName="Login">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="logout"/>
+        </controllerFile>
       </controllersDirectory>
       <formsDirectory>
         <formFile formName="ExamDegrees"/>
@@ -90,6 +94,7 @@
           <dbTableFile dbTableName="ExamHasCourse"/>
           <dbTableFile dbTableName="CourseHasCourse"/>
           <dbTableFile dbTableName="DegreeHasLecturer"/>
+          <dbTableFile dbTableName="UserPrivilegeMapping"/>
         </dbTableDirectory>
         <modelFile modelName="DegreeGroup"/>
         <modelFile modelName="DegreeGroupMapper"/>
@@ -120,6 +125,8 @@
         <modelFile modelName="ExamStatus"/>
         <modelFile modelName="AuthManager"/>
         <modelFile modelName="ExamLogManager"/>
+        <modelFile modelName="UserPrivilegeMapping"/>
+        <modelFile modelName="UserPrivilegeMappingMapper"/>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
       <viewsDirectory>
@@ -204,6 +211,12 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="ExamsAdmin">
             <viewScriptFile forActionName="maintenance"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Login">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Login">
+            <viewScriptFile forActionName="logout"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

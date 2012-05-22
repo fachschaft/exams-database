@@ -315,7 +315,7 @@ public function degreesAction() {
 				// save the old controller and action to redirect the user after
 				// the login
 				$data = $authmanager->pushParameters ( $data );
-				
+				die("Application");
 				$this->_helper->redirector('login', 'exams-admin', NULL, $data);
 			}
 			

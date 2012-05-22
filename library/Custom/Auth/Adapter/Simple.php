@@ -14,7 +14,7 @@ class Custom_Auth_Adapter_Simple implements Zend_Auth_Adapter_Interface
 {
 	protected $_username;
 	protected $_password;
-	protected $_users = array('admin'=>'123456', 'aritas'=>'123456');
+	protected $_users = array('admin'=>'123456', 'aritas'=>'123456', 'dl45' => '123456');
 	
 	public function __construct($username, $password)
 	{

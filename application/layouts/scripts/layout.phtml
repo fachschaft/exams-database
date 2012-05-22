@@ -42,8 +42,8 @@
             true) ?>">Login</a>-->
 		<? else: ?>	
 		
-		<?php echo Application_Model_AuthManager::getIdentity() ?> - (<a href="<?php echo $this->url(
-            array('controller'=>'exams-admin',
+		<?php echo Application_Model_AuthManager::getIdentity() . " (" . Application_Model_AuthManager::getRole() .")" ?> - (<a href="<?php echo $this->url(
+            array('controller'=>'login',
                   'action'=>'logout'),
             'default',
             true) ?>">Logout</a>)
