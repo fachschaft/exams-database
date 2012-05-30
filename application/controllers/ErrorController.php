@@ -1,7 +1,7 @@
 <?php 
 /**
  * exams-database
- * @copyright	Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @copyright	Written for Fachschaft Technische Fakultï¿½t Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
@@ -21,7 +21,6 @@ class ErrorController extends Zend_Controller_Action
             $this->view->message = 'You have reached the error page';
             return;
         }
-        
         switch ($errors->type) {
             case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ROUTE:
             case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
@@ -31,6 +30,21 @@ class ErrorController extends Zend_Controller_Action
                 $priority = Zend_Log::NOTICE;
                 $this->view->message = 'Page not found';
                 break;
+            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_OTHER:
+            	$priority = Zend_Log::NOTICE;
+            	switch(get_class($errors->exception)) {
+            		case'Custom_Exception_NotLoggedIn':
+						$this->_forward('not-logged-in');
+            			break;
+            		case 'Custom_Exception_PermissionDenied':
+            			$this->_forward('permission-denied');
+            			break;
+            			         				
+            		default:
+            			throw new Zend_Exception("Developer was incompetent, Exception not found");
+            			break;
+            	}
+            	break;
             default:
                 // application error            	
                 $this->getResponse()->setHttpResponseCode(500);
@@ -67,7 +81,15 @@ class ErrorController extends Zend_Controller_Action
         $log = $bootstrap->getResource('Log');
         return $log;
     }
-
+	public function notLoggedInAction() {
+		echo "Not logged in action called!";
+		die();
+	}
+	
+	public function permissionDeniedAction() {
+		echo "Permission Denied action called!";
+		die();
+	}
 
 }
 
