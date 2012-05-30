@@ -4,10 +4,44 @@ class LoginController extends Zend_Controller_Action
 {
 
     private $_authManager = null;
+    
+    private $_filterManager;
 
     public function init()
     {
         $this->_authManager = new Application_Model_AuthManager();
+        
+        $this->_filterManager = new Application_Model_FilterManager();
+        
+		$this->_filterManager->setAllowedFileds(array(
+				// default rule
+				'*' =>array(
+						'filter' 	=> array('StripTags'),
+						'validator' => array()),
+
+				// redirecting controller
+				'rcontroller' =>array(
+						'filter' 	=> array('StripTags'),
+						'validator' => array()),
+				
+				// redirecting aktion
+				'raction' => array(
+						'filter' 	=> array('StripTags'),
+						'validator' => array()),
+				
+				'username' => array(
+						'filter' 	=> array('StripTags'),
+						'validator' => array()),
+				
+				'password' => array(
+						'filter' 	=> array('StripTags'),
+						'validator' => array()),
+				
+					
+		));
+
+		$this->_filterManager->setFilterAndValidator();
+		$this->_filterManager->applyFilterAndValidators($this->getRequest());
     }
 
     public function indexAction()
@@ -24,14 +58,14 @@ class LoginController extends Zend_Controller_Action
 			$form = $this->getLoginForm ();
 			if (! $form->isValid ( $request->getPost () )) {
 				$this->view->form = $form;
-				return $this->render ( 'login' ); // re-render the login form
+				return $this->render ( 'index' ); // re-render the login form
 			}
 			// Check if credentials provided are valid 
 			$formdata = $form->getValues ();			
 			if (!$this->_authManager->grantPermission($formdata)) {
 				$form->setDescription ( 'Invalid credentials provided' );
 				$this->view->form = $form;
-				return $this->render ( 'login' ); // re-render the login form
+				return $this->render ( 'index' ); // re-render the login form
 			}
 			
 			else {
