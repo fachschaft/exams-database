@@ -14,16 +14,14 @@ class ExamsController extends Zend_Controller_Action {
 	
 	private $_profiler;
 	
-	private $_allowedFileds;
-	private $_inputFilter;
-	private $_inputValidator;
-	
-	private $_inputUnescaped; 
+	private $_filterManager;
 	
 	public function init() {
 		
+		$this->_filterManager = new Application_Model_FilterManager();
+		
 		// define all allowed fields
-		$this->_allowedFileds = array(
+		$this->_filterManager->setAllowedFileds(array(
 				// default rule
 				'*' =>array(
 						'filter' 	=> array('StripTags'),//'HtmlEntities'),
@@ -110,49 +108,13 @@ class ExamsController extends Zend_Controller_Action {
 				'files' =>array(
 						'filter' 	=> array('Int'),
 						'validator' => array('Int')),	
-		);
-				
-		$this->setFilterAndValidator();
-		$this->applyFilterAndValidators();
-	}
-	
-	private function setFilterAndValidator()
-	{
-		foreach ($this->_allowedFileds as $filed=>$options)
-		{
-			$this->_inputFilter[$filed] = $options['filter'];
-			$this->_inputValidator[$filed] = $options['validator'];
-		}
-	}
-	
-	private function applyFilterAndValidators()
-	{
-		$allowedParms = array();
-		foreach ($this->getRequest()->getParams() as $key=>$parm)
-		{
-			if(array_key_exists($key, $this->_allowedFileds))
-			{
-				$allowedParms[$key] = $parm;
-			} else {
-				if(isset($_GET[$key])) unset($_GET[$key]);
-				if(isset($_POST[$key])) unset($_POST[$key]);
-			}
-		}
-		
-		// filter the given params
-		$input = new Zend_Filter_Input(
-				$this->_inputFilter,
-				$this->_inputValidator,
-				$allowedParms);
-		
-		$escaped = $input->getEscaped();
+		));
 
-		$this->_inputUnescaped = $input->getUnescaped();
-		
-		$this->getRequest()->clearParams();
-		
-		$this->getRequest()->setParams($escaped);
+		$this->_filterManager->setFilterAndValidator();
+		$this->_filterManager->applyFilterAndValidators($this->getRequest());
 	}
+	
+	
 	
 	
 	// Scrub entries from $_POST[] that are not needed
@@ -408,7 +370,7 @@ public function degreesAction() {
 					//Note: SECURETY, we use _inputUnescaped for Validation!
 					//		This only includes FILTERD and VALID defined parms from the init()
 					//		Ensure all passed Strings are secure
-					if ($form->isValid ( $this->_inputUnescaped )) {
+					if ($form->isValid ( $this->_filterManager->getInputUnescaped())) {
 						$post = $this->getRequest ()->getParams (); //for insert we use escaped strings
 						
 						// insert the new exam to into the database and mark the

@@ -127,6 +127,7 @@
         <modelFile modelName="ExamLogManager"/>
         <modelFile modelName="UserPrivilegeMapping"/>
         <modelFile modelName="UserPrivilegeMappingMapper"/>
+        <modelFile modelName="FilterManager"/>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
       <viewsDirectory>
