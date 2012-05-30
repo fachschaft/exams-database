@@ -30,7 +30,7 @@ class ErrorController extends Zend_Controller_Action
                 $priority = Zend_Log::NOTICE;
                 $this->view->message = 'Page not found';
                 break;
-            case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_OTHER:
+            default:
             	$priority = Zend_Log::NOTICE;
             	switch(get_class($errors->exception)) {
             		case'Custom_Exception_NotLoggedIn':
@@ -40,17 +40,13 @@ class ErrorController extends Zend_Controller_Action
             			$this->_forward('permission-denied');
             			break;
             			         				
-            		default:
-            			throw new Zend_Exception("Developer was incompetent, Exception not found");
-            			break;
+           			default:
+                		// application error            	
+               			$this->getResponse()->setHttpResponseCode(500);
+                		$priority = Zend_Log::CRIT;
+                		$this->view->message = 'Application error';
+                		break;
             	}
-            	break;
-            default:
-                // application error            	
-                $this->getResponse()->setHttpResponseCode(500);
-                $priority = Zend_Log::CRIT;
-                $this->view->message = 'Application error';
-                break;
         }
         
         // Log exception, if logger available
