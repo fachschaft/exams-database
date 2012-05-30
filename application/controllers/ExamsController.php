@@ -1,7 +1,7 @@
 <?php 
 /**
  * exams-database
- * @copyright	Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @copyright	Written for Fachschaft Technische Fakultï¿½t Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
@@ -12,12 +12,16 @@
 
 class ExamsController extends Zend_Controller_Action {
 	
-	private $_profiler;
+	private $_authManager;
 	
 	private $_filterManager;
 	
 	public function init() {
 		
+		//Initialize the auth manager to enable acl
+		$this->_authManager = new Application_Model_AuthManager();
+		
+		// Initialize the filter to secure post and get variables
 		$this->_filterManager = new Application_Model_FilterManager();
 		
 		// define all allowed fields
@@ -152,8 +156,10 @@ class ExamsController extends Zend_Controller_Action {
 	
 public function degreesAction() {
 	$form = new Application_Form_ExamDegrees();
-        
-        if ($this->getRequest()->isPost()) {
+	if(!$this->_authManager->isAllowed(null, 'search')) 
+		throw new Custom_Exception_PermissionDenied("Permission Denied");	
+		
+    if ($this->getRequest()->isPost()) {
             $form->setMultiOptions($this->getRequest()->group);
             $form->setGroup($this->getRequest()->group);
             
@@ -176,6 +182,8 @@ public function degreesAction() {
 
     public function coursesAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'search'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
         $form = new Application_Form_ExamCourses();
 
         // go back to group
@@ -207,6 +215,8 @@ public function degreesAction() {
 
     public function searchAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'search'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
         $request = $this->getRequest();
         $this->view->exams = array();
         if(isset($this->getRequest()->request)) {
@@ -253,6 +263,8 @@ public function degreesAction() {
     }
 	
 	public function downloadAction() {
+		if(!$this->_authManager->isAllowed(null, 'download'))
+			throw new Custom_Exception_PermissionDenied("Permission Denied");
 		$authmanager = new Application_Model_AuthManager ();
 		if (isset ( $this->getRequest ()->id )) {
 			// For anonymous Users, check if the user is allowed to download
@@ -314,6 +326,8 @@ public function degreesAction() {
 	}
 	
 	public function uploadAction() {
+		if(!$this->_authManager->isAllowed(null, 'upload'))
+			throw new Custom_Exception_PermissionDenied("Permission Denied");
 		
 		$form = null;
 		$step = 1;
@@ -469,6 +483,8 @@ public function degreesAction() {
 	public function uploadfinalAction() {	}	
 	
 	public function reportAction() {
+		if(!$this->_authManager->isAllowed(null, 'report'))
+			throw new Custom_Exception_PermissionDenied("Permission Denied");
 		$examid = $this->getRequest ()->id;
 		$form = new Application_Form_ExamReport ();
 		$form->setAction ( $examid );
@@ -484,6 +500,8 @@ public function degreesAction() {
 
     public function quickSearchAction()
     {
+    	if(!$this->_authManager->isAllowed(null, 'quick_search'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
     	$found = false;
     	$form = new Application_Form_ExamQuickSearch();
     	if ($this->_request->isPost()) {
