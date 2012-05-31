@@ -50,25 +50,12 @@ class Application_Model_LecturerMapper
         $resultSet = $this->getDbTable()->getAdapter()->fetchAll($select);*/
         
         $resultSet = $this->getDbTable()->getAdapter()->query("
-        		SELECT lecturer.idlecturer, lecturer.degree, lecturer.first_name, lecturer.name,
-        		replace(
-        		replace(
-        		replace(
-        		replace(
-        		replace(
-        		replace( lecturer.name,
-        		'&auml;', 'a'),
-        		'&Auml;', 'A'),
-        		'&ouml;', 'o'),
-        		'&Ouml;', 'O'),
-        		'&uuml;', 'u'),
-        		'&Uuml;', 'U')
-        		as unescaped_name FROM
+        		SELECT lecturer.idlecturer, lecturer.degree, lecturer.first_name, lecturer.name FROM
         		lecturer JOIN degree_has_lecturer
         		ON degree_has_lecturer.lecturer_idlecturer = lecturer.idlecturer
         		JOIN degree ON degree_has_lecturer.degree_iddegree = degree.iddegree
         		WHERE degree.iddegree = ".$degree->id."
-        		ORDER BY unescaped_name;
+        		ORDER BY lecturer.name_unescaped;
         		");
          
         $entries   = array();

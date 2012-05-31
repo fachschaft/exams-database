@@ -39,25 +39,12 @@ class Application_Model_CourseMapper
         $degreeTb = new Application_Model_DbTable_Degree();       
         
         $resultSet = $this->getDbTable()->getAdapter()->query("
-        SELECT course.idcourse, course.name, 
-		replace(
-		replace(
-		replace(
-		replace(
-		replace(
-		replace( course.name,
-		'&auml;', 'a'),
-		'&Auml;', 'A'),
-		'&ouml;', 'o'),
-		'&Ouml;', 'O'),
-		'&uuml;', 'u'),
-		'&Uuml;', 'U')
-		as unescaped_name FROM 
+        SELECT course.idcourse, course.name FROM 
 		course JOIN degree_has_course 
 		ON degree_has_course.course_idcourse = course.idcourse
 		JOIN degree ON degree_has_course.degree_iddegree = degree.iddegree
 		WHERE degree.iddegree = ".$degree->id."
-		ORDER BY unescaped_name;
+		ORDER BY course.name_unescaped;
         ");
          
         $entries   = array();

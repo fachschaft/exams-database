@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS `degree_group` ;
 CREATE  TABLE IF NOT EXISTS `degree_group` (
   `iddegree_group` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
+  `name_unescaped` VARCHAR(255) NULL ,
   `order` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`iddegree_group`) )
 ENGINE = InnoDB;
@@ -25,6 +26,7 @@ CREATE  TABLE IF NOT EXISTS `degree` (
   `iddegree` INT NOT NULL AUTO_INCREMENT ,
   `degree_group_iddegree_group` INT NOT NULL ,
   `name` VARCHAR(255) NULL ,
+  `name_unescaped` VARCHAR(255) NULL ,
   `order` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`iddegree`) ,
   INDEX `fk_degree_degree_group` (`degree_group_iddegree_group` ASC) ,
@@ -44,6 +46,7 @@ DROP TABLE IF EXISTS `course` ;
 CREATE  TABLE IF NOT EXISTS `course` (
   `idcourse` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
+  `name_unescaped` VARCHAR(255) NULL ,
   `name_short` VARCHAR(14) NULL ,
   `order` INT NOT NULL DEFAULT 1 ,
   PRIMARY KEY (`idcourse`) )
@@ -199,6 +202,9 @@ CREATE  TABLE IF NOT EXISTS `lecturer` (
   `name` VARCHAR(255) NULL ,
   `first_name` VARCHAR(255) NULL ,
   `degree` VARCHAR(255) NULL ,
+  `name_unescaped` VARCHAR(255) NULL ,
+  `first_name_unescaped` VARCHAR(255) NULL ,
+  `degree_unescaped` VARCHAR(255) NULL ,
   `order` INT NOT NULL DEFAULT 1 ,
   PRIMARY KEY (`idlecturer`) )
 ENGINE = InnoDB;
@@ -422,6 +428,20 @@ CREATE  TABLE IF NOT EXISTS `log` (
   `idlog` INT NOT NULL ,
   `message` TEXT NULL ,
   PRIMARY KEY (`idlog`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `user_privilege_mapping`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `user_privilege_mapping` ;
+
+CREATE  TABLE IF NOT EXISTS `user_privilege_mapping` (
+  `iduser_privilege_mapping` INT NOT NULL AUTO_INCREMENT ,
+  `authadapter` VARCHAR(255) NULL ,
+  `identity` VARCHAR(255) NULL ,
+  `role` VARCHAR(255) NULL ,
+  PRIMARY KEY (`iduser_privilege_mapping`) )
 ENGINE = InnoDB;
 
 
