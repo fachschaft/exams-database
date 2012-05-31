@@ -78,11 +78,15 @@ class ExamsController extends Zend_Controller_Action {
 				'_reason' =>array(
 						'filter' 	=> array('Alnum'),
 						'validator' => array('Alnum')),
-						
+				//Download from admin area
+				'admin' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
 				// Upload step 2
 				'exam' =>array(
 						'filter' 	=> array('Int'),
 						'validator' => array('Int')),
+						
 				'step' =>array(
 						'filter' 	=> array('Int'),
 						'validator' => array('Int')),
@@ -263,19 +267,19 @@ public function degreesAction() {
     }
 	
 	public function downloadAction() {
+		
+		if (! Application_Model_AuthManager::hasIdentity()) {
+			$ip = array (
+					'ip' => $this->getRequest ()->getClientIp ()
+			);
+			$this->_authManager->grantPermission($ip);
+		}
+		
 		if(!$this->_authManager->isAllowed(null, 'download'))
 			throw new Custom_Exception_PermissionDenied("Permission Denied");
-		$authmanager = new Application_Model_AuthManager ();
 		if (isset ( $this->getRequest ()->id )) {
 			// For anonymous Users, check if the user is allowed to download
-			// files based on IP
-			if (! Application_Model_AuthManager::hasIdentity()) {
-				$ip = array (
-						'ip' => $this->getRequest ()->getClientIp () 
-				);
-				if ($authmanager->grantPermission ( $ip )) {
-					// If user is allowed to download, get the fileid for the
-					// download
+			// files based on
 					$documentMapper = new Application_Model_DocumentMapper ();
 					$document = $documentMapper->fetch ( $this->getRequest ()->id );
 					
@@ -283,35 +287,10 @@ public function degreesAction() {
 						$fileId = $this->getRequest ()->id;
 					else
 						throw new Exception ( "Sorry, you are not allowed to download that file", 500 );
-				} 
-				else {
-				$data = $this->getRequest ()->getParams ();
-				// save the old controller and action to redirect the user after
-				// the login
-				$data = $authmanager->pushParameters ( $data );
-				die("Application");
-				$this->_helper->redirector('login', 'exams-admin', NULL, $data);
-			}
-			
-			}
-		 if (Application_Model_AuthManager::hasIdentity())
 		 	$fileId = $this->getRequest ()->id;
 		 }
 		if (isset ( $this->getRequest ()->admin )) {
-			// ToDo: check for admin state
-			
-			// check if a login exists for admin controller
-			if (Application_Model_AuthManager::hasIdentity ()) {
-				// If user is logged in, get the fileid for the download
 				$fileId = $this->getRequest ()->admin;
-			} else {
-				$data = $this->getRequest ()->getParams ();
-				// save the old controller and action to redirect the user after
-				// the login
-				$data = $authmanager->pushParameters ( $data );
-				
-				$this->_helper->redirector('login', 'exams-admin', NULL, $data);
-			}
 		} 
 		if (!isset ($fileId))
 			throw new Exception('You are not allowed to download files!');

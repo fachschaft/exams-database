@@ -31,10 +31,10 @@ class Application_Model_UserPrivilegeMappingMapper
 			$identity = "";
 		}
 		
-		$res = $this->getDbTable()->fetchAll('authadapter = "'.$adapter.'" OR authadapter IS NULL');
+		$res = $this->getDbTable()->fetchAll('authadapter = "'.$adapter.'"');
 		
 		$role = Application_Model_AuthManager::$Guest;
-		
+
 		foreach ($res as $priv) {
 			$or = Application_Model_AuthManager::mapRolteToOrder($priv['role']);
 			if($role['order'] < $or['order'])
