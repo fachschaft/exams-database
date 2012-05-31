@@ -318,15 +318,15 @@ class ExamsAdminController extends Zend_Controller_Action
 				
 				if ($form->newIndex->isChecked ()) {
 					if($this->_authManager->isAllowed(null, 'maintenance_quicksearch_new_index')){
-					$index->createIndex ();
-					echo "Index created";
+						$index->createIndex ();
+						echo "Index created";
 					}
 					else echo "You can't do that!";
 				
 				} else if ($form->rebuildIndex->isChecked ()) {
-					if(!$this->_authManager->isAllowed(null, 'maintenance_quickseach_rebuild_index')){
-					$index->renewIndex ();
-					echo "Index rebuilt";
+					if($this->_authManager->isAllowed(null, 'maintenance_quickseach_rebuild_index')){
+						$index->renewIndex ();
+						echo "Index rebuilt";
 					}
 					else echo "You can't do that!";
 				

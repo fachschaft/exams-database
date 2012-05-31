@@ -29,9 +29,11 @@ class Application_Model_UserPrivilegeMappingMapper
 	{
 		if($identity == null) {
 			$identity = "";
+		} else {
+			$identity = ' AND identity = "'.$identity.'"';
 		}
 		
-		$res = $this->getDbTable()->fetchAll('authadapter = "'.$adapter.'"');
+		$res = $this->getDbTable()->fetchAll('authadapter = "'.$adapter.'" '.$identity);
 		
 		$role = Application_Model_AuthManager::$Guest;
 
