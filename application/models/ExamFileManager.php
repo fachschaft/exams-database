@@ -105,9 +105,9 @@ class Application_Model_ExamFileManager
 			
 			foreach($documents as $doc) {
 				// check if file exists
-				if(file_exists($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention)) {
+				if(file_exists($this->_fileDestinationPath.$doc->fileName)) {
 					// adds a file to the zip archive
-					$zip->addFile($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention, $doc->id .'_'. $doc->displayName.'.'.$doc->extention);
+					$zip->addFile($this->_fileDestinationPath.$doc->fileName, $doc->id .'_'. $doc->displayName.'.'.$doc->extention);
 				} else {
 					// if add file is not existing, delete temp archive and drop a exception
 					$zip->close();
