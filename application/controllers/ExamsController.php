@@ -76,8 +76,8 @@ class ExamsController extends Zend_Controller_Action {
 						
 				// Reporting
 				'_reason' =>array(
-						'filter' 	=> array('Alnum'),
-						'validator' => array('Alnum')),
+						'filter' 	=> array(new Zend_Filter_Alnum(array('allowwhitespace' => true))),
+						'validator' => array(new Zend_Validate_Alnum(array('allowwhitespace' => true)))),
 				//Download from admin area
 				'admin' =>array(
 						'filter' 	=> array('Int'),
