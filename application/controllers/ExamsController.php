@@ -286,14 +286,14 @@ public function degreesAction() {
 					if ($document->exam->status->id == Application_Model_ExamStatus::PublicExam || $document->exam->status->id == Application_Model_ExamStatus::Reported)
 						$fileId = $this->getRequest ()->id;
 					else
-						throw new Exception ( "Sorry, you are not allowed to download that file", 500 );
+						throw new Custom_Exception_PermissionDenied("Permission Denied");
 		 	$fileId = $this->getRequest ()->id;
 		 }
 		if (isset ( $this->getRequest ()->admin )) {
 				$fileId = $this->getRequest ()->admin;
 		} 
 		if (!isset ($fileId))
-			throw new Exception('You are not allowed to download files!');
+			throw new Exception('No File ID set, something whent very wrong!');
 			
 		// If all conditions are met, send the User the file he requested for Download.
 		$filemanager = new Application_Model_ExamFileManager ();
