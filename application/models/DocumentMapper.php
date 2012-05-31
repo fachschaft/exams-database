@@ -37,7 +37,12 @@ class Application_Model_DocumentMapper
     public function fetch($documentId)
     {
        $element = $this->getDbTable()->find($documentId)->current();
+       
        $entry = new Application_Model_Document();
+       
+       if (count($element) != 1) {
+       		return $entry; 
+       }
        
        $examMapper = new Application_Model_ExamMapper();
 
