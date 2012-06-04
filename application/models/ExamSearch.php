@@ -72,7 +72,7 @@ class Application_Model_ExamSearch {
 		{
 			$this->addFileToIndex($exam->getId());
 			// reset the timeout timer each time the loop is executed 	
-			set_time_limit(2);
+			set_time_limit(10);
 		}
 	}
 	
