@@ -1,7 +1,7 @@
 <?php 
 /**
  * exams-database
- * @copyright	Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @copyright	Written for Fachschaft Technische Fakultï¿½t Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
@@ -62,7 +62,7 @@ class Application_Model_ExamSearch {
 	
 	// Rebuild the index from the database in case of data corruption
 	public function renewIndex() {
-		set_time_limit(0);
+		//set_time_limit(0);
 		if (file_exists ( $this->_indexpath ))
 			$this->deleteIndex ();
 		$index = Zend_Search_Lucene::create ( $this->_indexpath );
@@ -71,6 +71,8 @@ class Application_Model_ExamSearch {
 		foreach ($exams as $exam)
 		{
 			$this->addFileToIndex($exam->getId());
+			// reset the timeout timer each time the loop is executed 	
+			set_time_limit(2);
 		}
 	}
 	
