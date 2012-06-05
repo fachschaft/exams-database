@@ -291,6 +291,7 @@ class Application_Model_ExamFileManager
 		// get the extetion of the filename from the archive
 		$ex_names = preg_split('/\./', $fileName, -1);
 		$extention = $ex_names[count($ex_names)-1];
+		$display_name = substr($fileName, 0, strlen($fileName) - strlen($extention) -1);
 		
 		// get free filename from destionation
 		$new_file_name = $this->getFreeFilename($this->_fileDestinationPath);
@@ -309,6 +310,7 @@ class Application_Model_ExamFileManager
 				$document->mimeType = mime_content_type($destination_filename);
 				$document->ExamId = $examId;
 				$document->CheckSum = md5_file($destination_filename);
+				$document->DisplayName = $display_name;
 		
 				$documentMapper = new Application_Model_DocumentMapper();
 				$documentMapper->saveNew($document);
