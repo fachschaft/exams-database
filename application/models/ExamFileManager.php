@@ -73,10 +73,23 @@ class Application_Model_ExamFileManager
 		if ($entries->DeleteState)
 			throw new Exception ( 'The document is not longer available', 500 );
 		
+		$cor = $entries->getExam()->getCourse();
+		$cor = $cor[0];
+		$max_len = strlen ($cor->getName());
+		
+		$lec = $entries->getExam()->getLecturer();
+		$lec = $lec[0];
+		$max_len_lec = strlen ($lec->getName());
+		
 		$doc->updateDownloadCounter ( $entries->id );
 		
+		
+		
 		header ( 'Content-Type: application/octet-stream' );
-		header ( "Content-Disposition: attachment; filename=" . date ( 'YmdHis' ) . "." . $entries->getExtention () );
+		header ( "Content-Disposition: attachment; filename=" . $entries->getId() . "_" 
+															  . substr( $cor->getName(), 0, $max_len < 5 ? $max_len : 5) . "_" 
+															  . substr( $lec->getName(), 0, $max_len_lec < 5 ? $max_len_lec : 5) . "_"
+															  . $entries->getDisplayName() . "." . $entries->getExtention () );
 		
 		$path = $this->getFileStoragePath ();
 		
