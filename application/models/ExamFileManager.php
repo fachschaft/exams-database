@@ -1,7 +1,7 @@
 <?php 
 /**
  * exams-database
- * @copyright	Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @copyright	Written for Fachschaft Technische Fakultï¿½t Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
@@ -249,6 +249,15 @@ class Application_Model_ExamFileManager
 	
 	public function storeUploadedFiles($files, $examId)
 	{
+		echo "called storeuploaded";
+		//Check if the file has been deleted and throw an exception if it was
+		$exams = new Application_Model_ExamMapper();
+		$res = $exams->find($examId);
+		// If the exam is deleted throw an exception.
+		// TODO(aamuuninen): make this more generic, e.g. not dependant on what is in the database
+		if ($res->getStatus()->getName() == deleted)
+			throw new Custom_Exception_PermissionDenied();
+		
 		if(!is_array($files)) {
 			$files = array($files);
 		}
