@@ -255,7 +255,7 @@ class Application_Model_ExamFileManager
 		$res = $exams->find($examId);
 		// If the exam is deleted throw an exception.
 		// TODO(aamuuninen): make this more generic, e.g. not dependant on what is in the database
-		if ($res->getStatus()->getName() == deleted)
+		if ($res->getStatus()->getId() == Application_Model_ExamStatus::Deleted)
 			throw new Custom_Exception_PermissionDenied();
 		
 		if(!is_array($files)) {
