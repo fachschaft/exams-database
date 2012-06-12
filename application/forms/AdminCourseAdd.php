@@ -1,17 +1,17 @@
 <?php 
 /**
  * exams-database
- * @copyright	Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @copyright	Written for Fachschaft Technische FakultÃ¤t Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
  * @version		1.0
  * @since		1.0
  * @todo		-
- */
-
+ */ 
+ 
 class Application_Form_AdminCourseAdd extends Zend_Form
-{
+{ 
 
 	protected $_degrees = null;
 	protected $_newElement = null;
@@ -20,6 +20,7 @@ class Application_Form_AdminCourseAdd extends Zend_Form
     public function init()
     {
     	$this->setMethod('post');
+    	//$this->setAttrib('accept-charset', 'utf-8');
     	 
     	
     	$this->_newElement = new Zend_Form_Element_Text('newElement');

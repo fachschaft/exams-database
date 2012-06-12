@@ -1,7 +1,7 @@
 <?php 
 /**
  * exams-database
- * @copyright	Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @copyright	Written for Fachschaft Technische Fakultï¿½t Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
@@ -76,7 +76,10 @@ class Application_Model_DegreeMapper
     
     public function add(Application_Model_Degree $degree)
     {
-    	$this->getDbTable()->insert(array('name'=>$degree->name, 'degree_group_iddegree_group'=>$degree->group->id));
+    	$filter = new Zend_Filter_HtmlEntities();
+    	$this->getDbTable()->insert(array('name'=>$filter->filter($degree->name),
+    			'name_unescaped'=>Custom_Formatter_EscapeSpecialChars::escape($filter->filter($degree->name)),
+    			'degree_group_iddegree_group'=>$degree->group->id));
     }
     
     public function updateGroup(Application_Model_Degree $degree)

@@ -475,6 +475,8 @@ class ExamsAdminController extends Zend_Controller_Action
         				$new_degrees = array();
         				foreach ($data['degrees'] as $deg) { $new_degrees[] = new Application_Model_Degree(array('id'=>$deg)); }
         				$new_course = new Application_Model_Course(array('name'=>$data['newElement'], 'degrees'=>$new_degrees));
+        				//var_dump($data);
+        				//die();
         				$courseMapper = new Application_Model_CourseMapper();
         				$courseMapper->add($new_course);
         				

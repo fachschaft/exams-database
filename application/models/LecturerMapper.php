@@ -1,7 +1,7 @@
 <?php 
 /**
  * exams-database
- * @copyright	Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @copyright	Written for Fachschaft Technische Fakultï¿½t Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
@@ -73,7 +73,7 @@ class Application_Model_LecturerMapper
 	
 	public function fetchAll()
     {    
-        $resultSet = $this->GetDbTable()->fetchAll();
+        $resultSet = $this->GetDbTable()->fetchAll(null, array('name_unescaped ASC'));
 
         $entries = array();
         foreach ($resultSet as $row) {
@@ -90,7 +90,15 @@ class Application_Model_LecturerMapper
     
     public function add(Application_Model_Lecturer $lecturer)
     {
-    	$new_lecturer_id = $this->getDbTable()->insert(array('name'=>$lecturer->name, 'first_name'=>$lecturer->firstName, 'degree'=>$lecturer->degree));
+    	$filter = new Zend_Filter_HtmlEntities();
+    	$new_lecturer_id = $this->getDbTable()->insert(array('name'=>$filter->filter($lecturer->name), 
+    			'first_name'=>$filter->filter($lecturer->firstName), 
+    			'degree'=>$filter->filter($lecturer->degree),
+    			'name_unescaped'=>Custom_Formatter_EscapeSpecialChars::escape($filter->filter($lecturer->name)), 
+    			'first_name_unescaped'=>Custom_Formatter_EscapeSpecialChars::escape($filter->filter($lecturer->firstName)), 
+    			'degree_unescaped'=>Custom_Formatter_EscapeSpecialChars::escape($filter->filter($lecturer->degree))
+    			
+    			));
     	
         	// addign degree connections
     	$degHasLec = new Application_Model_DbTable_DegreeHasLecturer();
