@@ -109,7 +109,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `exam_degree` ;
 
 CREATE  TABLE IF NOT EXISTS `exam_degree` (
-  `idexam_degree` INT NOT NULL ,
+  `idexam_degree` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
   PRIMARY KEY (`idexam_degree`) )
 ENGINE = InnoDB;
@@ -121,7 +121,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `university` ;
 
 CREATE  TABLE IF NOT EXISTS `university` (
-  `iduniversity` INT NOT NULL ,
+  `iduniversity` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
   PRIMARY KEY (`iduniversity`) )
 ENGINE = InnoDB;
@@ -223,9 +223,9 @@ CREATE  TABLE IF NOT EXISTS `document` (
   `submit_file_name` VARCHAR(255) NULL ,
   `extention` VARCHAR(10) NULL ,
   `mime_type` VARCHAR(255) NULL ,
-  `deleted` TINYINT(1) NOT NULL DEFAULT 0 ,
-  `reviewed` TINYINT(1) NOT NULL DEFAULT 0 ,
-  `collection` TINYINT(1) NOT NULL DEFAULT 0 ,
+  `deleted` TINYINT(1)  NOT NULL DEFAULT 0 ,
+  `reviewed` TINYINT(1)  NOT NULL DEFAULT 0 ,
+  `collection` TINYINT(1)  NOT NULL DEFAULT 0 ,
   `downloads` INT NOT NULL DEFAULT 0 ,
   `upload_date` TIMESTAMP NULL ,
   `delete_date` TIMESTAMP NULL ,
@@ -425,7 +425,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `log` ;
 
 CREATE  TABLE IF NOT EXISTS `log` (
-  `idlog` INT NOT NULL ,
+  `idlog` INT NOT NULL AUTO_INCREMENT ,
   `message` TEXT NULL ,
   PRIMARY KEY (`idlog`) )
 ENGINE = InnoDB;
