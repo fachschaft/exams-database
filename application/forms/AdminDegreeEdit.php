@@ -146,9 +146,9 @@ class Application_Form_AdminDegreeEdit extends Zend_Form
     
     	$options = array();
     
-    	foreach($entries as $group)
+    	foreach($entries as $degree)
     	{
-    		$options[$group->getId()] = $group->getName() . ' - ' . $group->group->name;
+    		$options[$degree->getId()] = $degree->name . ' - ' . $degree->group->name;
     	}
     
     	$element->setMultiOptions($options);

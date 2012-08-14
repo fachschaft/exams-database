@@ -62,7 +62,7 @@ class Application_Model_Degree
  
     public function getName()
     {
-        return $this->_name;
+        return html_entity_decode($this->_name);
     }  
 
     public function setGroup(Application_Model_DegreeGroup $group)
