@@ -130,13 +130,15 @@ class Application_Model_DocumentMapper
 	public function updateReviewState($documentId)
 	{
 		$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `reviewed` = 1 WHERE `iddocument` =".$documentId.";");
-		$this->addLogMessage($documentId, 'Document (ID: '.$documentId.') downloaded (hopely reviewed too) by %user%.');
+		$doc = $this->fetch($documentId);
+		Application_Model_ExamLogManager::addLogMessage($doc->getExamId(), 'Document (ID: '.$documentId.') downloaded (hopely reviewed too) by %user%.');
 	}
 	
 	public function deleteDocument($documentId)
 	{
 		$this->getDbTable()->getAdapter()->query("UPDATE  `document` SET  `deleted` = 1, delete_date = NOW() WHERE `iddocument` =".$documentId.";");
-		$this->addLogMessage($documentId, 'Document (ID: '.$documentId.') deleted by %user%.');
+		$doc = $this->fetch($documentId);
+		Application_Model_ExamLogManager::addLogMessage($doc->getExamId(), 'Document (ID: '.$documentId.') deleted by %user%.');
 	}
 
     
