@@ -1,7 +1,7 @@
 <?php 
 /**
  * exams-database
- * @copyright	Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @copyright	Written for Fachschaft Technische Fakultaet Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
@@ -201,7 +201,7 @@ class Application_Model_ExamMapper
     public function fetchQuick($courseIds, $lecturerIds, $semesterIds, $examTypeIds, $degree, array $status = array(), $withReflexive = true, array $examId = array('-1'))
     {
 
-    	$explode_Group_Concat_Delimiter = "#&$#§"; // this string will be used to seperate the strings in the database, e.G. " prof 1 # prof 2 " use a string which will NOT be in an string from the selected fields
+    	$explode_Group_Concat_Delimiter = "#&$#ï¿½"; // this string will be used to seperate the strings in the database, e.G. " prof 1 # prof 2 " use a string which will NOT be in an string from the selected fields
     	
     	
     	if(!is_array($courseIds) && $courseIds == "-1") $courseIds = array(); // course is "-1" so we want select all
