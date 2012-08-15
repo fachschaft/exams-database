@@ -297,10 +297,18 @@ public function degreesAction() {
 		} 
 		if (!isset ($fileId))
 			throw new Exception('No File ID set, something whent very wrong!');
-			
+		
+		// check if the downloas was calld from an admin and set the reviews state of the document
+		$count = true;
+		if (isset ( $this->getRequest ()->admin )) {
+			$maper = new Application_Model_DocumentMapper();
+			$maper->updateReviewState($fileId);
+			$count = false;
+		}
+		
 		// If all conditions are met, send the User the file he requested for Download.
 		$filemanager = new Application_Model_ExamFileManager ();
-		$filemanager->downloadDocuments ( $fileId );
+		$filemanager->downloadDocuments ( $fileId , $count);
 		
 		// This exit() is important as php will output a lot of html instead of
 		// just the file contents if it is missing.

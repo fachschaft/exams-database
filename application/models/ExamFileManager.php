@@ -66,7 +66,8 @@ class Application_Model_ExamFileManager
 			throw new Zend_Exception ("Cannot write in directory ".$this->_fileTempPath."! Plese call your admin.", 500);
     }
 	
-	public function downloadDocuments($id) {
+	public function downloadDocuments($id, $count = true) {
+		// $cout defines if this download shoud be countet
 		$doc = new Application_Model_DocumentMapper ();
 		$entries = $doc->fetch ( $id );
 		
@@ -81,7 +82,9 @@ class Application_Model_ExamFileManager
 		$lec = $lec[0];
 		$max_len_lec = strlen ($lec->getName());
 		
-		$doc->updateDownloadCounter ( $entries->id );
+		if($count) {
+			$doc->updateDownloadCounter ( $entries->id );
+		}
 		
 		
 		
