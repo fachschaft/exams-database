@@ -1,7 +1,7 @@
 <?php 
 /**
  * exams-database
- * @copyright	Written for Fachschaft Technische Fakultät Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
+ * @copyright	Written for Fachschaft Technische Fakultï¿½t Freiburg, Germany and licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
@@ -14,8 +14,23 @@ class Application_Model_Semester
 {
     protected $_name;
     protected $_id;
+    protected $_begin_time; // stored as time stamp
     
-    public function __construct(array $options = null)
+    /**
+	 * @return the $begin_time
+	 */
+	public function getBegin_time() {
+		return $this->_begin_time;
+	}
+
+	/**
+	 * @param field_type $begin_time
+	 */
+	public function setBegin_time($begin_time) {
+		$this->_begin_time = $begin_time;
+	}
+
+	public function __construct(array $options = null)
     {
         if (is_array($options)) {
             $this->setOptions($options);

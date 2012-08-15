@@ -315,6 +315,10 @@ public function degreesAction() {
 		$step = 1;
 		
 		if (isset ( $this->getRequest ()->degree )) {
+			// check if the current time has past the last semester
+			$semesterMapper = new Application_Model_SemesterMapper();
+			$semesterMapper->checkFuthereSemesterExists();
+			
 			$step = 2;
 			$form = new Application_Form_UploadDetail ();
 			$form->setCourseOptions (new Application_Model_Degree(array('id'=>$this->getRequest ()->degree )));

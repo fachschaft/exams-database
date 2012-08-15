@@ -62,6 +62,7 @@ DROP TABLE IF EXISTS `semester` ;
 CREATE  TABLE IF NOT EXISTS `semester` (
   `idsemester` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
+  `begin_time` DATETIME NULL ,
   PRIMARY KEY (`idsemester`) )
 ENGINE = InnoDB
 PACK_KEYS = DEFAULT;
@@ -109,7 +110,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `exam_degree` ;
 
 CREATE  TABLE IF NOT EXISTS `exam_degree` (
-  `idexam_degree` INT NOT NULL AUTO_INCREMENT ,
+  `idexam_degree` INT NOT NULL ,
   `name` VARCHAR(255) NULL ,
   PRIMARY KEY (`idexam_degree`) )
 ENGINE = InnoDB;
@@ -121,7 +122,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `university` ;
 
 CREATE  TABLE IF NOT EXISTS `university` (
-  `iduniversity` INT NOT NULL AUTO_INCREMENT ,
+  `iduniversity` INT NOT NULL ,
   `name` VARCHAR(255) NULL ,
   PRIMARY KEY (`iduniversity`) )
 ENGINE = InnoDB;
@@ -223,9 +224,9 @@ CREATE  TABLE IF NOT EXISTS `document` (
   `submit_file_name` VARCHAR(255) NULL ,
   `extention` VARCHAR(10) NULL ,
   `mime_type` VARCHAR(255) NULL ,
-  `deleted` TINYINT(1)  NOT NULL DEFAULT 0 ,
-  `reviewed` TINYINT(1)  NOT NULL DEFAULT 0 ,
-  `collection` TINYINT(1)  NOT NULL DEFAULT 0 ,
+  `deleted` TINYINT(1) NOT NULL DEFAULT 0 ,
+  `reviewed` TINYINT(1) NOT NULL DEFAULT 0 ,
+  `collection` TINYINT(1) NOT NULL DEFAULT 0 ,
   `downloads` INT NOT NULL DEFAULT 0 ,
   `upload_date` TIMESTAMP NULL ,
   `delete_date` TIMESTAMP NULL ,
@@ -425,7 +426,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `log` ;
 
 CREATE  TABLE IF NOT EXISTS `log` (
-  `idlog` INT NOT NULL AUTO_INCREMENT ,
+  `idlog` INT NOT NULL ,
   `message` TEXT NULL ,
   PRIMARY KEY (`idlog`) )
 ENGINE = InnoDB;
@@ -489,10 +490,10 @@ COMMIT;
 -- Data for table `semester`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `semester` (`idsemester`, `name`) VALUES (1, 'WS 2010/11');
-INSERT INTO `semester` (`idsemester`, `name`) VALUES (2, 'SS 2011');
-INSERT INTO `semester` (`idsemester`, `name`) VALUES (3, 'WS 2011/12');
-INSERT INTO `semester` (`idsemester`, `name`) VALUES (4, 'SS 2012');
+INSERT INTO `semester` (`idsemester`, `name`, `begin_time`) VALUES (1, 'WS 2010/11', NULL);
+INSERT INTO `semester` (`idsemester`, `name`, `begin_time`) VALUES (2, 'SS 2011', NULL);
+INSERT INTO `semester` (`idsemester`, `name`, `begin_time`) VALUES (3, 'WS 2011/12', NULL);
+INSERT INTO `semester` (`idsemester`, `name`, `begin_time`) VALUES (4, 'SS 2012', NULL);
 
 COMMIT;
 
