@@ -99,6 +99,8 @@
           <dbTableFile dbTableName="CourseHasCourse"/>
           <dbTableFile dbTableName="DegreeHasLecturer"/>
           <dbTableFile dbTableName="UserPrivilegeMapping"/>
+          <dbTableFile dbTableName="APIMasterKey"/>
+          <dbTableFile dbTableName="APITemporaryKey"/>
         </dbTableDirectory>
         <modelFile modelName="DegreeGroup"/>
         <modelFile modelName="DegreeGroupMapper"/>
