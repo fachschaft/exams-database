@@ -1,19 +1,4 @@
 <?php
-
-class Registration
-{
-	public function add()
-	{
-		return "lol";
-	}
-	
-	public function uncheckedExams($apiKey)
-	{
-		// check if api key ist valid
-		return 99;
-	}
-}
-
 class ApiController extends Zend_Controller_Action
 {
 
@@ -31,7 +16,7 @@ class ApiController extends Zend_Controller_Action
     {
         // check for request
     	$service =new Zend_Json_Server();
-    	$service->setClass("Registration");
+    	$service->setClass("Application_Model_API");
     	echo $service->handle();
         
        // demo request: {"method":"uncheckedExams", "id":1, "Params":{"apiKey":"123456"}}

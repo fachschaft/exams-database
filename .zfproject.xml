@@ -132,6 +132,7 @@
         <modelFile modelName="UserPrivilegeMapping"/>
         <modelFile modelName="UserPrivilegeMappingMapper"/>
         <modelFile modelName="FilterManager"/>
+        <modelFile modelName="API"/>
       </modelsDirectory>
       <modulesDirectory enabled="false"/>
       <viewsDirectory>

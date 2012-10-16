@@ -679,6 +679,17 @@ class Application_Model_ExamMapper
 		return $this->fetchQuick("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::Unchecked), false);
 	}
 	
+	public function countUnchecked()
+	{
+		$resDocs = $this->getDbTable()->getAdapter()->query("SELECT count(*) as count FROM `exam` WHERE `exam_status_idexam_status` = " . Application_Model_ExamStatus::Unchecked);
+		$docCount = 0;
+		foreach($resDocs as $doc)
+		{
+			$docCount = $doc['count'];
+		}
+		return $docCount;
+	}
+	
 	public function fetchReported()
 	{
 		return $this->fetchQuick("-1", "-1", "-1", "-1", "-1", array(Application_Model_ExamStatus::Reported), false);
