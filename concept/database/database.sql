@@ -426,7 +426,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `log` ;
 
 CREATE  TABLE IF NOT EXISTS `log` (
-  `idlog` INT NOT NULL ,
+  `idlog` INT NOT NULL AUTO_INCREMENT ,
   `message` TEXT NULL ,
   PRIMARY KEY (`idlog`) )
 ENGINE = InnoDB;
@@ -443,6 +443,31 @@ CREATE  TABLE IF NOT EXISTS `user_privilege_mapping` (
   `identity` VARCHAR(255) NULL ,
   `role` VARCHAR(255) NULL ,
   PRIMARY KEY (`iduser_privilege_mapping`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `api_master_key`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `api_master_key` ;
+
+CREATE  TABLE IF NOT EXISTS `api_master_key` (
+  `idapi_master_key` INT NOT NULL AUTO_INCREMENT ,
+  `key` VARCHAR(255) NOT NULL ,
+  PRIMARY KEY (`idapi_master_key`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `api_temporary_key`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `api_temporary_key` ;
+
+CREATE  TABLE IF NOT EXISTS `api_temporary_key` (
+  `idapi_temporary_key` INT NOT NULL AUTO_INCREMENT ,
+  `key` VARCHAR(255) NOT NULL ,
+  `expire_time` TIMESTAMP NOT NULL ,
+  PRIMARY KEY (`idapi_temporary_key`) )
 ENGINE = InnoDB;
 
 
@@ -660,5 +685,13 @@ INSERT INTO `course_has_course` (`course_idcourse`, `course_idcourse1`, `course_
 INSERT INTO `course_has_course` (`course_idcourse`, `course_idcourse1`, `course_has_relationship`) VALUES (3, 2, 100);
 INSERT INTO `course_has_course` (`course_idcourse`, `course_idcourse1`, `course_has_relationship`) VALUES (4, 3, 100);
 INSERT INTO `course_has_course` (`course_idcourse`, `course_idcourse1`, `course_has_relationship`) VALUES (7, 6, 100);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `api_master_key`
+-- -----------------------------------------------------
+START TRANSACTION;
+INSERT INTO `api_master_key` (`idapi_master_key`, `key`) VALUES (1, 'HNmmaBQZzN3xN7lbed0ztarhc6HXMS6fp8y9HQ3JQDaUEpsuiuELAWK1iTqMNFR');
 
 COMMIT;
