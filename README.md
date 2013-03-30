@@ -23,5 +23,11 @@ For using the unrar function install *PECL rar*:
 `pecl -v install rar`
 requires: *php5-dev dh-make-php build-essential*
 
+##Development
+There some file you should remove from the index:<br>
+`git update-index --assume-unchanged logs/info.log`<br>
+`git update-index --assume-unchanged logs/warn.log`<br>
+`git update-index --assume-unchanged application/configs/application.ini`
+
 # License
 This project is licensed under [CC BY-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/)
