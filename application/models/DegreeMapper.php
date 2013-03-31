@@ -84,7 +84,13 @@ class Application_Model_DegreeMapper
     
     public function updateGroup(Application_Model_Degree $degree)
     {
-    	$this->getDbTable()->update(array('degree_group_iddegree_group'=>$degree->group->id, 'name'=>$degree->name), 'iddegree = '.$degree->id);
+    	$filter = new Zend_Filter_HtmlEntities();
+    	$this->getDbTable()->update(
+    		array(
+    			'degree_group_iddegree_group'=>$degree->group->id, 
+    			'name'=>$degree->name, 
+    			'name_unescaped'=>Custom_Formatter_EscapeSpecialChars::escape($filter->filter($degree->name))
+    	), 'iddegree = '.$degree->id);
     }
     
     
