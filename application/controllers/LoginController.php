@@ -19,6 +19,15 @@ class LoginController extends Zend_Controller_Action
 
     public function init()
     {
+    	
+    	//force the user to user https while using the login controller!
+    	if($_SERVER['SERVER_PORT'] != '443') {
+    		header('Location: https://' . $_SERVER['HTTP_HOST'] .
+    		$_SERVER['REQUEST_URI']);
+    		exit();
+    	}
+    		
+    	
         $this->_authManager = new Application_Model_AuthManager();
         
         $this->_filterManager = new Application_Model_FilterManager();
