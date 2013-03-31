@@ -147,12 +147,19 @@ class Application_Model_AuthManager {
 		// $config = Zend_Registry::get ( 'authenticate' );
 		// return new Zend_Auth_Adapter_Digest($config['filename'],
 		// $config['realm'], $params['username'], $params['password']);
-		// 
-		if (isset ($params['username']) && isset( $params['password']))
-			return new Custom_Auth_Adapter_Simple ( $params ['username'], $params ['password'] );
+		
+		$config_ldap = Zend_Registry::get('ldap');
+		$config_ldap['server1']['username'] = str_replace("%user%", $params['username'], $config_ldap['server1']['username']);
+		$config_ldap['server1']['password'] = str_replace("%pass%", $params['password'], $config_ldap['server1']['password']);
+		
+		//if (isset ($params['username']) && isset( $params['password']))
+		//	return new Custom_Auth_Adapter_Simple ( $params ['username'], $params ['password'] );
+		
+		if (isset ($params['username']) && isset($params['password']))
+		return new Zend_Auth_Adapter_Ldap($config_ldap, $params['username'], $params['password']);
 		
 		elseif (isset($params['ip']))
-			return new Custom_Auth_Adapter_InternetProtocol($params['ip']);
+		return new Custom_Auth_Adapter_InternetProtocol($params['ip']);
 		
 		else 
 			throw new Exception('Could not get Auth adapter');
@@ -195,7 +202,7 @@ class Application_Model_AuthManager {
 
 	
 	public function mapIdentityToRole($identity, $adapter)
-	{
+	{		
 		if($adapter == NULL) { return 'guest'; }
 		
 		$privMap = new Application_Model_UserPrivilegeMappingMapper();

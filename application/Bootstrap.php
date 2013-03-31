@@ -32,6 +32,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 		
 		$authenticateConfig = $this->getOption('authenticate');
         Zend_Registry::set('authenticate', $authenticateConfig);
+        
+        $ldapConfig = $this->getOption('ldap');
+        Zend_Registry::set('ldap', $ldapConfig);
     }
     
     public function _initPlaintextHelper()

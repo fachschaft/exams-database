@@ -15,8 +15,12 @@ class ErrorController extends Zend_Controller_Action
 
     public function errorAction()
     {
-        $errors = $this->_getParam('error_handler');
-        
+    	$errors = $this->_getParam('error_handler');
+    	
+    	// remove password at the error trace
+    	$errors->request->setParam('password', '****');
+    	
+
         if (!$errors || !$errors instanceof ArrayObject) {
             $this->view->message = 'You have reached the error page';
             return;
@@ -42,7 +46,7 @@ class ErrorController extends Zend_Controller_Action
             			         				
            			default:
                 		// application error            	
-               			$this->getResponse()->setHttpResponseCode(500);
+               			//$this->getResponse()->setHttpResponseCode(500);
                 		$priority = Zend_Log::CRIT;
                 		$this->view->message = 'Application error';
                 		break;
@@ -65,7 +69,10 @@ class ErrorController extends Zend_Controller_Action
             $this->view->exception = $errors->exception;
         }
         
+        $errors->request->setParam('password', '****');
+        
         $this->view->request   = $errors->request;
+
     }
 
     public function getLog()

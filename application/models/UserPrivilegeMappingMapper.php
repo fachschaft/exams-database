@@ -34,7 +34,7 @@ class Application_Model_UserPrivilegeMappingMapper
 			$identity = ' AND identity = "'.$identity.'"';
 		}
 		
-		if($adapter == 'Custom_Auth_Adapter_InternetProtocol') {
+		if($adapter == 'Custom_Auth_Adapter_InternetProtocol' || $adapter == 'Zend_Auth_Adapter_Ldap') {
 			$res = $this->getDbTable()->fetchAll('authadapter = "'.$adapter.'" '.$identity);
 			
 			if(count($res) == 0) {
