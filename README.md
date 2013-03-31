@@ -12,7 +12,9 @@ To initialize the database (**all data will be dropped**) run scripts/load.mysql
 
 `cd /path/to/folder/scripts; php load.mysql.php --env development --withdata`
 
-Ensure: /data/exams needs 775 permissions
+permissions:<br>
+`chmod 775 data/exams`<br>
+`chmod 775 data/my-index`
 
 ## Unpacking
 Requirements: (PECL zip >= 1.5.0, PECL rar >= 2.0.0)
