@@ -10,7 +10,7 @@
  * @todo		-
  */
 
-class Application_Form_UploadDegrees extends Zend_Form
+class Application_Form_UploadDegrees extends Application_Form_ExamTemplate
 {
 
     protected $_elementSelect = null;
@@ -40,7 +40,10 @@ class Application_Form_UploadDegrees extends Zend_Form
         $this->addElement('submit', 'submit', array(
             'ignore'   => true,
             'label'    => 'Weiter',
+        	'decorators' =>$this->_decoratorDivButton,
         ));
+        
+        $this->_elementSelect->setDecorators($this->_decoratorDiv);
         
         
         $this->setMultiOptions();

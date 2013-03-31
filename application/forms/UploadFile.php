@@ -10,7 +10,7 @@
  * @todo		-
  */
 
-class Application_Form_UploadFile extends Zend_Form
+class Application_Form_UploadFile extends Application_Form_ExamTemplate
 {
 	protected $_file;
 	
@@ -36,6 +36,9 @@ class Application_Form_UploadFile extends Zend_Form
                 ->addValidator('Extension', false, $config['allowed_extentions'])
                 ->setAttrib('enctype', 'multipart/form-data');
         $this->addElement($this->_file, 'exam_file');
+        
+        
+        
 		
 		$this->setMultiFile($config['default_upload_files_count']);
         
@@ -49,6 +52,7 @@ class Application_Form_UploadFile extends Zend_Form
         $this->addElement('submit', 'submit', array(
             'ignore'   => true,
             'label'    => 'Weiter',
+        	'decorators' => $this->_decoratorDivButton,
         ));
     }
     

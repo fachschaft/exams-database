@@ -26,10 +26,14 @@ class Application_Form_AdminFileUpload extends Zend_Form {
 		
 		$this->_file = new Zend_Form_Element_File ( 'exam_file' );
 		$config = Zend_Registry::get ( 'examDBConfig' );
-		$this->_file->setLabel ( 'Uplaod Exam File:' )->addValidator ( 'Count', false, array (
+		$this->_file->setLabel ( 'Uplaod Exam File:' )
+		->addValidator ( 'Count', false, array (
 				'min' => 1,
 				'max' => $config ['max_upload_files'] 
-		) )->addValidator ( 'Size', false, $config ['max_file_size'] )->setMaxFileSize ( $config ['max_file_size'] )->addValidator ( 'Extension', false, $config ['allowed_extentions'] )->setAttrib ( 'enctype', 'multipart/form-data' );
+		) )
+		->addValidator ( 'Size', false, $config ['max_file_size'] )
+		->setMaxFileSize ( $config ['max_file_size'] )
+		->addValidator ( 'Extension', false, $config ['allowed_extentions'] )->setAttrib ( 'enctype', 'multipart/form-data' );
 		$this->addElement ( $this->_file, 'exam_file' );
 		
 		//$this->setMultiFile ( $config ['default_upload_files_count'] );

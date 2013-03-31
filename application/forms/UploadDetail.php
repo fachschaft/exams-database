@@ -10,7 +10,7 @@
  * @todo		-
  */
 
-class Application_Form_UploadDetail extends Zend_Form
+class Application_Form_UploadDetail extends Application_Form_ExamTemplate
 {
 
     protected $_elementCourse = null;
@@ -38,6 +38,7 @@ class Application_Form_UploadDetail extends Zend_Form
                              ->setLabel('Vorlesung');
         //$this->setCourseOptions(array());
         $this->addElement($this->_elementCourse);
+        $this->_elementCourse->setDecorators($this->_decoratorDiv);
         
         //
         $this->_elementLecturer = new Zend_Form_Element_Multiselect('lecturer');
@@ -46,6 +47,7 @@ class Application_Form_UploadDetail extends Zend_Form
                                ->setLabel('Dozent');
         //$this->setLecturerOptions(array());
         $this->addElement($this->_elementLecturer);
+        $this->_elementLecturer->setDecorators($this->_decoratorDiv);
         
         //
         $this->_elementSemester = new Zend_Form_Element_Select('semester');
@@ -54,6 +56,7 @@ class Application_Form_UploadDetail extends Zend_Form
                                ->setLabel('Semester');
         $this->setSemesterOptions();
         $this->addElement($this->_elementSemester);
+        $this->_elementSemester->setDecorators($this->_decoratorDiv);
         
         //
         $this->_elementExamType = new Zend_Form_Element_Select('type');
@@ -62,11 +65,13 @@ class Application_Form_UploadDetail extends Zend_Form
                                ->setLabel('Typ');
         $this->setExamTypeOptions();
         $this->addElement($this->_elementExamType);
+        $this->_elementExamType->setDecorators($this->_decoratorDiv);
         
         //
         $this->addElement('text', 'autor', array(
             'label'    => 'Autor',
             'required'   => false,
+        	'decorators' => $this->_decoratorDiv,
             
         ));
         
@@ -76,6 +81,7 @@ class Application_Form_UploadDetail extends Zend_Form
                                ->setLabel('Degree');
         $this->setExamDegreeOptions();
         $this->addElement($this->_elementDegree);
+        $this->_elementDegree->setDecorators($this->_decoratorDiv);
         
         //
         $this->_elementExamSubType = new Zend_Form_Element_Select('subType');
@@ -83,6 +89,7 @@ class Application_Form_UploadDetail extends Zend_Form
                                ->setLabel('Solution Type');
         $this->setExamSubType();
         $this->addElement($this->_elementExamSubType);
+        $this->_elementExamSubType->setDecorators($this->_decoratorDiv);
         
         //
         $this->_elementUniversity = new Zend_Form_Element_Select('university');
@@ -90,10 +97,12 @@ class Application_Form_UploadDetail extends Zend_Form
                                ->setLabel('University');
         $this->setExamUniversityOptions();
         $this->addElement($this->_elementUniversity);
+        $this->_elementUniversity->setDecorators($this->_decoratorDiv);
         
         $this->addElement('textarea', 'comment', array(
             'label'    => 'Comment',
             'required'   => false,
+        	'decorators' => $this->_decoratorDiv,
         ));
         
         $this->addElement('hidden', 'step', array(
@@ -105,6 +114,7 @@ class Application_Form_UploadDetail extends Zend_Form
         $this->addElement('submit', 'submit', array(
             'ignore'   => true,
             'label'    => 'Weiter',
+        	'decorators' => $this->_decoratorDivButton,
         ));
         
         
