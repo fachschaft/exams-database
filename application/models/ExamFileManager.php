@@ -207,7 +207,7 @@ class Application_Model_ExamFileManager
 	private function unpackZipArchive($doc)
 	{
 		$zip = new ZipArchive;
-		if ($zip->open($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention) === TRUE)
+		if ($zip->open($this->_fileDestinationPath.$doc->fileName) === TRUE)
 		{
 			// go through all files in the archive
 			for ($i=0; $i<$zip->numFiles;$i++) {
@@ -234,7 +234,7 @@ class Application_Model_ExamFileManager
 	
 	private function unpackRarArchive($doc)
 	{
-		$rar_arch = RarArchive::open($this->_fileDestinationPath.$doc->fileName.'.'.$doc->extention);
+		$rar_arch = RarArchive::open($this->_fileDestinationPath.$doc->fileName);
 		if ($rar_arch === FALSE)
 			throw new Zend_Exception ("Failed opening file.", 500);
 		
