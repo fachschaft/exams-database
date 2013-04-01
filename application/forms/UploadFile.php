@@ -32,9 +32,10 @@ class Application_Form_UploadFile extends Application_Form_ExamTemplate
         $this->_file->setLabel('Uplaod Exam File:')
                 ->addValidator('Count', false, array('min' => 1, 'max' => $config['max_upload_files']))
                 ->addValidator('Size', false, $config['max_file_size'])
-				->setMaxFileSize($config['max_file_size'])
+				//->setMaxFileSize($config['max_file_size'] * 3) //max FORM size (for all files) is 3 times the max file size given in the config 
                 ->addValidator('Extension', false, $config['allowed_extentions'])
-                ->setAttrib('enctype', 'multipart/form-data');
+                ->setAttrib('enctype', 'multipart/form-data');     
+        
         $this->addElement($this->_file, 'exam_file');
         
         
