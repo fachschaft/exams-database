@@ -143,7 +143,7 @@ class ExamsController extends Zend_Controller_Action {
 	
 	public function indexAction() {
 
-		$this->_helper->redirector ( 'groups' );
+		$this->_helper->redirector ( 'quick-search' );
 	}
 	
 	public function groupsAction() {
