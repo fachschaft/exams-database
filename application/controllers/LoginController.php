@@ -48,6 +48,12 @@ class LoginController extends Zend_Controller_Action
 						'filter' 	=> array('StripTags'),
 						'validator' => array()),
 				
+				// redirecting controller
+				'rid' =>array(
+						'filter' 	=> array('StripTags'),
+						'validator' => array()),
+				
+				
 				'username' => array(
 						'filter' 	=> array('StripTags'),
 						'validator' => array()),
@@ -89,9 +95,10 @@ class LoginController extends Zend_Controller_Action
 			
 			else {
 			$data = $this->getRequest ()->getParams ();
-			
+						
 			// reconstruct the old parameters
 			$data = $this->_authManager->popParameters($data);
+						
 			
 			$this->_helper->Redirector->setGotoSimple ( $data ['action'], $data ['controller'], null, $data );
 			}

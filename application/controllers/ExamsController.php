@@ -276,7 +276,7 @@ public function degreesAction() {
 		}
 		
 		if(!$this->_authManager->isAllowed(null, 'download'))
-			throw new Custom_Exception_PermissionDenied("Permission Denied");
+			throw new Custom_Exception_NotLoggedIn("Sorry, your not logged in");
 		if (isset ( $this->getRequest ()->id )) {
 			// For anonymous Users, check if the user is allowed to download
 			// files based on
@@ -289,7 +289,7 @@ public function degreesAction() {
 					if ($document->exam->status->id == Application_Model_ExamStatus::PublicExam || $document->exam->status->id == Application_Model_ExamStatus::Reported)
 						$fileId = $this->getRequest ()->id;
 					else
-						throw new Custom_Exception_PermissionDenied("Permission Denied");
+						throw new Custom_Exception_PermissionDenied("You tryed to call a non public document");
 		 	$fileId = $this->getRequest ()->id;
 		 }
 		if (isset ( $this->getRequest ()->admin )) {

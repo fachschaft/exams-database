@@ -54,6 +54,11 @@ class Application_Model_AuthManager {
 		unset ( $params ['controller'] );
 		unset ( $params ['action'] );
 		
+		if(isset($params['id'])) {
+			$params['rid'] = $params['id'];
+			unset($params['id']);
+		}
+		
 		return $params;
 	}
 	
@@ -76,6 +81,11 @@ class Application_Model_AuthManager {
 		else {
 			$params ['controller'] = $params ['rcontroller'];
 			unset ( $params ['rcontroller'] );
+		}
+		
+		if(isset($params['rid'])) {
+			$params['id'] = $params['rid'];
+			unset($params['rid']);
 		}
 		
 		return $params;

@@ -18,7 +18,9 @@ class ErrorController extends Zend_Controller_Action
     	$errors = $this->_getParam('error_handler');
     	
     	// remove password at the error trace
-    	$errors->request->setParam('password', '****');
+    	if($errors->request->getParam('password') != null) {
+    		$errors->request->setParam('password', '****');
+    	}
     	
 
         if (!$errors || !$errors instanceof ArrayObject) {
@@ -38,7 +40,17 @@ class ErrorController extends Zend_Controller_Action
             	$priority = Zend_Log::NOTICE;
             	switch(get_class($errors->exception)) {
             		case'Custom_Exception_NotLoggedIn':
-						$this->_forward('not-logged-in');
+            			$data = $errors->request->getParams();
+            			//$data['_request'] = $errors->request->getRequestUri();
+            			$exp =  explode( "/" ,$errors->request->getRequestUri());
+            			$data['controller'] = $exp[1];
+            			$data['action'] = $exp[2];
+            			// save the old controller and action to redirect the user after the login
+            			$authmanager = new Application_Model_AuthManager ();
+            			$data = $authmanager->pushParameters( $data );
+            			
+            			$this->_helper->Redirector->setGotoSimple ( 'index', 'login', null, $data);
+						//$this->_forward('not-logged-in');
             			break;
             		case 'Custom_Exception_PermissionDenied':
             			$this->_forward('permission-denied');
@@ -85,13 +97,14 @@ class ErrorController extends Zend_Controller_Action
         return $log;
     }
 	public function notLoggedInAction() {
-		echo "Not logged in action called!";
-		die();
+		$this->_helper->Redirector->setGotoSimple ( 'index', 'login', null, $data);
+		//echo "Not logged in action called!";
+		//die();
 	}
 	
 	public function permissionDeniedAction() {
-		echo "Permission Denied action called!";
-		die();
+		//echo "Permission Denied action called!";
+		//die();
 	}
 
 }
