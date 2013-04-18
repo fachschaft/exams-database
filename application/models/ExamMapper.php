@@ -830,7 +830,7 @@ class Application_Model_ExamMapper
 	public function updateExamStatusToUnchecked($examId) 
 	{
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Unchecked."', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
-		Application_Model_ExamLogManager::addLogMessage($examId, 'Exam files uploaded by %user%.');
+		Application_Model_ExamLogManager::addLogMessage($examId, 'Exam files uploaded.');
     }
 	
 	public function updateExamStatusToDisapprove($examId) 
