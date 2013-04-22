@@ -37,7 +37,8 @@ class Application_Model_ExamSubTypeMapper
     public function fetchAll()
     {
         //$select = $this->getDbTable()->select()->order(array('idsemester DESC'));
-        $resultSet = $this->getDbTable()->fetchAll();
+    	$select = $this->getDbTable()->select()->order('order');
+        $resultSet = $this->getDbTable()->fetchAll($select);
         $entries   = array();
         foreach ($resultSet as $row) {
             $entry = new Application_Model_ExamSubType();
