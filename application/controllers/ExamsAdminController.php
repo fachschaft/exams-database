@@ -43,6 +43,7 @@ class ExamsAdminController extends Zend_Controller_Action
     	}
     	
 		$examMapper = new Application_Model_ExamMapper ();
+		$documentMapper = new Application_Model_DocumentMapper();
 		$request = $this->getRequest ();
 		if (isset ( $request->do ) && isset ( $request->id )) {
 			$do = $request->do;
@@ -54,8 +55,24 @@ class ExamsAdminController extends Zend_Controller_Action
 						echo "You can't do that!";
 								break;
 					}
-					$examMapper->updateExamStatusToChecked ( $id );
+					
+					$docs = $documentMapper->fetchByExamId($id);
+					$allProofed = true;
+					if(!empty($docs)) {
+						foreach ($docs as $doc) {
+							if(!$doc->getReviewed()) {
+								$allProofed = false;
+							}
+						}
+					} else {
+						$allProofed = false;
+					}
+					
+					if ($allProofed) {
+						$examMapper->updateExamStatusToChecked ( $id );
+					}
 					$this->_helper->Redirector->setGotoSimple ( 'overview' );
+					
 					break;
 				case "disapprove" :
 					if(!$this->_authManager->isAllowed(null, 'approve_exam')) {
