@@ -127,7 +127,9 @@
 	</div>
 	</td>
 	<td>
-	<? if(Application_Model_AuthManager::hasIdentity()): ?>
+	<?php  $authManager = new Application_Model_AuthManager(); ?>
+	<?
+	if($authManager->isAllowed(null, 'approve_exam')): ?>
 		<a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'overview',
@@ -142,7 +144,7 @@
                   'id'=>$entry->id),
             'default',
             true) ?>">report</a><br>
-	<? if(Application_Model_AuthManager::hasIdentity()): ?>
+	<? if($authManager->isAllowed(null, 'view_log')): ?>
 		<a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'log',
