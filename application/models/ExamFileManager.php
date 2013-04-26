@@ -396,7 +396,7 @@ class Application_Model_ExamFileManager
 	
 		$docDb = new Application_Model_DbTable_Document();
 	
-		$data = $docDb->fetchAll();
+		$data = $docDb->fetchAll("deleted = 0");
 	
 		$diffs = 0;
 		foreach ($data as $doc)
