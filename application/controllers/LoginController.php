@@ -19,12 +19,15 @@ class LoginController extends Zend_Controller_Action
 
     public function init()
     {
+    	$authenticate_config = Zend_Registry::get('authenticate');
     	
-    	//force the user to user https while using the login controller!
-    	if($_SERVER['SERVER_PORT'] != '443') {
-    		header('Location: https://' . $_SERVER['HTTP_HOST'] .
-    		$_SERVER['REQUEST_URI']);
-    		exit();
+    	if($authenticate_config['forceSSL']) {
+	    	//force the user to user https while using the login controller!
+	    	if($_SERVER['SERVER_PORT'] != '443') {
+	    		header('Location: https://' . $_SERVER['HTTP_HOST'] .
+	    		$_SERVER['REQUEST_URI']);
+	    		exit();
+	    	}
     	}
     		
     	
