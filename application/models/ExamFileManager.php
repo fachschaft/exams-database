@@ -76,11 +76,17 @@ class Application_Model_ExamFileManager
 		
 		$cor = $entries->getExam()->getCourse();
 		$cor = $cor[0];
+		$cor->setName(preg_replace( '/\s/', '', $cor->getName()));
+		$cor->setName(preg_replace( '/-/', '', $cor->getName()));
 		$max_len = strlen ($cor->getName());
 		
 		$lec = $entries->getExam()->getLecturer();
 		$lec = $lec[0];
+		$lec->setName(preg_replace( '/\s/', '', $lec->getName()));
+		$lec->setName(preg_replace( '/-/', '', $lec->getName()));
+		
 		$max_len_lec = strlen ($lec->getName());
+	 
 		
 		if($count) {
 			$doc->updateDownloadCounter ( $entries->id );
