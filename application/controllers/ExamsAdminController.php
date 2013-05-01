@@ -153,6 +153,21 @@ class ExamsAdminController extends Zend_Controller_Action
     				break;
     				
     				
+    			case "delete_files" :
+    				$this->view->action = 'delete_files';
+    				$this->view->id = $id;
+    				$this->view->edit_exam = $request->edit_exam;
+    				break;
+    			case "delete_files_do" :
+    				foreach ( $id as $i ) {
+    					$documentMapper = new Application_Model_DocumentMapper();
+    					$documentMapper->deleteDocument ( $i );
+    				}
+    				$data2['id'] = $this->getRequest()->edit_exam;
+    				$this->_helper->Redirector->setGotoSimple ( 'editfiles', null, null, $data2 );
+    				break;
+    				
+    				
     				
     			
     				// degree group handle
@@ -327,9 +342,14 @@ class ExamsAdminController extends Zend_Controller_Action
 						}
 						break;
 					case 'delete' :
-						foreach ( $ids as $id ) {
-							$documentMapper->deleteDocument ( $id );
-						}
+						$data2['do'] = 'delete_files';
+						$data2['id'] = $ids;
+						$data2['edit_exam'] = $this->getRequest()->id;
+						$this->_helper->Redirector->setGotoSimple ( 'ensure', null, null, $data2 );
+						
+						//foreach ( $ids as $id ) {
+						//	$documentMapper->deleteDocument ( $id );
+						//}
 						break;
 					case 'pack' :
 						$docs = array ();

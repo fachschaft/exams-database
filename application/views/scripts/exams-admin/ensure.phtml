@@ -23,6 +23,18 @@ Are you sure about deleting the File with id: <?php echo $this->id; ?><br><br>
             true) ?>">Yes, delete the File!</a><br>
 <? endif; ?>
 
+<? if($this->action == 'delete_files'): ?>
+Are you sure about deleting the Files with id: <?php foreach ($this->id as $entry): echo $entry . ", "; endforeach ?><br><br>
+	<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'ensure',
+                  'do'=>'delete_files_do',
+                  'id'=>$this->id,
+				  'edit_exam' => $this->edit_exam),
+            'default',
+            true) ?>">Yes, delete the <?php echo count($this->id); ?> Files!</a><br>
+<? endif; ?>
+
 
 
 
