@@ -101,6 +101,12 @@ class LoginController extends Zend_Controller_Action
 						
 			// reconstruct the old parameters
 			$data = $this->_authManager->popParameters($data);
+			
+			
+			// redirect to the default controller if login without any redirection destination
+			if(!isset($data['controller'])) {
+				$data['controller'] = 'index';
+			}
 						
 			
 			$this->_helper->Redirector->setGotoSimple ( $data ['action'], $data ['controller'], null, $data );
