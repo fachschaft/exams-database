@@ -25,5 +25,17 @@ Are you sure about deleting the Degree Group with id: <?php echo $this->id; ?><b
 <? endif; ?>
 
 
+<? if($this->action == 'delete_degree'): ?>
+Are you sure about deleting the Degree with id: <?php echo $this->id; ?><br><br>
+	<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'ensure',
+                  'do'=>'delete_degree_do',
+                  'id'=>$this->id),
+            'default',
+            true) ?>">Yes, delete the Degree!</a><br>
+<? endif; ?>
+
+
 
 </div>
