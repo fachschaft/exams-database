@@ -1,4 +1,3 @@
-
 -- -----------------------------------------------------
 -- Data for table `degree_group`
 -- -----------------------------------------------------
@@ -38,10 +37,10 @@ COMMIT;
 -- Data for table `semester`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `semester` (`idsemester`, `name`) VALUES (1, 'WS 2010/11');
-INSERT INTO `semester` (`idsemester`, `name`) VALUES (2, 'SS 2011');
-INSERT INTO `semester` (`idsemester`, `name`) VALUES (3, 'WS 2011/12');
-INSERT INTO `semester` (`idsemester`, `name`) VALUES (4, 'SS 2012');
+INSERT INTO `semester` (`idsemester`, `name`, `begin_time`) VALUES (1, 'WS 2010/11', NULL);
+INSERT INTO `semester` (`idsemester`, `name`, `begin_time`) VALUES (2, 'SS 2011', NULL);
+INSERT INTO `semester` (`idsemester`, `name`, `begin_time`) VALUES (3, 'WS 2011/12', NULL);
+INSERT INTO `semester` (`idsemester`, `name`, `begin_time`) VALUES (4, 'SS 2012', NULL);
 
 COMMIT;
 
@@ -49,8 +48,8 @@ COMMIT;
 -- Data for table `exam_type`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `exam_type` (`idexam_type`, `name`) VALUES (1, 'Klausur');
-INSERT INTO `exam_type` (`idexam_type`, `name`) VALUES (2, 'Protokoll');
+INSERT INTO `exam_type` (`idexam_type`, `name`, `order`) VALUES (1, 'Klausur', '1');
+INSERT INTO `exam_type` (`idexam_type`, `name`, `order`) VALUES (2, 'Protokoll', '2');
 
 COMMIT;
 
@@ -58,8 +57,8 @@ COMMIT;
 -- Data for table `exam_sub_type`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `exam_sub_type` (`idexam_sub_type`, `name`) VALUES (1, 'mit L&ouml;sung');
-INSERT INTO `exam_sub_type` (`idexam_sub_type`, `name`) VALUES (2, 'ohne L&ouml;sung');
+INSERT INTO `exam_sub_type` (`idexam_sub_type`, `name`, `order`) VALUES (1, 'mit L&ouml;sung', 2);
+INSERT INTO `exam_sub_type` (`idexam_sub_type`, `name`, `order`) VALUES (2, 'ohne L&ouml;sung', 1);
 
 COMMIT;
 
@@ -79,9 +78,9 @@ COMMIT;
 -- Data for table `exam_degree`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `exam_degree` (`idexam_degree`, `name`) VALUES (1, 'Bachelor');
-INSERT INTO `exam_degree` (`idexam_degree`, `name`) VALUES (2, 'Master');
-INSERT INTO `exam_degree` (`idexam_degree`, `name`) VALUES (3, 'Diploma');
+INSERT INTO `exam_degree` (`idexam_degree`, `name`, `order`) VALUES (1, 'Bachelor', 1);
+INSERT INTO `exam_degree` (`idexam_degree`, `name`, `order`) VALUES (2, 'Master', 2);
+INSERT INTO `exam_degree` (`idexam_degree`, `name`, `order`) VALUES (3, 'Diploma', 3);
 
 COMMIT;
 
@@ -208,5 +207,13 @@ INSERT INTO `course_has_course` (`course_idcourse`, `course_idcourse1`, `course_
 INSERT INTO `course_has_course` (`course_idcourse`, `course_idcourse1`, `course_has_relationship`) VALUES (3, 2, 100);
 INSERT INTO `course_has_course` (`course_idcourse`, `course_idcourse1`, `course_has_relationship`) VALUES (4, 3, 100);
 INSERT INTO `course_has_course` (`course_idcourse`, `course_idcourse1`, `course_has_relationship`) VALUES (7, 6, 100);
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `api_master_key`
+-- -----------------------------------------------------
+START TRANSACTION;
+INSERT INTO `api_master_key` (`idapi_master_key`, `key`) VALUES (1, 'HNmmaBQZzN3xN7lbed0ztarhc6HXMS6fp8y9HQ3JQDaUEpsuiuELAWK1iTqMNFR');
 
 COMMIT;

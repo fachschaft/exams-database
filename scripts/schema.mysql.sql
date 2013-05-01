@@ -1,6 +1,6 @@
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 
 -- -----------------------------------------------------
@@ -29,7 +29,7 @@ CREATE  TABLE IF NOT EXISTS `degree` (
   `name_unescaped` VARCHAR(255) NULL ,
   `order` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`iddegree`) ,
-  INDEX `fk_degree_degree_group` (`degree_group_iddegree_group` ASC) ,
+  INDEX `fk_degree_degree_group_idx` (`degree_group_iddegree_group` ASC) ,
   CONSTRAINT `fk_degree_degree_group`
     FOREIGN KEY (`degree_group_iddegree_group` )
     REFERENCES `degree_group` (`iddegree_group` )
@@ -76,6 +76,7 @@ DROP TABLE IF EXISTS `exam_type` ;
 CREATE  TABLE IF NOT EXISTS `exam_type` (
   `idexam_type` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
+  `order` VARCHAR(45) NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`idexam_type`) )
 ENGINE = InnoDB;
 
@@ -88,6 +89,7 @@ DROP TABLE IF EXISTS `exam_sub_type` ;
 CREATE  TABLE IF NOT EXISTS `exam_sub_type` (
   `idexam_sub_type` INT NOT NULL AUTO_INCREMENT ,
   `name` VARCHAR(255) NULL ,
+  `order` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`idexam_sub_type`) )
 ENGINE = InnoDB;
 
@@ -112,6 +114,7 @@ DROP TABLE IF EXISTS `exam_degree` ;
 CREATE  TABLE IF NOT EXISTS `exam_degree` (
   `idexam_degree` INT NOT NULL ,
   `name` VARCHAR(255) NULL ,
+  `order` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`idexam_degree`) )
 ENGINE = InnoDB;
 
@@ -148,13 +151,13 @@ CREATE  TABLE IF NOT EXISTS `exam` (
   `create_date` TIMESTAMP NULL ,
   `modified_last_date` TIMESTAMP NULL ,
   PRIMARY KEY (`idexam`) ,
-  INDEX `fk_exame_semester` (`semester_idsemester` ASC) ,
-  INDEX `fk_exame_exame_type` (`exam_type_idexam_type` ASC) ,
-  INDEX `fk_exame_exame_sub_type` (`exam_sub_type_idexam_sub_type` ASC) ,
-  INDEX `fk_exam_exam_status` (`exam_status_idexam_status` ASC) ,
-  INDEX `fk_exam_exam_degree1` (`exam_degree_idexam_degree` ASC) ,
-  INDEX `fk_exam_university1` (`university_iduniversity` ASC) ,
-  INDEX `fk_exam_degree1` (`degree_iddegree` ASC) ,
+  INDEX `fk_exame_semester_idx` (`semester_idsemester` ASC) ,
+  INDEX `fk_exame_exame_type_idx` (`exam_type_idexam_type` ASC) ,
+  INDEX `fk_exame_exame_sub_type_idx` (`exam_sub_type_idexam_sub_type` ASC) ,
+  INDEX `fk_exam_exam_status_idx` (`exam_status_idexam_status` ASC) ,
+  INDEX `fk_exam_exam_degree1_idx` (`exam_degree_idexam_degree` ASC) ,
+  INDEX `fk_exam_university1_idx` (`university_iduniversity` ASC) ,
+  INDEX `fk_exam_degree1_idx` (`degree_iddegree` ASC) ,
   CONSTRAINT `fk_exame_semester`
     FOREIGN KEY (`semester_idsemester` )
     REFERENCES `semester` (`idsemester` )
@@ -232,7 +235,7 @@ CREATE  TABLE IF NOT EXISTS `document` (
   `delete_date` TIMESTAMP NULL ,
   `md5_sum` VARCHAR(32) NULL ,
   PRIMARY KEY (`iddocument`) ,
-  INDEX `fk_document_exam1` (`exam_idexam` ASC) ,
+  INDEX `fk_document_exam1_idx` (`exam_idexam` ASC) ,
   CONSTRAINT `fk_document_exam1`
     FOREIGN KEY (`exam_idexam` )
     REFERENCES `exam` (`idexam` )
@@ -250,8 +253,8 @@ CREATE  TABLE IF NOT EXISTS `degree_has_course` (
   `degree_iddegree` INT NOT NULL ,
   `course_idcourse` INT NOT NULL ,
   PRIMARY KEY (`degree_iddegree`, `course_idcourse`) ,
-  INDEX `fk_degree_has_course_degree` (`degree_iddegree` ASC) ,
-  INDEX `fk_degree_has_course_course` (`course_idcourse` ASC) ,
+  INDEX `fk_degree_has_course_degree_idx` (`degree_iddegree` ASC) ,
+  INDEX `fk_degree_has_course_course_idx` (`course_idcourse` ASC) ,
   CONSTRAINT `fk_degree_has_course_degree`
     FOREIGN KEY (`degree_iddegree` )
     REFERENCES `degree` (`iddegree` )
@@ -275,7 +278,7 @@ CREATE  TABLE IF NOT EXISTS `exam_log` (
   `message` TEXT NULL ,
   `date` TIMESTAMP NULL DEFAULT NOW() ,
   PRIMARY KEY (`idexam_log`) ,
-  INDEX `fk_exam_log_exam` (`exam_idexam` ASC) ,
+  INDEX `fk_exam_log_exam_idx` (`exam_idexam` ASC) ,
   CONSTRAINT `fk_exam_log_exam`
     FOREIGN KEY (`exam_idexam` )
     REFERENCES `exam` (`idexam` )
@@ -293,8 +296,8 @@ CREATE  TABLE IF NOT EXISTS `exam_has_course` (
   `exam_idexam` INT NOT NULL ,
   `course_idcourse` INT NOT NULL ,
   PRIMARY KEY (`exam_idexam`, `course_idcourse`) ,
-  INDEX `fk_exam_has_course_group_exam` (`exam_idexam` ASC) ,
-  INDEX `fk_exam_has_course_group_course1` (`course_idcourse` ASC) ,
+  INDEX `fk_exam_has_course_group_exam_idx` (`exam_idexam` ASC) ,
+  INDEX `fk_exam_has_course_group_course1_idx` (`course_idcourse` ASC) ,
   CONSTRAINT `fk_exam_has_course_group_exam`
     FOREIGN KEY (`exam_idexam` )
     REFERENCES `exam` (`idexam` )
@@ -316,8 +319,8 @@ CREATE  TABLE IF NOT EXISTS `degree_has_lecturer` (
   `degree_iddegree` INT NOT NULL ,
   `lecturer_idlecturer` INT NOT NULL ,
   PRIMARY KEY (`degree_iddegree`, `lecturer_idlecturer`) ,
-  INDEX `fk_degree_has_lecturer_degree` (`degree_iddegree` ASC) ,
-  INDEX `fk_degree_has_lecturer_lecturer` (`lecturer_idlecturer` ASC) ,
+  INDEX `fk_degree_has_lecturer_degree_idx` (`degree_iddegree` ASC) ,
+  INDEX `fk_degree_has_lecturer_lecturer_idx` (`lecturer_idlecturer` ASC) ,
   CONSTRAINT `fk_degree_has_lecturer_degree`
     FOREIGN KEY (`degree_iddegree` )
     REFERENCES `degree` (`iddegree` )
@@ -339,8 +342,8 @@ CREATE  TABLE IF NOT EXISTS `exam_has_lecturer` (
   `exam_idexam` INT NOT NULL ,
   `lecturer_idlecturer` INT NOT NULL ,
   PRIMARY KEY (`exam_idexam`, `lecturer_idlecturer`) ,
-  INDEX `fk_exam_has_lecturer_exam` (`exam_idexam` ASC) ,
-  INDEX `fk_exam_has_lecturer_lecturer` (`lecturer_idlecturer` ASC) ,
+  INDEX `fk_exam_has_lecturer_exam_idx` (`exam_idexam` ASC) ,
+  INDEX `fk_exam_has_lecturer_lecturer_idx` (`lecturer_idlecturer` ASC) ,
   CONSTRAINT `fk_exam_has_lecturer_exam`
     FOREIGN KEY (`exam_idexam` )
     REFERENCES `exam` (`idexam` )
@@ -363,8 +366,8 @@ CREATE  TABLE IF NOT EXISTS `course_has_course` (
   `course_idcourse1` INT NOT NULL ,
   `course_has_relationship` INT NULL DEFAULT 100 ,
   PRIMARY KEY (`course_idcourse`, `course_idcourse1`) ,
-  INDEX `fk_course_has_course_course2` (`course_idcourse1` ASC) ,
-  INDEX `fk_course_has_course_course1` (`course_idcourse` ASC) ,
+  INDEX `fk_course_has_course_course2_idx` (`course_idcourse1` ASC) ,
+  INDEX `fk_course_has_course_course1_idx` (`course_idcourse` ASC) ,
   CONSTRAINT `fk_course_has_course_course1`
     FOREIGN KEY (`course_idcourse` )
     REFERENCES `course` (`idcourse` )
@@ -389,7 +392,7 @@ CREATE  TABLE IF NOT EXISTS `exam_download_statistic_day` (
   `date` DATE NOT NULL ,
   `downloads` INT NOT NULL ,
   PRIMARY KEY (`idexam_download_statistic_day`) ,
-  INDEX `fk_exam_download_statistic_day_exam1` (`exam_idexam` ASC) ,
+  INDEX `fk_exam_download_statistic_day_exam1_idx` (`exam_idexam` ASC) ,
   UNIQUE INDEX `exam_idexam_date_UNIQUE` (`exam_idexam` ASC, `date` ASC) ,
   CONSTRAINT `fk_exam_download_statistic_day_exam1`
     FOREIGN KEY (`exam_idexam` )
@@ -410,7 +413,7 @@ CREATE  TABLE IF NOT EXISTS `document_download_statistic_day` (
   `date` DATE NOT NULL ,
   `downloads` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`iddocument_download_statistic_day`) ,
-  INDEX `fk_document_download_statistic_day_document1` (`document_iddocument` ASC) ,
+  INDEX `fk_document_download_statistic_day_document1_idx` (`document_iddocument` ASC) ,
   UNIQUE INDEX `document_iddocument_date_UNIQUE` (`document_iddocument` ASC, `date` ASC) ,
   CONSTRAINT `fk_document_download_statistic_day_document1`
     FOREIGN KEY (`document_iddocument` )
@@ -426,7 +429,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `log` ;
 
 CREATE  TABLE IF NOT EXISTS `log` (
-  `idlog` INT NOT NULL ,
+  `idlog` INT NOT NULL AUTO_INCREMENT ,
   `message` TEXT NULL ,
   PRIMARY KEY (`idlog`) )
 ENGINE = InnoDB;
@@ -443,6 +446,31 @@ CREATE  TABLE IF NOT EXISTS `user_privilege_mapping` (
   `identity` VARCHAR(255) NULL ,
   `role` VARCHAR(255) NULL ,
   PRIMARY KEY (`iduser_privilege_mapping`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `api_master_key`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `api_master_key` ;
+
+CREATE  TABLE IF NOT EXISTS `api_master_key` (
+  `idapi_master_key` INT NOT NULL AUTO_INCREMENT ,
+  `key` VARCHAR(255) NOT NULL ,
+  PRIMARY KEY (`idapi_master_key`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `api_temporary_key`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `api_temporary_key` ;
+
+CREATE  TABLE IF NOT EXISTS `api_temporary_key` (
+  `idapi_temporary_key` INT NOT NULL AUTO_INCREMENT ,
+  `key` VARCHAR(255) NOT NULL ,
+  `expire_time` TIMESTAMP NOT NULL ,
+  PRIMARY KEY (`idapi_temporary_key`) )
 ENGINE = InnoDB;
 
 
