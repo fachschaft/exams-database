@@ -126,6 +126,12 @@ class Application_Model_LecturerMapper
     
     public function delete(Application_Model_Lecturer $lecturer)
     {
+    	$lecturer_old = $this->find($lecturer->id);
+    	// delete foreign
+    	// degree
+    	foreach($lecturer_old->degrees as $element) {
+    		$this->getDbTable()->getAdapter()->query("DELETE FROM `degree_has_lecturer` WHERE `degree_iddegree` = ".$element->id." AND `lecturer_idlecturer` = ".$lecturer->id.";");
+    	}
     	$this->getDbTable()->delete('idlecturer = '.$lecturer->id);
     }
     
