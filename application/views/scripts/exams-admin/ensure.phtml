@@ -47,6 +47,17 @@ Are you sure about deleting the Course with id: <?php echo $this->id; ?><br><br>
             true) ?>">Yes, delete the Course!</a><br>
 <? endif; ?>
 
+<? if($this->action == 'delete_lecturer'): ?>
+Are you sure about deleting the Lecturer with id: <?php echo $this->id; ?><br><br>
+	<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'ensure',
+                  'do'=>'delete_lecturer_do',
+                  'id'=>$this->id),
+            'default',
+            true) ?>">Yes, delete the Lecturer!</a><br>
+<? endif; ?>
+
 
 
 

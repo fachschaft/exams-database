@@ -176,6 +176,21 @@ class ExamsAdminController extends Zend_Controller_Action
 	        		// leave the form after save
 	        		$this->_helper->redirector('course-edit');
    					break;
+
+   					
+   					
+   					// course lecturer
+   				case "delete_lecturer" :
+   					$this->view->action = 'delete_lecturer';
+   					$this->view->id = $request->id;
+   					break;
+   				case "delete_lecturer_do" :
+   					$courseMapper = new Application_Model_LecturerMapper();
+		        	$courseMapper->delete(new Application_Model_Lecturer(array('id'=>$id)));
+		        	// leave the form after save
+		        	$this->_helper->redirector('lecturer-edit');
+   					break;
+   					
     				
     				
     					
@@ -713,10 +728,14 @@ class ExamsAdminController extends Zend_Controller_Action
 	        	switch($action){
 	        		case 'delete':
 	        			if ($form->isValid ( $data ) ) {
-		        			$courseMapper = new Application_Model_LecturerMapper();
-		        			$courseMapper->delete(new Application_Model_Lecturer(array('id'=>$data['select_lecturer'])));
+	        				$data2['do'] = 'delete_lecturer';
+	        				$data2['id'] = $data['select_lecturer'];
+	        				$this->_helper->Redirector->setGotoSimple ( 'ensure', null, null, $data2 );
+	        				
+		        			//$courseMapper = new Application_Model_LecturerMapper();
+		        			//$courseMapper->delete(new Application_Model_Lecturer(array('id'=>$data['select_lecturer'])));
 		        			// leave the form after save
-		        			$this->_helper->redirector('lecturer-edit');
+		        			//$this->_helper->redirector('lecturer-edit');
 	        			}
 	        			break;
 	        		case 'select':
