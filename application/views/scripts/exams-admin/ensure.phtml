@@ -1,0 +1,15 @@
+<div id="view-content">
+
+<? if($this->action == 'exam_delete'): ?>
+Are you sure about deleting the exam with id: <?php echo $this->exam_delete; ?><br><br>
+	<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'overview',
+                  'do'=>'delete',
+                  'id'=>$this->exam_delete),
+            'default',
+            true) ?>">Yes, delete the Exam!</a><br>
+<? endif; ?>
+
+
+</div>

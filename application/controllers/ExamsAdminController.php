@@ -123,6 +123,24 @@ class ExamsAdminController extends Zend_Controller_Action
 		
 		$this->view->exams_reported = $examMapper->fetchReported ();
     }
+    
+    
+    public function ensureAction()
+    {
+    	$request = $this->getRequest ();
+    	if (isset ( $request->do ) && isset ( $request->id )) {
+    		$do = $request->do;
+    		$id = $request->id;
+    			
+    		switch ($do) {
+    			case "delete_exam" :
+    				$this->view->action = 'exam_delete';
+    				$this->view->exam_delete = $id;
+    				break;
+    		}
+    	}	
+	    //
+    }
 
     public function editdetailsAction()
     {
@@ -210,6 +228,8 @@ class ExamsAdminController extends Zend_Controller_Action
 		}
 		//
     }
+  
+    
 
     public function editfilesAction()
     {
