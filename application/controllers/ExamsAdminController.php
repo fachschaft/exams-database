@@ -138,6 +138,22 @@ class ExamsAdminController extends Zend_Controller_Action
     				$this->view->action = 'exam_delete';
     				$this->view->id = $id;
     				break;
+    				
+    				
+    			case "delete_file" :
+    				$this->view->action = 'delete_file';
+    				$this->view->id = $id;
+    				$this->view->edit_exam = $request->edit_exam;
+    				break;
+    			case "delete_file_do" :
+    				$documentMapper = new Application_Model_DocumentMapper ();
+    				$documentMapper->deleteDocument ( $id );
+    				$data2['id'] = $this->getRequest()->edit_exam;
+    				$this->_helper->Redirector->setGotoSimple ( 'editfiles', null, null, $data2 );
+    				break;
+    				
+    				
+    				
     			
     				// degree group handle
     			case "delete_degree_group" :
@@ -363,7 +379,13 @@ class ExamsAdminController extends Zend_Controller_Action
 			// switch over the given action
 			switch ($this->getRequest ()->do) {
 				case "delete" :
-					$documentMapper->deleteDocument ( $this->getRequest ()->file );
+					$data2['do'] = 'delete_file';
+					$data2['id'] = $this->getRequest()->file;
+					$data2['edit_exam'] = $this->getRequest()->id;
+					$this->_helper->Redirector->setGotoSimple ( 'ensure', null, null, $data2 );
+					
+					//$documentMapper = new Application_Model_DocumentMapper ();
+					//$documentMapper->deleteDocument ( $this->getRequest ()->file );
 					break;
 				default :
 					throw new Exception ( 'Action not implemented', 500 );

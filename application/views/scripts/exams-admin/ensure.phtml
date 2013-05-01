@@ -11,6 +11,19 @@ Are you sure about deleting the exam with id: <?php echo $this->id; ?><br><br>
             true) ?>">Yes, delete the Exam!</a><br>
 <? endif; ?>
 
+<? if($this->action == 'delete_file'): ?>
+Are you sure about deleting the File with id: <?php echo $this->id; ?><br><br>
+	<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'ensure',
+                  'do'=>'delete_file_do',
+                  'id'=>$this->id,
+				  'edit_exam' => $this->edit_exam),
+            'default',
+            true) ?>">Yes, delete the File!</a><br>
+<? endif; ?>
+
+
 
 
 <? if($this->action == 'delete_degree_group'): ?>
