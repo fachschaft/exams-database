@@ -1,15 +1,29 @@
 <div id="view-content">
 
 <? if($this->action == 'exam_delete'): ?>
-Are you sure about deleting the exam with id: <?php echo $this->exam_delete; ?><br><br>
+Are you sure about deleting the exam with id: <?php echo $this->id; ?><br><br>
 	<a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'overview',
                   'do'=>'delete',
-                  'id'=>$this->exam_delete),
+                  'id'=>$this->id),
             'default',
             true) ?>">Yes, delete the Exam!</a><br>
 <? endif; ?>
+
+
+
+<? if($this->action == 'delete_degree_group'): ?>
+Are you sure about deleting the Degree Group with id: <?php echo $this->id; ?><br><br>
+	<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'ensure',
+                  'do'=>'delete_degree_group_do',
+                  'id'=>$this->id),
+            'default',
+            true) ?>">Yes, delete the Degree Group!</a><br>
+<? endif; ?>
+
 
 
 </div>

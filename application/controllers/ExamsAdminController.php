@@ -131,11 +131,25 @@ class ExamsAdminController extends Zend_Controller_Action
     	if (isset ( $request->do ) && isset ( $request->id )) {
     		$do = $request->do;
     		$id = $request->id;
+    		
+    		
     			
     		switch ($do) {
     			case "delete_exam" :
     				$this->view->action = 'exam_delete';
-    				$this->view->exam_delete = $id;
+    				$this->view->id = $id;
+    				break;
+    			
+    				// degree group handle
+    			case "delete_degree_group" :
+    				$this->view->action = 'delete_degree_group';
+    				$this->view->id = $request->id;
+    				break;
+    			case "delete_degree_group_do" :
+    				$groupMapper = new Application_Model_DegreeGroupMapper();
+    				$groupMapper->delete(new Application_Model_DegreeGroup(array('id'=>$id)));
+    				// leave the form after save
+    				$this->_helper->redirector('degree-group-edit');
     				break;
     		}
     	}	
@@ -760,10 +774,14 @@ class ExamsAdminController extends Zend_Controller_Action
     		switch($action){
     			case 'delete':
     				if ($form->isValid ( $data ) ) {
-    					$groupMapper = new Application_Model_DegreeGroupMapper();
-    					$groupMapper->delete(new Application_Model_DegreeGroup(array('id'=>$data['select_degree_group'])));
+    					$data2['do'] = 'delete_degree_group';
+    					$data2['id'] = $data['select_degree_group'];
+    					$this->_helper->Redirector->setGotoSimple ( 'ensure', null, null, $data2 );
+    					
+    					//$groupMapper = new Application_Model_DegreeGroupMapper();
+    					//$groupMapper->delete(new Application_Model_DegreeGroup(array('id'=>$data['select_degree_group'])));
     					// leave the form after save
-    					$this->_helper->redirector('degree-group-edit');
+    					//$this->_helper->redirector('degree-group-edit');
     				}
     				break;
     			case 'select':
