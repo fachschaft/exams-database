@@ -129,6 +129,18 @@ class Application_Model_CourseMapper
     
     public function delete(Application_Model_Course $course)
     {
+    	$course_old = $this->find($course->id);
+    	// delete foreign
+    	// degree
+    	foreach($course_old->degrees as $element) {
+    		$this->getDbTable()->getAdapter()->query("DELETE FROM `degree_has_course` WHERE `degree_iddegree` = ".$element->id." AND `course_idcourse` = ".$course->id.";");
+    	}
+    	 
+    	// course
+    	foreach($course_old->connectedCourse as $element) {
+    		$this->getDbTable()->getAdapter()->query("DELETE FROM `course_has_course` WHERE (`course_idcourse` = ".$element->id." AND `course_idcourse1` = ".$course_old->id.") OR (`course_idcourse1` = ".$element->id." AND `course_idcourse` = ".$course_old->id.");");
+    	}
+    	
     	$this->getDbTable()->delete('idcourse = '.$course->id);
     }
     
