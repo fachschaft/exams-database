@@ -36,6 +36,18 @@ Are you sure about deleting the Degree with id: <?php echo $this->id; ?><br><br>
             true) ?>">Yes, delete the Degree!</a><br>
 <? endif; ?>
 
+<? if($this->action == 'delete_course'): ?>
+Are you sure about deleting the Course with id: <?php echo $this->id; ?><br><br>
+	<a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'ensure',
+                  'do'=>'delete_course_do',
+                  'id'=>$this->id),
+            'default',
+            true) ?>">Yes, delete the Course!</a><br>
+<? endif; ?>
+
+
 
 
 </div>

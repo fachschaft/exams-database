@@ -152,19 +152,34 @@ class ExamsAdminController extends Zend_Controller_Action
     				break;
     				
     				// degree handle
-    				case "delete_degree" :
-    					$this->view->action = 'delete_degree';
-    					$this->view->id = $request->id;
-    					break;
-    				case "delete_degree_do" :
-    					$degreeMapper = new Application_Model_DegreeMapper();
-        				$degree = $degreeMapper->find($id);
-        				$degreeMapper->delete($degree);
-        				// leave the form after save
-        				$this->_helper->redirector('degree-edit');
-    					break;
+    			case "delete_degree" :
+    				$this->view->action = 'delete_degree';
+    				$this->view->id = $request->id;
+    				break;
+    			case "delete_degree_do" :
+    				$degreeMapper = new Application_Model_DegreeMapper();
+       				$degree = $degreeMapper->find($id);
+       				$degreeMapper->delete($degree);
+       				// leave the form after save
+       				$this->_helper->redirector('degree-edit');
+   					break;
+   					
+   					
+   					// course handle
+				case "delete_course" :
+   					$this->view->action = 'delete_course';
+   					$this->view->id = $request->id;
+   					break;
+   				case "delete_course_do" :
+   					$courseMapper = new Application_Model_CourseMapper();
+	        		$courseMapper->delete(new Application_Model_Course(array('id'=>$id)));   
+	        		// leave the form after save
+	        		$this->_helper->redirector('course-edit');
+   					break;
     				
     				
+    					
+    					
     		}
     		
     	}	
@@ -586,10 +601,14 @@ class ExamsAdminController extends Zend_Controller_Action
         	switch($action){
         		case 'delete':
         			if ($form->isValid ( $data ) ) {
-	        			$courseMapper = new Application_Model_CourseMapper();
-	        			$courseMapper->delete(new Application_Model_Course(array('id'=>$data['select_course'])));   
+        				$data2['do'] = 'delete_course';
+        				$data2['id'] = $data['select_course'];
+        				$this->_helper->Redirector->setGotoSimple ( 'ensure', null, null, $data2 );
+        				
+	        			//$courseMapper = new Application_Model_CourseMapper();
+	        			//$courseMapper->delete(new Application_Model_Course(array('id'=>$data['select_course'])));   
 	        			// leave the form after save
-	        			$this->_helper->redirector('course-edit');
+	        			//$this->_helper->redirector('course-edit');
         			}
         			break;
         		case 'select':
