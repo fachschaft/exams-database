@@ -54,7 +54,7 @@ class Application_Model_ExamQuickSearchQuery {
 		// append all the lists
 		$filter_array = array_merge($this->_corseList, $this->_lecturerList);
 		
-		if (strlen(html_entity_decode($term, ENT_QUOTES, 'ISO-8859-15')) >= 1) {
+		if (strlen(html_entity_decode($term, ENT_QUOTES, 'ISO-8859-15')) >= 2) {
 			$filter = function($elements) use ($term)
 			{
 				if(stristr($elements,$term))
