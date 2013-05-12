@@ -18,10 +18,6 @@ class ExamsController extends Zend_Controller_Action {
 	
 	public function init() {
 		
-		$this->view->addHelperPath(
-				'ZendX/JQuery/View/Helper'
-				,'ZendX_JQuery_View_Helper');
-		
 		//Initialize the auth manager to enable acl
 		$this->_authManager = new Application_Model_AuthManager();
 		

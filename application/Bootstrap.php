@@ -35,6 +35,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         
         $ldapConfig = $this->getOption('ldap');
         Zend_Registry::set('ldap', $ldapConfig);
+        
+        $mailConfig = $this->getOption('mail');
+        Zend_Registry::set('mail', $mailConfig);
+        
+        $notConfig = $this->getOption('notification');
+        Zend_Registry::set('notification', $notConfig);
     }
     
     public function _initPlaintextHelper()
@@ -51,6 +57,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 			Zend_Registry::set ( "log", $log );
 			return $log;
 		}	
-	}  
+	} 
+
+	public function _initJQuery() {
+		$this->view->addHelperPath(
+				'ZendX/JQuery/View/Helper'
+				,'ZendX_JQuery_View_Helper');
+	}
 }
 

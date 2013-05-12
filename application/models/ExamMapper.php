@@ -829,6 +829,22 @@ class Application_Model_ExamMapper
 	
 	public function updateExamStatusToUnchecked($examId) 
 	{
+		$ex = new Application_Model_Exam();
+		
+		try { 
+		$exam = new Application_Model_ExamMapper();
+		$ex = $exam->find($examId);
+		} catch (Exception $e) {
+		}
+		
+		
+		try {
+		$noti = new Application_Model_Notification();
+		$noti->sendNotification("New unchecked Exam " . date('Y-m-d H:i:s'), "New unchecked Exam " . date('Y-m-d H:i:s')."\n".$ex->getCourse()[0]->getName() ." von ".$ex->getLecturer()[0]->getName() . " im " . $ex->getSemester());
+		} catch (Exception $e) {
+			//ToDo: handle this
+		}
+		
         $this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Unchecked."', `modified_last_date` = NOW() WHERE `idexam` =".$examId.";");
 		Application_Model_ExamLogManager::addLogMessage($examId, 'Exam files uploaded.');
     }
@@ -861,6 +877,22 @@ class Application_Model_ExamMapper
     
     public function updateExamStatusToReported($examId, $reason)
     {
+    	$ex = new Application_Model_Exam();
+    	
+    	try {
+    		$exam = new Application_Model_ExamMapper();
+    		$ex = $exam->find($examId);
+    	} catch (Exception $e) {
+    	}
+    	
+    	
+    	try {
+    		$noti = new Application_Model_Notification();
+    		$noti->sendNotification("New reported Exam " . date('Y-m-d H:i:s'), "New reported Exam " . date('Y-m-d H:i:s')."\n".$ex->getCourse()[0]->getName() ." by ".$ex->getLecturer()[0]->getName(). ", " . $ex->getLecturer()[0]->getDegree() . " in " . $ex->getSemester()."\n"."Reason: ".$reason);
+    	} catch (Exception $e) {
+    		//ToDo: handle this
+    	}
+    	
     	//TODO is changing the last modified date here correct?
     	$this->getDbTable()->getAdapter()->query("UPDATE `exam` SET `exam_status_idexam_status` =  '".Application_Model_ExamStatus::Reported."' WHERE `idexam` =".$examId.";");
     	Application_Model_ExamLogManager::addLogMessage($examId, 'Exam was reported with reason ' . $reason . '.');
