@@ -82,7 +82,7 @@ class Application_Model_ExamSearch {
 		$doc = new Zend_Search_Lucene_Document ();
 		$doc->addField ( Zend_Search_Lucene_Field::Keyword( 'examid', $id ) );
 		$keywords = $examMapper->returnQuicksearchIndexKeywords($id);
-		$doc->addField ( Zend_Search_Lucene_Field::Text ( 'keyword', $keywords ) );
+		$doc->addField ( Zend_Search_Lucene_Field::Text ( 'keyword', $keywords, 'UTF-8' ) );
 		$index->addDocument ( $doc );
 	}
 	
@@ -96,6 +96,7 @@ class Application_Model_ExamSearch {
 	
 	//ToDo(leinfeda): Think about the charset: http://framework.zend.com/manual/en/zend.search.lucene.charset.html
 	public function searchIndex($query) {
+		Zend_Search_Lucene_Search_QueryParser::setDefaultEncoding('utf-8');
 		$index = Zend_Search_Lucene::open ( $this->_indexpath );
 		$hits = $index->find ( $query );
 		$foundIds = array();
