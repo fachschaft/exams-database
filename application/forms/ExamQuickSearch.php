@@ -22,14 +22,20 @@ class Application_Form_ExamQuickSearch extends Application_Form_ExamTemplate
     	
     	$this->setMethod('post');
     	$this->setAction('/exams/quick-search');
-		$this->_query = new Zend_Form_Element_Text('_query');
+		//$this->_query = new Zend_Form_Element_Text('_query');
+    	$this->_query = new ZendX_JQuery_Form_Element_AutoComplete('_query');
 		$this->_query->setLabel('Keyword Search');
 		$this->_query->setRequired(true);
 		$this->_query->addValidator('NotEmpty', true);
 		$this->_query->addValidator( new Zend_Validate_StringLength(array('min'=>3)), true);
 		$this->_query->addValidator($validator);
 		
-		$this->_query->setDecorators($this->_decoratorDiv);
+		$this->_query->setJQueryParam('data', array('Daniel', 'Willi'));
+		
+		//$this->_query->setDecorators($this->_decoratorDiv);
+		//$this->_query->setDecorators($this->_decoratorformJQueryElements);
+		$this->_query->setJQueryParam(
+				'source', '/exams/quick-search-query');
 		
 		$this->addElement($this->_query);
 		

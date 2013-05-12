@@ -18,6 +18,10 @@ class ExamsController extends Zend_Controller_Action {
 	
 	public function init() {
 		
+		$this->view->addHelperPath(
+				'ZendX/JQuery/View/Helper'
+				,'ZendX_JQuery_View_Helper');
+		
 		//Initialize the auth manager to enable acl
 		$this->_authManager = new Application_Model_AuthManager();
 		
@@ -71,6 +75,11 @@ class ExamsController extends Zend_Controller_Action {
 				
 				// Quicksearch
 				'_query' =>array(
+						'filter' 	=> array('StripTags'),
+						'validator' => array()),
+						
+				// Quicksearch Query (jQuery - ajax)
+				'term' =>array(
 						'filter' 	=> array('StripTags'),
 						'validator' => array()),
 						
@@ -493,7 +502,7 @@ public function degreesAction() {
 	}
 
     public function quickSearchAction()
-    {
+    { 	
     	if(!$this->_authManager->isAllowed(null, 'quick_search'))
     		throw new Custom_Exception_PermissionDenied("Permission Denied");
     	$found = false;
@@ -513,8 +522,22 @@ public function degreesAction() {
     	// draw the form first, so ists possible to use the back key from your browser to modify the search
     	if($found) {
     		$data['request'] = $formData['_query'];
-    		return $this->_helper->Redirector->setGotoSimple ( 'search', null, null, $data );
+    		return $this->_helper->Redirector->setGotoSimple( 'search', null, null, $data );
     	}
     	
+    }
+    
+    public function quickSearchQueryAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'quick_search'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    	
+    	$eqsq = new Application_Model_ExamQuickSearchQuery();
+    	
+    	$results = $eqsq->getResults($this->_getParam('term'));
+    	$this->_helper->json(array_values($results));
+    	
+    	
+    	 
     }
 }

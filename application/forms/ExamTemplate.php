@@ -43,6 +43,16 @@ class Application_Form_ExamTemplate extends Zend_Form
 			//array('Label', array('tag' => 'div', 'class' => 'element_lable')),
 			array(array('data' => 'HtmlTag'), array('class' => 'element_button')),
 	);
+	
+	public $_decoratorformJQueryElements = array(
+			'ViewHelper',
+			array('Errors', array('class' => 'element_error')),
+			//'Label',
+			//array('Label', array('tag' => 'div', 'class' => 'element_lable')),
+			array(array('data' => 'HtmlTag'), array('class' => 'element_button')),
+			array('UiWidgetElement', array('tag' => '')) // it necessary to include for jquery elements
+	);
+	
 
     public function init()
     {
