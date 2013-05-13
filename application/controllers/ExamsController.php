@@ -506,7 +506,7 @@ public function degreesAction() {
     	if ($this->_request->isPost()) {
     		$formData = $this->_request->getParams();
     		$formData['_query'] = html_entity_decode($formData['_query']);
-    		echo $formData['_query'];
+    		//echo $formData['_query'];
     		if ($form->isValid($formData)) {
 	       		$index = new Application_Model_ExamSearch();
 	       		$found = $index->searchExists($formData['_query']);
@@ -514,7 +514,7 @@ public function degreesAction() {
 	    			$form->getElement("_query")->addError("no results found!");
 	    		}
     		} else {
-    			var_dump($form->getErrors());
+    			//var_dump($form->getErrors());
     		}
     	}
     	$this->view->form = $form;
