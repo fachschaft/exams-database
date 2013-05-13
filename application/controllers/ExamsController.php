@@ -505,13 +505,17 @@ public function degreesAction() {
     	$form = new Application_Form_ExamQuickSearch();
     	if ($this->_request->isPost()) {
     		$formData = $this->_request->getParams();
-    		if ($form->isValid($this->getRequest()->getParams())) {
+    		$formData['_query'] = html_entity_decode($formData['_query']);
+    		echo $formData['_query'];
+    		if ($form->isValid($formData)) {
 	       		$index = new Application_Model_ExamSearch();
 	       		$found = $index->searchExists($formData['_query']);
 	    		if(!$found) {
 	    			$form->getElement("_query")->addError("no results found!");
 	    		}
-    		} else { var_dump($form->getErrors()); }
+    		} else {
+    			var_dump($form->getErrors());
+    		}
     	}
     	$this->view->form = $form;
     	

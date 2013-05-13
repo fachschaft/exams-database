@@ -64,5 +64,12 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
 				'ZendX/JQuery/View/Helper'
 				,'ZendX_JQuery_View_Helper');
 	}
+	
+	protected function _initLucene()
+	{
+		Zend_Search_Lucene_Search_QueryParser::setDefaultEncoding('utf-8');
+		Zend_Search_Lucene_Analysis_Analyzer::setDefault(
+		new Zend_Search_Lucene_Analysis_Analyzer_Common_Utf8_CaseInsensitive ());
+	}
 }
 

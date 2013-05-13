@@ -80,9 +80,9 @@ class Application_Model_ExamSearch {
 		$examMapper = new Application_Model_ExamMapper();
 		$index = Zend_Search_Lucene::open ( $this->_indexpath );
 		$doc = new Zend_Search_Lucene_Document ();
-		$doc->addField ( Zend_Search_Lucene_Field::Keyword( 'examid', $id ) );
+		$doc->addField ( Zend_Search_Lucene_Field::Keyword( 'examid', $id ));
 		$keywords = $examMapper->returnQuicksearchIndexKeywords($id);
-		$doc->addField ( Zend_Search_Lucene_Field::Text ( 'keyword', $keywords, 'UTF-8' ) );
+		$doc->addField ( Zend_Search_Lucene_Field::UnStored ( 'keyword', $keywords, 'UTF-8' ) );
 		$index->addDocument ( $doc );
 	}
 	
@@ -96,14 +96,11 @@ class Application_Model_ExamSearch {
 	
 	//ToDo(leinfeda): Think about the charset: http://framework.zend.com/manual/en/zend.search.lucene.charset.html
 	public function searchIndex($query) {
-		Zend_Search_Lucene_Search_QueryParser::setDefaultEncoding('utf-8');
+		$query = html_entity_decode($query);
 		$index = Zend_Search_Lucene::open ( $this->_indexpath );
-		$hits = $index->find ( $query );
-		$foundIds = array();
+		$hits = $index->find ($query);
+
 		foreach ( $hits as $hit ) {
-			// Debug prints
-/* 			echo "Id: $hit->examid<br>";
-			echo "Keywords for this record: $hit->keyword<br>"; */
 			$foundIds[] = $hit->examid;
 		}
 		return $foundIds;

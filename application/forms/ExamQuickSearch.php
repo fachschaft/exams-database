@@ -17,7 +17,7 @@ class Application_Form_ExamQuickSearch extends Application_Form_ExamTemplate
 	
     public function init()
     {
-    	$validator = new Zend_Validate_Regex("$\w{3}.*$");
+    	$validator = new Zend_Validate_Regex("$[A-Za-z0-9_äÄöÖüÜß]{3}.*$");
     	$validator->setMessage("string has to start with 3 non wildcard characters", Zend_Validate_Regex::NOT_MATCH);
     	
     	$this->setMethod('post');
@@ -28,7 +28,7 @@ class Application_Form_ExamQuickSearch extends Application_Form_ExamTemplate
 		$this->_query->setRequired(true);
 		$this->_query->addValidator('NotEmpty', true);
 		$this->_query->addValidator( new Zend_Validate_StringLength(array('min'=>3)), true);
-		$this->_query->addValidator($validator);
+		//$this->_query->addValidator($validator);
 		
 		$this->_query->setJQueryParam('data', array('Daniel', 'Willi'));
 		
