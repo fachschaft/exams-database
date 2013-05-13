@@ -30,8 +30,6 @@ class Application_Form_ExamQuickSearch extends Application_Form_ExamTemplate
 		$this->_query->addValidator( new Zend_Validate_StringLength(array('min'=>3)), true);
 		//$this->_query->addValidator($validator);
 		
-		$this->_query->setJQueryParam('data', array('Daniel', 'Willi'));
-		
 		//$this->_query->setDecorators($this->_decoratorDiv);
 		//$this->_query->setDecorators($this->_decoratorformJQueryElements);
 		$this->_query->setJQueryParam(

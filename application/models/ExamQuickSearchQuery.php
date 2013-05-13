@@ -37,7 +37,7 @@ class Application_Model_ExamQuickSearchQuery {
 			//Becker, Prof. Dr. B.
 			//var_dump(htmlentities($item->getName()) . " , " . $item->getDegree());
 			//die(htmlentities($item->getName()) + " , " + $item->getDegree());
-			array_push($this->_lecturerList, htmlentities($item->getName()) . ", " . $item->getDegree() . " " . $item->getFirstName());
+			array_push($this->_lecturerList, htmlentities($item->getName()));// . ", " . $item->getDegree() . " " . $item->getFirstName());
 		}
 		
 	}
@@ -64,10 +64,10 @@ class Application_Model_ExamQuickSearchQuery {
 			
 			$res_arr = array();
 			foreach (array_filter($filter_array,$filter) as $res) {
-				array_push($res_arr, html_entity_decode($res));
+				array_push($res_arr, '"'.html_entity_decode($res).'"');
 			}
 			
-			return $res_arr;
+			return array_unique($res_arr);
 		}
 		
 		return array();
