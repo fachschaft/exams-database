@@ -57,6 +57,30 @@ class Application_Model_CourseMapper
         
         return $entries;
     }
+    
+    public function fetchByExam(Application_Model_Exam $exam)
+    {
+    	$degreeTb = new Application_Model_DbTable_Degree();
+    
+    	$resultSet = $this->getDbTable()->getAdapter()->query("
+        SELECT course.idcourse, course.name FROM
+		course JOIN exam_has_course
+		ON exam_has_course.course_idcourse = course.idcourse
+		JOIN exam ON exam_has_course.exam_idexam = exam.idexam
+		WHERE exam.idexam = ".$exam->id."
+		ORDER BY course.name_unescaped;
+        ");
+    	 
+    	$entries   = array();
+    	foreach ($resultSet as $row) {
+    		$entry = new Application_Model_Course();
+    		$entry->setId($row['idcourse'])
+    		->setName($row['name']);
+    		$entries[] = $entry;
+    	}
+    
+    	return $entries;
+    }
 	
 	public function fetchAll()
     {    
