@@ -159,8 +159,10 @@ class Application_Model_AuthManager {
 		// $config['realm'], $params['username'], $params['password']);
 		
 		$config_ldap = Zend_Registry::get('ldap');
+		if (isset ($params['username']) && isset($params['password'])) {
 		$config_ldap['server1']['username'] = str_replace("%user%", $params['username'], $config_ldap['server1']['username']);
 		$config_ldap['server1']['password'] = str_replace("%pass%", $params['password'], $config_ldap['server1']['password']);
+		}
 		
 		//if (isset ($params['username']) && isset( $params['password']))
 		//	return new Custom_Auth_Adapter_Simple ( $params ['username'], $params ['password'] );
