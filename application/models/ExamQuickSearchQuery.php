@@ -14,14 +14,16 @@ class Application_Model_ExamQuickSearchQuery {
 	
 	
 	private $_corseList = array();
+	private $_corseListIds = array();
 	private $_lecturerList = array();
 
 	public function __construct() {
 		$courses = new Application_Model_CourseMapper();
 		$list =  $courses->fetchAll();
 		
-		foreach ($list as $item) {
+		foreach ($list as $i=>$item) {
 			array_push($this->_corseList, $item->getName());
+			array_push($this->_corseListIds, $item);
 		}
 		
 		$lecturer = new Application_Model_LecturerMapper();
@@ -71,6 +73,65 @@ class Application_Model_ExamQuickSearchQuery {
 		}
 		
 		return array();
+	}
+	
+	
+	public function getCourse($term) {
+	
+		// ToDo: Build a nice matching function, e.G. informatik III should match to informatik 3 ... maybe do a weighting on the search items
+	
+	
+		// also a special char in the search should match to the name e.G. ü = &uuml;
+		$filter = new Zend_Filter_HtmlEntities();
+		$term = utf8_decode ($term);
+	
+		// append all the lists
+		$filter_array = $this->_corseListIds;
+	
+		if (strlen(html_entity_decode($term, ENT_QUOTES, 'ISO-8859-15')) >= 2) {
+			$filter = function($elements) use ($term)
+			{
+				if(stristr($elements,$term))
+					return true;
+				return false;
+			};
+				
+			$res_arr = array();
+			foreach (array_filter($filter_array,$filter) as $res) {
+				//array_push($res_arr, '"'.html_entity_decode($res).'"');
+				$res_arr[$res->getId()] = $res->getName();
+			}
+				
+			return array_unique($res_arr);
+			//return  $res_arr;
+		}
+	
+		return array();
+	}
+	
+	
+	public function getConnectedCourse($id) {
+	
+		// ToDo: Build a nice matching function, e.G. informatik III should match to informatik 3 ... maybe do a weighting on the search items
+	
+	
+		// also a special char in the search should match to the name e.G. ü = &uuml;
+		$filter = new Zend_Filter_HtmlEntities();
+		$id = utf8_decode ($id);
+
+		
+		$cm = new Application_Model_CourseMapper();
+		//$course = new Application_Model_Course();
+		$course = $cm->find($id);
+	
+		// append all the lists
+		$filter_array = array();
+		
+		foreach ($course->getConnectedCourse() as $i => $item) {
+			$filter_array[$item->getId()] = $item->getName();
+		}
+	
+		return $filter_array;
 	}
 
 	

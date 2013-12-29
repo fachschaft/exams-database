@@ -1,0 +1,203 @@
+<div id="view-content">
+  <style>
+  #feedback { font-size: 1.4em; }
+  #selectable .ui-selecting { background: #FECA40; }
+  #selectable .ui-selected { background: #F39814; color: white; }
+  #selectable { list-style-type: none; margin: 0; padding: 0; width: 45%; }
+  #selectable li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; }
+  
+  #selectable_edit .ui-selecting { background: #FECA40; }
+  #selectable_edit .ui-selected { background: #F39814; color: white; }
+  #selectable_edit { list-style-type: none; margin: 0; padding: 0; width: 45%; }
+  #selectable_edit li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; }
+  
+  #selectable_edit_on .ui-selecting { background: #FECA40; }
+  #selectable_edit_on .ui-selected { background: #F39814; color: white; }
+  #selectable_edit_on { list-style-type: none; margin: 0; padding: 0; width: 45%; }
+  #selectable_edit_on li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; }
+  </style>
+  
+  <script>
+
+  
+  $(function() {
+	  // the list of elements for course to course connecting (filter able)
+	  $( "#selectable_edit" ).sortable({
+	        connectWith: "#selectable_edit_on",
+	        remove: function(event, ui) {
+	            $(ui.item).clone().appendTo(event.target);
+	        },
+	        dropOnEmpty: false
+	    });
+
+	  // the list of elements which connected to a course, this one will be saved
+	  $( "#selectable_edit_on" ).sortable({
+	        connectWith: "#selectable_edit",
+	        update: function( event, ui ) {
+		        elements = $("#selectable_edit_on").sortable( "toArray" );
+		        //remove the default element
+		        
+		        if(elements.length > 1) {
+			        $.each($("#selectable_edit_on").find($('#-1')), function(i,item){
+		        	   	item.remove();
+			        }
+			        );
+			    }
+		        if(elements.length <= 0) {
+		        	setElmentsEditOn(-1,"your items here");
+			    }
+
+				var count = 0;
+        		$.each(elements, function(i,item){
+            			if(ui.item.attr("id") == item) {
+                			count = count + 1;
+                		}
+	        		}
+        		
+	        	);
+	        	
+        		if(count >= 2) {
+    				ui.item.remove();
+        		}
+		    },
+	        dropOnEmpty: false,
+	    });
+
+
+	  // def a global var for holing the selected course id
+	  var couse_id = -1;
+	  
+	// the general select of the course, the course_id will be used in all the other tabs for the edit 
+    $( "#selectable" ).selectable({
+        stop: function() {
+            var result = $( "#select-result" ).empty();
+            couse_id = $( ".ui-selected").attr("id");
+
+            // get all connected courses and move on
+            // maybe move on and display some waiting symbol for the user
+
+            $.getJSON("/exams-admin/ajax-connected-course",
+					"id="+couse_id,
+			        function(data){
+					$( "#selectable_edit_on" ).html("");
+					// set the default item if not set
+					if(data.length == 0) {
+						setElmentsEditOn(-1,"your items here");
+					}
+			          $.each(data, function(i,item){
+			        	  setElmentsEditOn(i,item);
+			          });
+			        });
+            
+
+            
+            result.append($( ".ui-selected").text());
+              $( "#tabsX [href='#tabs-2']").trigger( "click" );
+        }
+    });
+  });
+
+  //ajax request for filtering the selectabes
+  
+  //select
+  var old_course_value = "";
+  $(document).ready(function () {
+	  $( "#_course" ).keyup(function() {
+		  if(old_course_value != $( "#_course" ).val()) {
+			  old_course_value = $( "#_course" ).val();
+				
+				$.getJSON("/exams-admin/ajax-course",
+						"term="+$( "#_course" ).val(),
+				        function(data){
+						$( "#selectable" ).html("");
+				          $.each(data, function(i,item){
+				        	  setElments(i,item);
+				          });
+				        });
+			  }
+		});
+  });
+  // edit
+  var old_course_edit_value = "";
+  $(document).ready(function () {
+	  $( "#_couse_edit" ).keyup(function() {
+		  if(old_course_edit_value != $( "#_couse_edit" ).val()) {
+			  old_course_edit_value = $( "#_couse_edit" ).val();
+				
+				$.getJSON("/exams-admin/ajax-course",
+						"term="+$( "#_couse_edit" ).val(),
+				        function(data){
+						$( "#selectable_edit" ).html("");
+				          $.each(data, function(i,item){
+				        	  setElmentsEdit(i,item);
+				          });
+				        });
+			  }
+		});
+  });
+
+  
+  //adding a new selectable element
+  function setElments(key, value) {
+	  $( "#selectable" ).append('<li class="ui-widget-content" id="'+key+'">'+value+'</li>');
+  }
+
+  function setElmentsEdit(key, value) {
+	  $( "#selectable_edit" ).append('<li class="ui-widget-content" id="'+key+'">'+value+'</li>');
+  }
+  function setElmentsEditOn(key, value) {
+	  $( "#selectable_edit_on" ).append('<li class="ui-widget-content" id="'+key+'">'+value+'</li>');
+  }
+
+
+  // helper
+  function unique(list) {
+	    var result = [];
+	    $.each(list, function(i, e) {
+	        if ($.inArray(e, result) == -1) result.push(e);
+	    });
+	    return result;
+	}
+  
+  $(function() {
+	    $( "#tabsX" ).tabs();
+	  });
+  
+  </script>
+
+<p id="feedback">
+<span>You've selected Course:</span> <span id="select-result">none</span>
+</p>
+
+	<div id="tabsX">
+  <ul>
+    <li id="tabs-1Selector"><a href="#tabs-1">Select Element</a></li>
+    <li id="tabs-2Selector"><a href="#tabs-2">Edit Element</a></li>
+    <li id="tabs-3Selector"><a href="#tabs-3">Add Element</a></li>
+  </ul>
+  <div id="tabs-1">
+  	Select Course:<br>
+    <?php  echo $this->autoElmenet; ?>
+     <p>
+<ol id="selectable">
+</ol>
+</p>
+  </div>
+  <div id="tabs-2">
+  	Search availabe course:<br>
+  	<input type="text" id="_couse_edit" />
+  	<div style="clear:both; overflow: auto;">
+  	<ol id="selectable_edit" style="float: left;">
+	</ol>
+	<ol id="selectable_edit_on" style="float: right;">
+		<li class="ui-widget-content" id="-1"><i>your items here</i></li>
+	</ol>
+	</div>
+
+  </div>
+  <div id="tabs-3">
+    Add here
+  </div>
+</div>
+
+</div>

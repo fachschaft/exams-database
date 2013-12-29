@@ -28,6 +28,9 @@ class ExamsAdminController extends Zend_Controller_Action
 		
 		}
 		
+		$this->view->jQuery()->enable();
+		$this->view->jQuery()->uiEnable();
+		
 		//
     }
 
@@ -911,6 +914,55 @@ class ExamsAdminController extends Zend_Controller_Action
     	
     	$this->view->form = $form;
     }
+    
+    public function degreeGroupAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_degree_groups'))
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );
+    	
+    	 	
+    	 	
+    }
+    
+    
+    public function courseAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );
+    	 
+    	$autoElement = new Zend_Form_Element_Text('_course');
+    	//$autoElement->setJQueryParam(
+    	//		'source', '/exams-admin/ajax-course');
+    	
+    	$this->view->autoElmenet = $autoElement;
+    	 
+    }
+    
+    public function ajaxCourseAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    	 
+    	$eqsq = new Application_Model_ExamQuickSearchQuery();
+    	 
+    	$results = $eqsq->getCourse($this->_getParam('term'));
+    	$this->_helper->json($results);
+    	 
+    }
+    
+    public function ajaxConnectedCourseAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	$eqsq = new Application_Model_ExamQuickSearchQuery();
+    
+    	$results = $eqsq->getConnectedCourse($this->_getParam('id'));
+    	$this->_helper->json($results);
+    
+    }
+    
+    
 
     public function maintenanceAction()
     {
