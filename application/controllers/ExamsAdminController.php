@@ -1018,6 +1018,85 @@ class ExamsAdminController extends Zend_Controller_Action
     	}
     } 
 
+    public function statisticsAction()
+    {
+
+    }
+
+    public function statisticsg1Action()
+	{
+		$path = '/var/www/vhosts/testdb.fachschaft.tf/application/../library/jpgraph';
+		set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+		
+    	require_once ('jpgraph/jpgraph.php');
+		require_once ('jpgraph/jpgraph_bar.php');
+		
+		
+		$stats = new Application_Model_Statistics();
+		
+		$request = $this->getRequest ();
+		if (isset ( $request->year )) {
+			$year = $request->year;
+			$months = $gDateLocale->GetShortMonth();
+			$data1y = $stats->getExamUploadsYear($year);
+		} else {
+			$year = -1;
+			$res_data = $stats->getExamUploads($year);
+			$months = $res_data['axis'];			
+			$data1y = $res_data['data'];
+		}
+		
+		
+		
+		
+		//$data1y=array(47,80,40,116);
+		$data2y=array(61,30,82,105);
+		$data3y=array(115,50,70,93);
+		
+		
+		// Create the graph. These two calls are always required
+		$graph = new Graph(700,300,'auto');
+		$graph->SetScale("textint");
+		
+		$theme_class=new UniversalTheme;
+		$graph->SetTheme($theme_class);
+		
+		//$graph->yaxis->SetTickPositions(array(0,30,60,90,120,150), array(15,45,75,105,135));
+		$graph->SetBox(false);
+		
+		$graph->ygrid->SetFill(false);
+		$graph->xaxis->SetTickLabels($months);
+		$graph->yaxis->HideLine(false);
+		$graph->yaxis->HideTicks(false,false);
+		
+		// Create the bar plots
+		$b1plot = new BarPlot($data1y);
+		
+		// Create the grouped bar plot
+		$gbplot = new GroupBarPlot(array($b1plot));
+		// ...and add it to the graPH
+		$graph->Add($gbplot);
+		
+		
+		$b1plot->SetColor("white");
+		$b1plot->SetFillColor("#cc1111");
+		
+		/*$b2plot->SetColor("white");
+		$b2plot->SetFillColor("#11cccc");
+		
+		$b3plot->SetColor("white");
+		$b3plot->SetFillColor("#1111cc");*/
+		$sum = 0;
+		foreach ($data1y as $i) {
+			$sum += $i;
+		}
+		$graph->title->Set("uploads - total: " . $sum );
+		
+		// Display the graph
+		$graph->Stroke();
+    
+    	exit();
+    }
 
 }
 
