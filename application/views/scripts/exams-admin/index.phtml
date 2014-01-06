@@ -71,9 +71,14 @@
 	<ul>
 	<li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
-                  'action'=>'statistics'),
+                  'action'=>'statistics-upload'),
             'default',
-            true) ?>">Statistics</a></li>
+            true) ?>">Statistic Uploads</a></li>
+            <li><a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'statistics-download'),
+            'default',
+            true) ?>">Statistic Downloads</a></li>
 		</ul>
 		
 		

@@ -1,0 +1,256 @@
+  	<style>
+#gradient-style
+{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 12px;
+	/* margin: 45px; */
+	width: 100%;
+	text-align: left;
+	border-collapse: collapse;
+}
+#gradient-style th
+{
+	font-size: 13px;
+	font-weight: normal;
+	padding: 8px;
+	background: #b9c9fe repeat-x;
+	border-top: 2px solid #d3ddff;
+	border-bottom: 1px solid #fff;
+	color: #039;
+}
+#gradient-style td
+{
+	padding: 8px; 
+	border-bottom: 1px solid #fff;
+	color: #669;
+	border-top: 1px solid #fff;
+	background: #e8edff repeat-x;
+}
+#gradient-style tfoot tr td
+{
+	background: #e8edff;
+	font-size: 12px;
+	color: #99c;
+}
+#gradient-style tbody tr:hover td
+{
+	background: #d0dafd repeat-x;
+	color: #339;
+}
+</style>
+<script>
+var param;
+$(document).ready(function () {
+	param = {
+			active_time : $("#upload_time").val(),
+			active_degree : $("#upload_degree").val(),
+			active_page : 1,
+			active_elements : 30
+		};
+
+	updateRanking();
+	$("#upload_img").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-download?" + generateParams());
+
+	  $("#upload_time").change(function() {
+		  param.active_time = $("#upload_time").val();
+		  $("#upload_img").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-download?" + generateParams());
+		  updateRanking();
+		  
+		  
+	  });
+	  $("#upload_degree").change(function() { 
+		  param.active_degree = $("#upload_degree").val();
+		  $("#upload_img").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-download?" + generateParams());
+		  updateRanking();
+		  
+	  });
+});
+
+function generateParams() {
+	  var params = { };
+	  if(param.active_time.match("^y")) {
+	  	params['year'] = param.active_time.substring(1);
+	  }
+	  if(param.active_time.match("^ss") || param.active_time.match("^ws")) {
+		  	params['semester'] = param.active_time.substring(1);
+	  }
+	  if(param.active_degree.match("^g")) {
+		  	params['group'] = param.active_degree.substring(1);
+	  }
+	  if(param.active_degree.match("^d")) {
+		  	params['degree'] = param.active_degree.substring(1);
+	  }
+	  params['page'] = param.active_page;
+	  params['elements'] = param.active_elements;
+	  return jQuery.param(params);
+}
+
+function updateRanking() {
+	  $.getJSON("/exams-admin/statistics-ajax-download-ranking",
+				""+generateParams(),
+		        function(data){
+				$( "#download_ranking" ).html("<table id=\"gradient-style\">\
+						<tr>\
+							<th>Rank</th>\
+							<th>Down.</th>\
+							<th>ID</th>\
+							<th>Course</th>\
+							<th>Semester</th>\
+							<th>Lecturer</th>\
+							<th>Type</th>\
+							<th>Comment</th>\
+							<th>Files</th>\
+						</tr>");
+				// set the default item if not set
+				if(data.length == 0) {
+					setElmentsEditOn(-1,"no data");
+				}
+		          $.each(data, function(i,item){
+		        	  //setElmentsEditOn(i,item);
+		        	  //$( "#download_ranking" ).html("");
+		        	  
+		        	  appendRankingElement(item);
+		          });
+		        });
+}
+
+function appendRankingElement(item) {
+	var course = "";
+	$.each(item['course'], function(i,item){
+		course += "- " + item + "<br>";
+	});
+	$.each(item['course_connected'], function(i,item){
+		course += "- " + item + "*<br>";
+	});
+	var lecturer = "";
+	$.each(item['lecturer'], function(i,item){
+		lecturer += item + "<br>";
+	});
+
+	var files = "";
+	$.each(item['files'], function(i,item){
+		files += "<a href=\"/exams/download/id/"+item['id']+"\">"+item['name']+"</a><br>";
+	});
+	
+
+
+	
+	$( "#gradient-style" ).append(
+	'<tr> \
+	<td> \
+	<div id="exam-rank"> \
+	'+item['rank']+' \
+	</div> \
+</td> \
+<td>\
+	<div id="exam-downloads">\
+	'+item['downloads']+'\
+	</div>\
+</td>\
+<td>\
+	<div id="exam-id">\
+	'+item['idexam']+'\
+	</div>\
+</td>\
+<td>\
+	<div id="exam-course">\
+		'+course+'\
+	</div>\
+</td>\
+<td>\
+	<div id="exam-semester">\
+	'+item['semester']+' \
+	</div> \
+</td> \
+<td> \
+	<div id="exam-lecturer"> \
+			'+lecturer+' \
+	</div>\
+</td>\
+<td>\
+	<div id="exam-infos">     \
+		'+item['type']+'<br>'+item['sub_type']+'<br>'+item['uni']+'<br>\
+	</div>\
+</td>\
+<td>\
+	<div id="exam-comment" style="max-width:150px;">\
+	'+item['comment']+' \
+    </div>\
+</td>\
+<td>\
+	<div id="exam-files">\
+	    '+files+'  \
+	</div>\
+</tr>');
+}
+
+function nextPage() {
+	param.active_page += 1;
+	updateRanking();
+}
+function previousPage() {
+	if(param.active_page > 1) {
+	param.active_page -= 1;
+	updateRanking();
+	}
+}
+</script>
+
+<div id="view-content">
+	<h1>Download statistics</h1>
+	<div>
+	  <select name="upload_time" id="upload_time">
+	  <?php foreach($this->upload_years as $year)
+			{
+				echo ("<option value='y".$year."'>".$year."</option>");
+			}
+			?>
+		<!-- <option value="ss13">SS 13</option>
+		<option value="ws14">WS 13/14</option>-->
+	  </select>
+	  <select name="upload_degree" id="upload_degree">
+	  <option value="-1">ALL</option>
+	  	<optgroup label="========= GROUPS ==========">
+	  		  <?php
+	  		  foreach($this->upload_groups as $year)
+			{
+				echo ("<option value='g".$year['value']."'>".$year['name']."</option>");
+			}
+			?>
+	  	</optgroup>
+	  	<optgroup label="========= DEGREES ==========">
+	  		  <?php 
+	  		  foreach($this->upload_degrees as $year)
+			{
+				echo ("<option value='d".$year['value']."'>".$year['name']."</option>");
+			}
+			?>
+	    </optgroup>
+	  </select>
+  	</div>
+  	<div>
+  		<img id="upload_img" src="http://testdb.fachschaft.tf/exams-admin/statistics-graph-download">
+  	</div>
+  	<!-- <div>
+  		<img id="upload_img_pie_group" src="http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-groups">
+  		<img id="upload_img_pie_degree" src="http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-degrees">
+  	</div>-->
+  	<div id="download_ranking_pages" style="float: right;"><a href="#" onclick="javascript:previousPage()">Previous Page</a> - <a href="#" onclick="javascript:nextPage()">Next Page</a></div>
+  	<div id="download_ranking_elements">Elements: 30</div>  
+  	<span style="float: clar;"></span>
+  	<div id="download_ranking">
+    <table id="gradient-style">
+	
+	<tr>
+		<th>Rank</th>
+		<th>Down.</th>
+		<th>ID</th>
+		<th>Course</th>
+		<th>Semester</th>
+		<th>Lecturer</th>
+		<th>Type</th>
+		<th>Comment</th>
+		<th>Files</th>
+	</tr>
+  	</div>
+</div>

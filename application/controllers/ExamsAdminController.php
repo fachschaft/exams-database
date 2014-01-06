@@ -1018,35 +1018,214 @@ class ExamsAdminController extends Zend_Controller_Action
     	}
     } 
 
-    public function statisticsAction()
+    public function statisticsUploadAction()
     {
+    	$stats = new Application_Model_Statistics();
+    	
+    	// define years
+    	$this->view->upload_years = $stats->getAllUsedYears();
 
+    	
+    	$this->view->upload_degrees = $stats->getAllDegrees();
+    	
+    	$this->view->upload_groups = $stats->getAllDegreeGroups();
+    	
+    	
+    }
+    
+    public function statisticsUploadTotalAction()
+    {    	
+    	// this function is for ajax polling
+    	
+    	require_once ('jpgraph/jpgraph.php');
+    	
+    	$stats = new Application_Model_Statistics();
+    	 
+    	// define years
+    	$this->view->upload_years = $stats->getAllUsedYears();
+    
+    	 
+    	$this->view->upload_degrees = $stats->getAllDegrees();
+    	 
+    	$this->view->upload_groups = $stats->getAllDegreeGroups();
+    	
+    	$request = $this->getRequest ();
+    	if (isset ( $request->year )) {
+    		$year = $request->year;
+    	} else {
+    		$year = date("Y");
+    	}
+    	
+    	$group = false;
+    	$degree = -1;
+    	
+    	if (isset ( $request->group )) {
+    		$degree=$request->group;
+    		$group = true;
+    	}
+    	
+    	if (isset ( $request->degree )) {
+    		$degree = $request->degree;
+    	}
+    	
+    	$months = $gDateLocale->GetShortMonth();
+    	$data1y = $stats->getExamUploadsYear($year, $degree, $group);
+    	
+    	for ($i = 0; $i < sizeof($data1y); $i++) {
+    		if($data1y[$i] == "") { $data1y[$i] = 0; }
+    		echo($months[$i] . " - " . $data1y[$i] . "<br>");
+    	}
+    	
+    	exit();
+    	 
+    	 
+    }
+    
+    public function statisticsGraphUploadTotal2Action()
+    {
+    	$path = '../library/jpgraph';
+    	set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+    	
+    	require_once ('jpgraph/jpgraph.php');
+    	require_once ('jpgraph/jpgraph_bar.php');
+    	require_once ('jpgraph/jpgraph_line.php');
+    	
+    	//bar1
+    	$data1y=array(115,130,135,130,110,130,130,150,130,130,150,120);
+    	//bar2
+    	$data2y=array(180,200,220,190,170,195,190,210,200,205,195,150);
+    	//bar3
+    	$data3y=array(220,230,210,175,185,195,200,230,200,195,180,130);
+    	$data4y=array(40,45,70,80,50,75,70,70,80,75,80,50);
+    	$data5y=array(20,20,25,22,30,25,35,30,27,25,25,45);
+    	//line1
+    	$data6y=array(50,58,60,58,53,58,57,60,58,58,57,50);
+    	foreach ($data6y as &$y) { $y -=10; }
+    	
+    	// Create the graph. These two calls are always required
+    	$graph = new Graph(750,320,'auto');
+    	$graph->SetScale("textlin");
+    	$graph->SetY2Scale("lin",0,90);
+    	$graph->SetY2OrderBack(false);
+    	
+    	$graph->SetMargin(35,50,20,5);
+    	
+    	$theme_class = new UniversalTheme;
+    	$graph->SetTheme($theme_class);
+    	
+    	//$graph->yaxis->SetTickPositions(array(0,50,100,150,200,250,300,350), array(25,75,125,175,275,325));
+    	//$graph->y2axis->SetTickPositions(array(30,40,50,60,70,80,90));
+    	
+    	$months = $gDateLocale->GetShortMonth();
+    	$months = array_merge(array_slice($months,3,9), array_slice($months,0,3));
+    	$graph->SetBox(false);
+    	
+    	$graph->ygrid->SetFill(false);
+    	$graph->xaxis->SetTickLabels(array('A','B','C','D'));
+    	$graph->yaxis->HideLine(false);
+    	$graph->yaxis->HideTicks(false,false);
+    	// Setup month as labels on the X-axis
+    	$graph->xaxis->SetTickLabels($months);
+    	
+    	// Create the bar plots
+    	$b1plot = new BarPlot($data1y);
+    	$b2plot = new BarPlot($data2y);
+    	
+    	$b3plot = new BarPlot($data3y);
+    	$b4plot = new BarPlot($data4y);
+    	$b5plot = new BarPlot($data5y);
+    	
+    	//$lplot = new LinePlot($data6y);
+    	
+    	// Create the grouped bar plot
+    	$gbbplot = new AccBarPlot(array($b3plot,$b4plot,$b5plot));
+    	//$gbplot = new GroupBarPlot(array($b1plot,$b2plot,$gbbplot));
+    	
+    	// ...and add it to the graPH
+    	$graph->Add($gbbplot);
+    	//$graph->AddY2($lplot);
+    	
+    	$b1plot->SetColor("#0000CD");
+    	$b1plot->SetFillColor("#0000CD");
+    	$b1plot->SetLegend("Cliants");
+    	
+    	$b2plot->SetColor("#B0C4DE");
+    	$b2plot->SetFillColor("#B0C4DE");
+    	$b2plot->SetLegend("Machines");
+    	
+    	$b3plot->SetColor("#8B008B");
+    	$b3plot->SetFillColor("#8B008B");
+    	$b3plot->SetLegend("First Track");
+    	
+    	$b4plot->SetColor("#DA70D6");
+    	$b4plot->SetFillColor("#DA70D6");
+    	$b4plot->SetLegend("All");
+    	
+    	$b5plot->SetColor("#9370DB");
+    	$b5plot->SetFillColor("#9370DB");
+    	$b5plot->SetLegend("Single Only");
+    	
+    	/*$lplot->SetBarCenter();
+    	$lplot->SetColor("yellow");
+    	$lplot->SetLegend("Houses");
+    	$lplot->mark->SetType(MARK_X,'',1.0);
+    	$lplot->mark->SetWeight(2);
+    	$lplot->mark->SetWidth(8);
+    	$lplot->mark->setColor("yellow");
+    	$lplot->mark->setFillColor("yellow");*/
+    	
+    	$graph->legend->SetFrameWeight(1);
+    	$graph->legend->SetColumns(6);
+    	$graph->legend->SetColor('#4E4E4E','#00A78A');
+    	
+    	/*$band = new PlotBand(VERTICAL,BAND_RDIAG,11,"max",'khaki4');
+    	$band->ShowFrame(true);
+    	$band->SetOrder(DEPTH_BACK);
+    	$graph->Add($band);*/
+    	
+    	$graph->title->Set("Combineed Line and Bar plots");
+    	
+    	// Display the graph
+    	$graph->Stroke();
+    	
+    	exit();
     }
 
-    public function statisticsg1Action()
+    public function statisticsGraphUploadTotalAction()
 	{
-		$path = '/var/www/vhosts/testdb.fachschaft.tf/application/../library/jpgraph';
+		$stats = new Application_Model_Statistics();
+			
+		
+		$path = '../library/jpgraph';
 		set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 		
     	require_once ('jpgraph/jpgraph.php');
 		require_once ('jpgraph/jpgraph_bar.php');
 		
 		
-		$stats = new Application_Model_Statistics();
+		
 		
 		$request = $this->getRequest ();
 		if (isset ( $request->year )) {
 			$year = $request->year;
-			$months = $gDateLocale->GetShortMonth();
-			$data1y = $stats->getExamUploadsYear($year);
 		} else {
-			$year = -1;
-			$res_data = $stats->getExamUploads($year);
-			$months = $res_data['axis'];			
-			$data1y = $res_data['data'];
+			$year = date("Y");
 		}
 		
+		$group = false;
+		$degree = -1;
 		
+		if (isset ( $request->group )) {
+			$degree=$request->group;
+			$group = true;
+		}
+		
+		if (isset ( $request->degree )) {
+			$degree = $request->degree;
+		}
+		
+		$months = $gDateLocale->GetShortMonth();
+		$data1y = $stats->getExamUploadsYear($year, $degree, $group);
 		
 		
 		//$data1y=array(47,80,40,116);
@@ -1090,11 +1269,680 @@ class ExamsAdminController extends Zend_Controller_Action
 		foreach ($data1y as $i) {
 			$sum += $i;
 		}
-		$graph->title->Set("uploads - total: " . $sum );
+		$title = $year . " // uploads // total: " . $sum;
+		if($degree != -1) {
+			if($group) {
+				$amd = new Application_Model_DegreeGroupMapper();
+				$group = $amd->find($degree);
+				$title .= "\n group: " . $group->getName();
+			} else {
+				$amd = new Application_Model_DegreeMapper();
+				$degree = $amd->find($degree);
+				$title .= "\n degree: " . $degree->getName();
+			}
+		}
+		$graph->title->Set($title);
 		
 		// Display the graph
 		$graph->Stroke();
     
+    	exit();
+    }
+    
+    public function statisticsGraphUploadTotalTypesAction()
+    {
+    	$stats = new Application_Model_Statistics();
+    		
+    
+    	$path = '../library/jpgraph';
+    	set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+    
+    	require_once ('jpgraph/jpgraph.php');
+    	require_once ('jpgraph/jpgraph_bar.php');
+    
+    
+    
+    
+    	$request = $this->getRequest ();
+    	if (isset ( $request->year )) {
+    		$year = $request->year;
+    	} else {
+    		$year = date("Y");
+    	}
+    
+    	$group = false;
+    	$degree = -1;
+    
+    	if (isset ( $request->group )) {
+    		$degree=$request->group;
+    		$group = true;
+    	}
+    
+    	if (isset ( $request->degree )) {
+    		$degree = $request->degree;
+    	}
+    
+    	$months = $gDateLocale->GetShortMonth();
+    	$results = $stats->getExamUploadsYearByType($year, $degree, $group);
+    
+    	
+    
+    	  
+    
+    	// Create the graph. These two calls are always required
+    	$graph = new Graph(700,300,'auto');
+    	$graph->SetScale("textint");
+    
+    	$theme_class=new UniversalTheme;
+    	$graph->SetTheme($theme_class);
+    
+    	//$graph->yaxis->SetTickPositions(array(0,30,60,90,120,150), array(15,45,75,105,135));
+    	$graph->SetBox(false);
+    
+    	$graph->ygrid->SetFill(false);
+    	$graph->xaxis->SetTickLabels($months);
+    	$graph->yaxis->HideLine(false);
+    	$graph->yaxis->HideTicks(false,false);
+    
+
+    	
+    	
+    	
+    	$gbbplot_array = array();
+    	$amey = new Application_Model_ExamTypeMapper();
+    	$all = $amey->fetchAll();
+    	
+    	// add all months upload in plain format
+    	foreach ($results as $type_id => $type) {
+    		$a = array();
+    		foreach ($type as $month) {
+    			$a[] = $month['uploads'];
+    		}
+    		$bplot = new BarPlot($a);
+    		$bplot->SetLegend($amey->find($type_id)->getName());
+    		$gbbplot_array[] = $bplot;
+    	}
+    	
+    		
+    	// Create the grouped bar plot
+    	$gbbplot = new AccBarPlot($gbbplot_array);
+    	$gbplot = new GroupBarPlot(array($gbbplot));
+    	
+    	
+    	$graph->Add($gbplot);
+
+    	
+    	$sum = 0;
+    	foreach ($results as $typs) {
+    		foreach ($typs as $month) {
+    			$sum += $month['uploads'];
+    		}
+    		
+    	}
+    	$title = $year . " // uploads // total: " . $sum;
+    	if($degree != -1) {
+    		if($group) {
+    			$amd = new Application_Model_DegreeGroupMapper();
+    			$group = $amd->find($degree);
+    			$title .= "\n group: " . $group->getName();
+    		} else {
+    			$amd = new Application_Model_DegreeMapper();
+    			$degree = $amd->find($degree);
+    			$title .= "\n degree: " . $degree->getName();
+    		}
+    	}
+    	$graph->title->Set($title);
+    
+    	// Display the graph
+    	$graph->Stroke();
+    
+    	exit();
+    }
+    
+    public function statisticsGraphUploadTotalPieGroupsAction()
+    {
+    	$stats = new Application_Model_Statistics();
+    		
+    
+    	$path = '../library/jpgraph';
+    	set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+    
+    	require_once ('jpgraph/jpgraph.php');
+		require_once ('jpgraph/jpgraph_pie.php');
+		
+		$request = $this->getRequest ();
+		if (isset ( $request->year )) {
+			$year = $request->year;
+		} else {
+			$year = date("Y");
+		}
+	
+		$data1y = $stats->getExamAllGroupsUploads($year);
+    
+    	$data = $data1y;
+    	
+    	// Create the Pie Graph.
+    	$graph = new PieGraph(350,380);
+    	
+    	$theme_class="DefaultTheme";
+    	//$graph->SetTheme(new $theme_class());
+    	
+    	// Set A title for the plot
+    	$graph->title->Set("Distribution over degree groups");
+    	$graph->SetBox(true);
+    	
+    	// Create
+    	$p1 = new PiePlot($data);
+    	$graph->Add($p1);
+    	
+    	$axis = array();
+    	foreach ($stats->getAllDegreeGroups() as $elemet) {
+    		$axis[] = $elemet['name'];
+    	}
+    	$p1->SetLegends($axis);
+    	//$graph->legend->SetMargin(20,5);
+    	
+    	
+
+		$graph->legend->SetPos(0.5,0.97,'center','bottom');
+		$graph->legend->SetColumns(1);
+    	
+    	//$graph->SetLegends();
+    	
+    	$p1->ShowBorder();
+    	$p1->SetColor('black');
+    	//$p1->SetSliceColors(array('#1E90FF','#2E8B57','#ADFF2F','#DC143C','#BA55D3'));
+    	$graph->Stroke();
+    
+    
+    	
+    
+    	exit();
+    }
+    
+    public function statisticsGraphUploadTotalPieDegreesAction()
+    {
+    	$stats = new Application_Model_Statistics();
+    
+    
+    	$path = '../library/jpgraph';
+    	set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+    
+    	require_once ('jpgraph/jpgraph.php');
+    	require_once ('jpgraph/jpgraph_pie.php');
+    
+    	$request = $this->getRequest ();
+    	if (isset ( $request->year )) {
+    		$year = $request->year;
+    	} else {
+    		$year = date("Y");
+    	}
+    
+    	// Some data and the labels
+    	$data   = $stats->getExamAllDegreesUploads($year);
+    	$labels = $stats->getAllDegrees();
+    	
+    	$new_data = array();
+    	foreach ($data as $i => $dat) {
+    		if($dat != 0) {
+    			$new_data[] = array('data' => $dat, 'lable' => $labels[$i]['name'] );
+    			
+    		}
+    	}
+    	
+    	
+    	$labels = array();
+    	foreach ($new_data as $lable) {
+    		$labels[] = substr($lable['lable'], 0, 30)." (%.1f%%)";
+    	}
+    	
+    	$data = array();
+    	foreach ($new_data as $dat) {
+    		$data[] = $dat['data'];
+    	}
+
+    	
+    	// Create the Pie Graph.
+    	$graph = new PieGraph(700,380, "auto");
+    	$graph->SetShadow();
+    	
+    	// Set A title for the plot
+    	$graph->title->Set('Distribution over degrees');
+    	$graph->title->SetColor('black');
+    	
+    	// Create pie plot
+    	$p1 = new PiePlot($data);
+    	$p1->SetCenter(0.5,0.5);
+    	$p1->SetSize(0.3);
+    	
+    	// Enable and set policy for guide-lines. Make labels line up vertically
+    	$p1->SetGuideLines(true,false);
+    	$p1->SetGuideLinesAdjust(1.1);
+    	
+    	// Setup the labels to be displayed
+    	$p1->SetLabels($labels);
+    	
+    	// This method adjust the position of the labels. This is given as fractions
+    	// of the radius of the Pie. A value < 1 will put the center of the label
+    	// inside the Pie and a value >= 1 will pout the center of the label outside the
+    	// Pie. By default the label is positioned at 0.5, in the middle of each slice.
+    	$p1->SetLabelPos(1);
+    	
+    	// Setup the label formats and what value we want to be shown (The absolute)
+    	// or the percentage.
+    	$p1->SetLabelType(PIE_VALUE_PER);
+    	$p1->value->Show();
+    	$p1->value->SetColor('black');
+    	
+    	// Add and stroke
+    	$graph->Add($p1);
+    	$graph->Stroke();
+    
+    
+    	exit();
+    }
+    
+    public function statisticsDownloadAction()
+    {
+    	$stats = new Application_Model_Statistics();
+    	 
+    	// define years
+    	$this->view->upload_years = $stats->getAllUsedYears();
+    
+    	 
+    	$this->view->upload_degrees = $stats->getAllDegrees();
+    	 
+    	$this->view->upload_groups = $stats->getAllDegreeGroups();
+    	
+    	 
+    	 
+    }
+    
+    
+    public function statisticsAjaxDownloadRankingAction()
+    {
+    	
+    	//if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    	//	throw new Custom_Exception_PermissionDenied("Permission Denied");
+    	
+    	$stats = new Application_Model_Statistics();
+    	
+    	$request = $this->getRequest ();
+    	if (isset ( $request->year )) {
+    		$year = $request->year;
+    	} else {
+    		$year = date("Y");
+    	}
+    	 
+    	$group = false;
+    	$degree = -1;
+    	 
+    	if (isset ( $request->group )) {
+    		$degree=$request->group;
+    		$group = true;
+    	}
+    	 
+    	if (isset ( $request->degree )) {
+    		$degree = $request->degree;
+    	}
+    	
+    	$page = 1;
+    	$max_elements = 30;
+    	if (isset ( $request->elements )) {
+    		$max_elements=$request->elements;
+    	}
+    	
+    	if (isset ( $request->page )) {
+    		$page = $request->page;
+    	}
+    	
+    
+    	$results = $stats->getExamDownloadsRankingYear($year, $degree, $group);
+    	
+
+    	$results2 = array_slice($results, ($page-1) * $max_elements, $max_elements);
+    	
+    	//var_dump($results);
+    	
+    	$em = new Application_Model_ExamMapper();
+    	$exams = array();
+    	
+    	//var_dump($em->find(1337));
+    	$ids = array();
+    	
+    	foreach ($results2 as $exam) {
+    		$ids[] = $exam['idexam'];
+    		
+    	}
+    	
+    	//var_dump($ids);
+    	//die();
+    	
+    	
+    	$res = $em->fetchQuick(-1, -1, -1, -1, -1, array(), true, $ids);
+    	
+    	//var_dump($res);
+    		
+    	foreach ($res as $ex) {
+    		$cors = array();
+    		foreach ($ex->getCourse() as $cor) {
+    			$cors[] = $cor->getName();
+    		}
+    		$ccors = array();
+    		foreach ($ex->getCourseConnected() as $cor) {
+    			$ccors[] = $cor->getName();
+    		}
+    		$lect = array();
+    		foreach ($ex->getLecturer() as $cor) {
+    			$lect[] = $cor->getName() . ", " . $cor->getDegree() . " " . $cor->getFirstName();
+    		}
+    		$files = array();
+    		foreach ($ex->getDocuments() as $cor) {
+    			//$files[] = array('name' => $cor->getDisplayName().".".$cor->getExtention(), 'id'=>$cor->getId());
+    			$files[] = array('name' => ".".$cor->getExtention(), 'id'=>$cor->getId());
+    			 
+    		}
+    		
+    		$rank = -1;
+    		$downlow = -1;
+    		foreach ($results2 as $element) {
+    			if($element['idexam'] == $ex->getId()) {
+    				$rank = $element['rank'];
+    				$downlow = $element['downloads'];
+    			}
+    		}
+    		$exams[] = array(
+    				'idexam' =>$ex->getId(),
+    				'downloads' => $downlow,
+    				'rank' => $rank,
+    				'comment' =>$ex->getComment(),
+    				'course' => $cors,
+    				'course_connected' => $ccors,
+    				'degree'=> $ex->getDegree()->getName(),	
+    				'semester'=> $ex->getSemester()->getName(),
+    				'lecturer'=> $lect,
+    				'type'=> $ex->getType()->getName(),
+    				'sub_type'=> $ex->getSubType()->getName(),
+    				'semester'=> $ex->getSemester()->getName(),
+    				'autor'=> $ex->getAutor(),
+    				'files' => $files,
+    				'uni' => $ex->getUniversity()->getName(),
+    		);
+    	}
+    	
+    	// define a custom month sort
+    	function cmp($a, $b)
+    	{
+    		if ($a['rank'] == $b['rank']) {
+    			return 0;
+    		}
+    		return ($a['rank'] < $b['rank']) ? -1 : 1;
+    	}
+    	
+    	usort($exams, "cmp");
+    	
+    	
+    	/*
+    	 * object(Application_Model_Exam)#102 (16) {
+  ["_id":protected]=>
+  int(1337)
+  ["_autor":protected]=>
+  string(0) ""
+  ["_comment":protected]=>
+  string(0) ""
+  ["_created":protected]=>
+  int(1)
+  ["_modified":protected]=>
+  int(1381701152)
+  ["_degree":protected]=>
+  object(Application_Model_Degree)#103 (3) {
+    ["_degree_group":protected]=>
+    NULL
+    ["_name":protected]=>
+    string(6) "Physik"
+    ["_id":protected]=>
+    int(7)
+  }
+  ["_status":protected]=>
+  object(Application_Model_ExamStatus)#104 (2) {
+    ["_name":protected]=>
+    string(6) "public"
+    ["_id":protected]=>
+    string(1) "3"
+  }
+  ["_semester":protected]=>
+  object(Application_Model_Semester)#105 (3) {
+    ["_name":protected]=>
+    string(7) "SS 2006"
+    ["_id":protected]=>
+    int(62)
+    ["_begin_time":protected]=>
+    NULL
+  }
+  ["_type":protected]=>
+  object(Application_Model_ExamType)#106 (2) {
+    ["_name":protected]=>
+    string(7) "Klausur"
+    ["_id":protected]=>
+    int(1)
+  }
+  ["_subType":protected]=>
+  object(Application_Model_ExamSubType)#107 (2) {
+    ["_name":protected]=>
+    string(18) "ohne L&ouml;sungen"
+    ["_id":protected]=>
+    int(1)
+  }
+  ["_university":protected]=>
+  object(Application_Model_ExamUniversity)#108 (2) {
+    ["_name":protected]=>
+    string(12) "Uni Freiburg"
+    ["_id":protected]=>
+    int(1)
+  }
+  ["_writtenDegree":protected]=>
+  object(Application_Model_ExamDegree)#109 (2) {
+    ["_name":protected]=>
+    string(9) "Diplom NF"
+    ["_id":protected]=>
+    int(3)
+  }
+  ["_lecturer":protected]=>
+  array(1) {
+    [0]=>
+    object(Application_Model_Lecturer)#118 (5) {
+      ["_degree":protected]=>
+      string(9) "Prof. Dr."
+      ["_firstName":protected]=>
+      string(2) "A."
+      ["_name":protected]=>
+      string(6) "Blumen"
+      ["_id":protected]=>
+      int(80)
+      ["_degrees":protected]=>
+      NULL
+    }
+  }
+  ["_course":protected]=>
+  array(1) {
+    [0]=>
+    object(Application_Model_Course)#112 (4) {
+      ["_name":protected]=>
+      string(15) "Quantenmechanik"
+      ["_id":protected]=>
+      int(208)
+      ["_degrees":protected]=>
+      NULL
+      ["_connectedCourse":protected]=>
+      NULL
+    }
+  }
+  ["_courseConnected":protected]=>
+  array(1) {
+    [0]=>
+    object(Application_Model_Course)#115 (4) {
+      ["_name":protected]=>
+      string(44) "Quantum mechanics for micro and nano systems"
+      ["_id":protected]=>
+      int(232)
+      ["_degrees":protected]=>
+      NULL
+      ["_connectedCourse":protected]=>
+      NULL
+    }
+  }
+  ["_documents":protected]=>
+  array(1) {
+    [0]=>
+    object(Application_Model_Document)#121 (14) {
+      ["_extention":protected]=>
+      string(3) "zip"
+      ["_id":protected]=>
+      int(1630)
+      ["_examId":protected]=>
+      int(1337)
+      ["_exam":protected]=>
+      NULL
+      ["_uploadDate":protected]=>
+      string(19) "2013-10-13 21:51:19"
+      ["_deleted":protected]=>
+      bool(false)
+      ["_fileName":protected]=>
+      string(36) "0e76470b210350568519f8790841e5fd.zip"
+      ["_displayName":protected]=>
+      string(11) "Quant_Blume"
+      ["_mimeType":protected]=>
+      string(15) "application/zip"
+      ["_submitFileName":protected]=>
+      string(15) "Quant_Blume.zip"
+      ["_checkSum":protected]=>
+      NULL
+      ["_reviewed":protected]=>
+      NULL
+      ["_downloads":protected]=>
+      NULL
+      ["_collection":protected]=>
+      string(1) "0"
+    }
+  }
+}
+    	 */
+    	
+    	
+    	$this->_helper->json($exams);
+    	
+    	exit();
+    	 
+    
+    
+    }
+    
+    public function statisticsGraphDownloadAction()
+    {
+    	$stats = new Application_Model_Statistics();
+    
+    
+    	$path = '../library/jpgraph';
+    	set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+    
+    	require_once ('jpgraph/jpgraph.php');
+    	require_once ('jpgraph/jpgraph_scatter.php');
+    	require_once ('jpgraph/jpgraph_bar.php');
+    	
+    	$request = $this->getRequest ();
+    	if (isset ( $request->year )) {
+    		$year = $request->year;
+    	} else {
+    		$year = date("Y");
+    	}
+    	
+    	$group = false;
+    	$degree = -1;
+    	
+    	if (isset ( $request->group )) {
+    		$degree=$request->group;
+    		$group = true;
+    	}
+    	
+    	if (isset ( $request->degree )) {
+    		$degree = $request->degree;
+    	}
+    	
+    	//$months = $gDateLocale->GetShortMonth();
+    	$results = $stats->getExamDownloadsDailyYear($year, $degree, $group);
+    	
+    	//var_dump($results);
+    	//die();
+    	
+    	$days = array();
+    	$downloads = array();
+    	$total_downloads = 0;
+    	foreach ($results as $day=>$download)
+    	{
+    		//echo($day);
+    		$days[] = $day;
+    		$downloads[] = $download;
+    		$total_downloads += $download;
+    	}
+    	//die();
+    	
+    	$datay = $downloads;//array(3.5,3.7,3,4,6.2,6,3.5,8,14,8,11.1,13.7);
+    	$datax = $days;//array(20,22,12,13,17,20,16,19,30,31,40,43);
+    	$graph = new Graph(900,380);
+    	$graph->img->SetMargin(40,40,40,40);
+    	$graph->img->SetAntiAliasing();
+    	$graph->SetScale("linlin");
+    	$graph->SetShadow();
+    	
+    	//$graph->yaxis->SetTickPositions(array(0,50,100,150,200,250,300,350), array(25,75,125,175,275,325));
+    	//$graph->y2axis->SetTickPositions(array(30,40,50,60,70,80,90));
+
+    	$markings = array();
+    	for ($i = 0; $i < 365; $i++) {
+    		if($i%15 == 0 and $i%30 != 0) {
+    			$markings[] = $i;
+    		}
+    	}
+    	
+    	$months = $gDateLocale->GetShortMonth();
+    	
+    	$graph->xaxis->SetTickPositions($markings, NULL, $months);
+    	
+   	
+    	
+    	$title = ($year . " // Downloads // total: ". $total_downloads);
+    	if($degree != -1) {
+    		if($group) {
+    			$amd = new Application_Model_DegreeGroupMapper();
+    			$group = $amd->find($degree);
+    			$title .= "\n group: " . $group->getName();
+    		} else {
+    			$amd = new Application_Model_DegreeMapper();
+    			$degree = $amd->find($degree);
+    			$title .= "\n degree: " . $degree->getName();
+    		}
+    	}
+    	$graph->title->Set($title);
+    	//$graph->title->SetFont(FF_FONT1,FS_BOLD);
+    	
+    	$band = new PlotBand(VERTICAL,BAND_RDIAG,"min","max",'khaki4');
+    	$band->ShowFrame(true);
+    	$band->SetOrder(DEPTH_BACK);
+    	$graph->Add($band);
+    	
+    	
+    	$b1plot = new BarPlot($datay);
+    	$gbplot = new GroupBarPlot(array($b1plot));
+    	
+    	/*$sp1 = new ScatterPlot($datay,);
+    	$sp1->SetLinkPoints(true,"red",2);
+    	$sp1->mark->SetType(MARK_FILLEDCIRCLE);
+    	$sp1->mark->SetFillColor("navy");
+    	$sp1->mark->SetWidth(0);*/
+    	
+    	$graph->Add($gbplot);
+    	$graph->Stroke();
+    	
     	exit();
     }
 

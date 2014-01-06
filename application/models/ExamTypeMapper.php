@@ -48,6 +48,12 @@ class Application_Model_ExamTypeMapper
         }
         return $entries;
     }
+    
+    public function find($id)
+    {
+    	$res = $this->getDbTable()->find($id)->current();
+    	return new Application_Model_ExamType(array('id'=>$res->idexam_type, 'name'=>$res->name));
+    }
 
 }
 

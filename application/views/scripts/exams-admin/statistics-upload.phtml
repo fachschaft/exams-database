@@ -1,0 +1,85 @@
+<script>
+$(document).ready(function () {
+	var param = {
+			active_time : $("#upload_time").val(),
+			active_degree : $("#upload_degree").val()
+		};
+
+	  $("#upload_img").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-types?" + generateParams());
+	  $("#upload_img_pie_group").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-groups?" + generateParams());
+	  $("#upload_img_pie_degree").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-degrees?" + generateParams());
+
+	  $("#upload_time").change(function() {
+		  param.active_time = $("#upload_time").val();
+		  $("#upload_img").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-types?" + generateParams());
+		  $("#upload_img_pie_group").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-groups?" + generateParams());
+		  $("#upload_img_pie_degree").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-degrees?" + generateParams());
+		  
+		  
+	  });
+	  $("#upload_degree").change(function() { 
+		  param.active_degree = $("#upload_degree").val();
+		  $("#upload_img").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-types?" + generateParams());
+		  
+	  });
+	  function generateParams() {
+		  var params = { };
+		  if(param.active_time.match("^y")) {
+		  	params['year'] = param.active_time.substring(1);
+		  }
+		  if(param.active_time.match("^ss") || param.active_time.match("^ws")) {
+			  	params['semester'] = param.active_time.substring(1);
+		  }
+		  if(param.active_degree.match("^g")) {
+			  	params['group'] = param.active_degree.substring(1);
+		  }
+		  if(param.active_degree.match("^d")) {
+			  	params['degree'] = param.active_degree.substring(1);
+		  }
+		  return jQuery.param(params);
+	  }
+});
+</script>
+
+<div id="view-content">
+	<h1>Upload statistics</h1>
+	<div>
+	  <select name="upload_time" id="upload_time">
+	  <?php foreach($this->upload_years as $year)
+			{
+				echo ("<option value='y".$year."'>".$year."</option>");
+			}
+			?>
+		<!-- <option value="ss13">SS 13</option>
+		<option value="ws14">WS 13/14</option>-->
+	  </select>
+	  <select name="upload_degree" id="upload_degree">
+	  <option value="-1">ALL</option>
+	  	<optgroup label="========= GROUPS ==========">
+	  		  <?php
+	  		  foreach($this->upload_groups as $year)
+			{
+				echo ("<option value='g".$year['value']."'>".$year['name']."</option>");
+			}
+			?>
+	  	</optgroup>
+	  	<optgroup label="========= DEGREES ==========">
+	  		  <?php 
+	  		  foreach($this->upload_degrees as $year)
+			{
+				echo ("<option value='d".$year['value']."'>".$year['name']."</option>");
+			}
+			?>
+	    </optgroup>
+	  </select>
+  	</div>
+  	<div>
+  		<img id="upload_img" src="http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-types">
+  	</div>
+  	<div>
+  		<img id="upload_img_pie_group" src="http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-groups">
+  		<img id="upload_img_pie_degree" src="http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-degrees">
+  	</div>
+  	<div id="upload_data">
+  	</div>
+</div>
