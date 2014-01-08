@@ -1370,8 +1370,8 @@ class ExamsAdminController extends Zend_Controller_Action
     	
     	
     	$graph->Add($gbplot);
-
     	
+   	
     	$sum = 0;
     	foreach ($results as $typs) {
     		foreach ($typs as $month) {
@@ -1848,6 +1848,7 @@ class ExamsAdminController extends Zend_Controller_Action
     	require_once ('jpgraph/jpgraph.php');
     	require_once ('jpgraph/jpgraph_scatter.php');
     	require_once ('jpgraph/jpgraph_bar.php');
+    	require_once ('jpgraph/jpgraph_line.php');
     	
     	$request = $this->getRequest ();
     	if (isset ( $request->year )) {
@@ -1908,6 +1909,12 @@ class ExamsAdminController extends Zend_Controller_Action
     	
     	$graph->xaxis->SetTickPositions($markings, NULL, $months);
     	
+    	
+    	/*$data6y=array(50,58,60,58,53,58,57,60,58,58,57,50);
+    	 
+    	$lplot = new LinePlot($data6y);
+    	 
+    	$graph->Add($lplot);*/
    	
     	
     	$title = ($year . " // Downloads // total: ". $total_downloads);
@@ -1922,6 +1929,7 @@ class ExamsAdminController extends Zend_Controller_Action
     			$title .= "\n degree: " . $degree->getName();
     		}
     	}
+    	
     	$graph->title->Set($title);
     	//$graph->title->SetFont(FF_FONT1,FS_BOLD);
     	

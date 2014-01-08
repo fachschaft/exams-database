@@ -54,15 +54,16 @@ $(document).ready(function () {
 	  $("#upload_time").change(function() {
 		  param.active_time = $("#upload_time").val();
 		  $("#upload_img").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-download?" + generateParams());
-		  updateRanking();
-		  
-		  
+		  param.active_page = 1;
+		  param.active_elements = 30;
+		  updateRanking();		  
 	  });
 	  $("#upload_degree").change(function() { 
 		  param.active_degree = $("#upload_degree").val();
 		  $("#upload_img").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-download?" + generateParams());
-		  updateRanking();
-		  
+		  param.active_page = 1;
+		  param.active_elements = 30;
+		  updateRanking();	  
 	  });
 });
 
