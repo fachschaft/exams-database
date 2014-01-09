@@ -321,6 +321,41 @@ class ExamsAdminController extends Zend_Controller_Action
 		}
 		//
     }
+    
+    
+    public function activityLogAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'view_log'))
+    		$this->_helper->Redirector->setGotoSimple ( 'overview' );
+    	// action body
+    	
+    }
+    
+    public function ajaxActivityLogAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'view_log'))
+    		$this->_helper->Redirector->setGotoSimple ( 'overview' );
+    	// action body
+    	
+    	$request = $this->getRequest();
+    	    	 
+    	$page = 1;
+    	$max_elements = 30;
+    	if (isset ( $request->elements )) {
+    		$max_elements=$request->elements;
+    	}
+    	 
+    	if (isset ( $request->page )) {
+    		$page = $request->page;
+    	}
+    	
+    	$aml = new Application_Model_LogMapper();
+       
+    	$result = $aml->fetchAll($page, $max_elements);
+    	
+    	$this->_helper->json($result);
+    	exit();
+    }
   
     
 
@@ -1754,7 +1789,13 @@ class ExamsAdminController extends Zend_Controller_Action
 
     	$results2 = array_slice($results, ($page-1) * $max_elements, $max_elements);
     	
-    	//var_dump($results);
+    	//var_dump($results2);
+    	//die();
+    	
+    	if(count($results2) == 0) {
+    		$this->_helper->json(array());
+    		exit();
+    	}
     	
     	$em = new Application_Model_ExamMapper();
     	$exams = array();
@@ -1958,8 +1999,13 @@ class ExamsAdminController extends Zend_Controller_Action
     
     	$results2 = array_slice($results, ($page-1) * $max_elements, $max_elements);
     	 
-    	//var_dump($results);
+    	//var_dump(count($results));
     	//die();
+    	
+    	if(count($results) == 0) {
+    		$this->_helper->json(array());
+    		exit();
+    	}
     	 
     	$em = new Application_Model_ExamMapper();
     	$exams = array();

@@ -487,12 +487,13 @@ public function degreesAction() {
 		$examid = $this->getRequest ()->id;
 		$form = new Application_Form_ExamReport ();
 		$form->setAction ( $examid );
-		if ($this->_request->isPost ()) {
+		if ($this->_request->isPost () && $form->isValid($this->_request->getParams ())) {
 			$formData = $this->_request->getParams ();
 			$examMapper = new Application_Model_ExamMapper ();
 			// TODO check escaping as a get variable is passed to mysql here!!!! Maybe find a nicer way of doing this when it's less late.		
 			$examMapper->updateExamStatusToReported ( $examid, $formData['_reason']);
 			echo "Your report was submitted. Thank you for your help.";
+			$form->reset();
 		}
 		$this->view->form = $form;
 	}

@@ -1,0 +1,92 @@
+<script>
+var param;
+$(document).ready(function () {
+	param = {
+			active_page : 1,
+			active_elements : 30
+		};
+
+	updateRanking();
+});
+
+function generateParams() {
+	  var params = { };
+	  params['page'] = param.active_page;
+	  params['elements'] = param.active_elements;
+	  return jQuery.param(params);
+}
+function updateRanking() {
+	  $.getJSON("/exams-admin/ajax-activity-log",
+				""+generateParams(),
+		        function(data){
+				$( "#download_ranking" ).html("<table id=\"gradient-style\">\
+						<tr>\
+						<th>ID</th>\
+						<th>ExamID</th>\
+						<th>Date</th>\
+						<th>Message</th>\
+					</tr>");
+		          $.each(data, function(i,item){
+		        	  //setElmentsEditOn(i,item);
+		        	  //$( "#download_ranking" ).html("");
+		        	  
+		        	  appendRankingElement(item);
+		          });
+		        });
+}
+
+function appendRankingElement(item) {
+	
+	$( "#gradient-style" ).append(
+	'<tr> \
+	<td> \
+	<div id="log-id"> \
+	'+item['id']+' \
+	</div> \
+</td> \
+<td>\
+	<div id="log-idexam">\
+	'+item['idexam']+'\
+	</div>\
+</td>\
+<td>\
+	<div id="log-date">\
+	'+item['date']+'\
+	</div>\
+</td>\
+<td>\
+	<div id="log-message">\
+	'+item['message']+'\
+	</div>\
+</td>\
+</tr>');
+}
+
+function nextPage() {
+	param.active_page += 1;
+	updateRanking();
+}
+function previousPage() {
+	if(param.active_page > 1) {
+	param.active_page -= 1;
+	updateRanking();
+	}
+}
+</script>
+
+<div id="view-content">
+<h1>Activity log</h1>
+<div id="download_ranking_pages" style="float: right;"><a href="#" onclick="javascript:previousPage()">Previous Page</a> - <a href="#" onclick="javascript:nextPage()">Next Page</a></div>
+  	<div id="download_ranking_elements">Elements: 30</div>  
+  	<span style="float: clar;"></span>
+  	<div id="download_ranking">
+    <table id="gradient-style">
+	
+	<tr>
+		<th>ID</th>
+		<th>ExamID</th>
+		<th>Date</th>
+		<th>Message</th>
+	</tr>
+  	</div>
+</div>

@@ -53,6 +53,27 @@ class Application_Model_LogMapper
 		return $log;
 	}
 	
+	public function fetchAll($page = 0, $elements = 30)
+	{
+		$select = $this->getDbTable()->getAdapter()->select()
+		->from(array('log' => 'exam_log'),
+				array('idexam_log', 'exam_idexam', 'message', 'date'))
+				->order(array('date DESC'))
+				->limitPage($page, $elements);
+	
+		$resultSet = $this->getDbTable()->getAdapter()->fetchAll($select);
+
+		$result = array();
+		foreach ($resultSet as $row) {
+			$result[] = array('id' => $row['idexam_log'],
+					'idexam' => $row['exam_idexam'],
+					'message' => $row['message'],
+					'date' => $row['date']
+			);
+		}
+		return $result;
+	}
+	
 
 }
 

@@ -17,10 +17,11 @@ class Application_Form_ExamReport extends Zend_Form {
 	public function init() {
 
 		$this->setMethod('post');
-		$this->_reason = new Zend_Form_Element_Text('_reason');
+		$this->_reason = new Zend_Form_Element_Textarea('_reason');
 		$this->_reason->setLabel('Explanation:')
 		->setRequired(true)
-		->addValidator('NotEmpty');
+		->addValidator('NotEmpty')
+		->addValidator(new Zend_Validate_StringLength(array('min' => 20)));
 		
 		$submit = new Zend_Form_Element_Submit('submit');
 		$submit->setLabel('Submit');

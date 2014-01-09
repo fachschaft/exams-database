@@ -1,43 +1,3 @@
-  	<style>
-#gradient-style
-{
-	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-	font-size: 12px;
-	/* margin: 45px; */
-	width: 100%;
-	text-align: left;
-	border-collapse: collapse;
-}
-#gradient-style th
-{
-	font-size: 13px;
-	font-weight: normal;
-	padding: 8px;
-	background: #b9c9fe repeat-x;
-	border-top: 2px solid #d3ddff;
-	border-bottom: 1px solid #fff;
-	color: #039;
-}
-#gradient-style td
-{
-	padding: 8px; 
-	border-bottom: 1px solid #fff;
-	color: #669;
-	border-top: 1px solid #fff;
-	background: #e8edff repeat-x;
-}
-#gradient-style tfoot tr td
-{
-	background: #e8edff;
-	font-size: 12px;
-	color: #99c;
-}
-#gradient-style tbody tr:hover td
-{
-	background: #d0dafd repeat-x;
-	color: #339;
-}
-</style>
 <script>
 var param;
 $(document).ready(function () {
@@ -53,7 +13,8 @@ $(document).ready(function () {
 
 	  $("#upload_time").change(function() {
 		  param.active_time = $("#upload_time").val();
-		  $("#upload_img").attr("src", "/exams-admin/statistics-graph-download-course?" + generateParams());	  
+		  $("#upload_img").attr("src", "/exams-admin/statistics-graph-download-course?" + generateParams());
+		  updateRanking();
 	  });
 });
 
