@@ -1833,158 +1833,216 @@ class ExamsAdminController extends Zend_Controller_Action
     	
     	usort($exams, "cmp");
     	
-    	
-    	/*
-    	 * object(Application_Model_Exam)#102 (16) {
-  ["_id":protected]=>
-  int(1337)
-  ["_autor":protected]=>
-  string(0) ""
-  ["_comment":protected]=>
-  string(0) ""
-  ["_created":protected]=>
-  int(1)
-  ["_modified":protected]=>
-  int(1381701152)
-  ["_degree":protected]=>
-  object(Application_Model_Degree)#103 (3) {
-    ["_degree_group":protected]=>
-    NULL
-    ["_name":protected]=>
-    string(6) "Physik"
-    ["_id":protected]=>
-    int(7)
-  }
-  ["_status":protected]=>
-  object(Application_Model_ExamStatus)#104 (2) {
-    ["_name":protected]=>
-    string(6) "public"
-    ["_id":protected]=>
-    string(1) "3"
-  }
-  ["_semester":protected]=>
-  object(Application_Model_Semester)#105 (3) {
-    ["_name":protected]=>
-    string(7) "SS 2006"
-    ["_id":protected]=>
-    int(62)
-    ["_begin_time":protected]=>
-    NULL
-  }
-  ["_type":protected]=>
-  object(Application_Model_ExamType)#106 (2) {
-    ["_name":protected]=>
-    string(7) "Klausur"
-    ["_id":protected]=>
-    int(1)
-  }
-  ["_subType":protected]=>
-  object(Application_Model_ExamSubType)#107 (2) {
-    ["_name":protected]=>
-    string(18) "ohne L&ouml;sungen"
-    ["_id":protected]=>
-    int(1)
-  }
-  ["_university":protected]=>
-  object(Application_Model_ExamUniversity)#108 (2) {
-    ["_name":protected]=>
-    string(12) "Uni Freiburg"
-    ["_id":protected]=>
-    int(1)
-  }
-  ["_writtenDegree":protected]=>
-  object(Application_Model_ExamDegree)#109 (2) {
-    ["_name":protected]=>
-    string(9) "Diplom NF"
-    ["_id":protected]=>
-    int(3)
-  }
-  ["_lecturer":protected]=>
-  array(1) {
-    [0]=>
-    object(Application_Model_Lecturer)#118 (5) {
-      ["_degree":protected]=>
-      string(9) "Prof. Dr."
-      ["_firstName":protected]=>
-      string(2) "A."
-      ["_name":protected]=>
-      string(6) "Blumen"
-      ["_id":protected]=>
-      int(80)
-      ["_degrees":protected]=>
-      NULL
-    }
-  }
-  ["_course":protected]=>
-  array(1) {
-    [0]=>
-    object(Application_Model_Course)#112 (4) {
-      ["_name":protected]=>
-      string(15) "Quantenmechanik"
-      ["_id":protected]=>
-      int(208)
-      ["_degrees":protected]=>
-      NULL
-      ["_connectedCourse":protected]=>
-      NULL
-    }
-  }
-  ["_courseConnected":protected]=>
-  array(1) {
-    [0]=>
-    object(Application_Model_Course)#115 (4) {
-      ["_name":protected]=>
-      string(44) "Quantum mechanics for micro and nano systems"
-      ["_id":protected]=>
-      int(232)
-      ["_degrees":protected]=>
-      NULL
-      ["_connectedCourse":protected]=>
-      NULL
-    }
-  }
-  ["_documents":protected]=>
-  array(1) {
-    [0]=>
-    object(Application_Model_Document)#121 (14) {
-      ["_extention":protected]=>
-      string(3) "zip"
-      ["_id":protected]=>
-      int(1630)
-      ["_examId":protected]=>
-      int(1337)
-      ["_exam":protected]=>
-      NULL
-      ["_uploadDate":protected]=>
-      string(19) "2013-10-13 21:51:19"
-      ["_deleted":protected]=>
-      bool(false)
-      ["_fileName":protected]=>
-      string(36) "0e76470b210350568519f8790841e5fd.zip"
-      ["_displayName":protected]=>
-      string(11) "Quant_Blume"
-      ["_mimeType":protected]=>
-      string(15) "application/zip"
-      ["_submitFileName":protected]=>
-      string(15) "Quant_Blume.zip"
-      ["_checkSum":protected]=>
-      NULL
-      ["_reviewed":protected]=>
-      NULL
-      ["_downloads":protected]=>
-      NULL
-      ["_collection":protected]=>
-      string(1) "0"
-    }
-  }
-}
-    	 */
-    	
-    	
+    	   	
     	$this->_helper->json($exams);
     	
     	exit();
     	 
+    
+    
+    }
+    
+    public function statisticsAjaxDownloadRankingCourseAction()
+    {
+   	 
+    	$stats = new Application_Model_Statistics();
+    	 
+    	$request = $this->getRequest ();
+    	if (isset ( $request->year )) {
+    		$year = $request->year;
+    	} else {
+    		$year = date("Y");
+    	}
+    
+    	$group = false;
+    	$degree = -1;
+    
+    	if (isset ( $request->group )) {
+    		$degree=$request->group;
+    		$group = true;
+    	}
+    
+    	if (isset ( $request->degree )) {
+    		$degree = $request->degree;
+    	}
+    	 
+    	$page = 1;
+    	$max_elements = 30;
+    	if (isset ( $request->elements )) {
+    		$max_elements=$request->elements;
+    	}
+    	 
+    	if (isset ( $request->page )) {
+    		$page = $request->page;
+    	}
+    	 
+    
+    	$results = $stats->getCoursDownloadsRankingYear($year, $degree, $group);
+    	 
+    
+    	$results2 = array_slice($results, ($page-1) * $max_elements, $max_elements);
+
+    	
+    	$cours = array();
+    	$rank = 1;
+    	foreach ($results2 as $ex) {    
+    		
+    		
+    		$cours[] = array(
+    				'idcourse' => $ex['idcourse'],
+    				'downloads' => $ex['downloads'],
+    				'name' => $ex['cours_name'],
+    				'rank' => $rank,
+    		);
+    		
+    		$rank++;
+    		
+    		
+    	}
+    	 
+    	// define a custom month sort
+    	function cmp($a, $b)
+    	{
+    		if ($a['rank'] == $b['rank']) {
+    			return 0;
+    		}
+    		return ($a['rank'] < $b['rank']) ? -1 : 1;
+    	}
+    	 
+    	usort($cours, "cmp");
+    	 
+    		
+    	
+    	$this->_helper->json($cours);
+    	
+    	exit();
+    
+    
+    }
+    
+    public function statisticsAjaxDownloadRankingCourse2Action()
+    {
+    	 
+    	//if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    	//	throw new Custom_Exception_PermissionDenied("Permission Denied");
+    	 
+    	$stats = new Application_Model_Statistics();
+    	 
+    	$request = $this->getRequest ();
+    	if (isset ( $request->year )) {
+    		$year = $request->year;
+    	} else {
+    		$year = date("Y");
+    	}
+    	
+    	$course = -1;
+    
+    	if (isset ( $request->course )) {
+    		$course=$request->course;
+    	}
+    
+    	    	 
+    	$page = 1;
+    	$max_elements = 30;
+    	if (isset ( $request->elements )) {
+    		$max_elements=$request->elements;
+    	}
+    	 
+    	if (isset ( $request->page )) {
+    		$page = $request->page;
+    	}
+    	 
+    
+    	$results = $stats->getCoursDownloadsRankingYear($year, $course);
+    	 
+    
+    	$results2 = array_slice($results, ($page-1) * $max_elements, $max_elements);
+    	 
+    	//var_dump($results);
+    	//die();
+    	 
+    	$em = new Application_Model_ExamMapper();
+    	$exams = array();
+    	 
+    	//var_dump($em->find(1337));
+    	$ids = array();
+    	 
+    	foreach ($results2 as $exam) {
+    		$ids[] = $exam['idexam'];
+    
+    	}
+    	 
+    	//var_dump($ids);
+    	//die();
+    	 
+    	 
+    	$res = $em->fetchQuick(-1, -1, -1, -1, -1, array(), true, $ids);
+    	 
+    	//var_dump($res);
+    
+    	foreach ($res as $ex) {
+    		$cors = array();
+    		foreach ($ex->getCourse() as $cor) {
+    			$cors[] = array('name' => $cor->getName(), 'id' => $cor->getId() );
+    		}
+    		$ccors = array();
+    		foreach ($ex->getCourseConnected() as $cor) {
+    			$ccors[] = $cor->getName();
+    		}
+    		$lect = array();
+    		foreach ($ex->getLecturer() as $cor) {
+    			$lect[] = $cor->getName() . ", " . $cor->getDegree() . " " . $cor->getFirstName();
+    		}
+    		$files = array();
+    		foreach ($ex->getDocuments() as $cor) {
+    			//$files[] = array('name' => $cor->getDisplayName().".".$cor->getExtention(), 'id'=>$cor->getId());
+    			$files[] = array('name' => ".".$cor->getExtention(), 'id'=>$cor->getId());
+    
+    		}
+    
+    		$rank = -1;
+    		$downlow = -1;
+    		foreach ($results2 as $element) {
+    			if($element['idexam'] == $ex->getId()) {
+    				$rank = $element['rank'];
+    				$downlow = $element['downloads'];
+    			}
+    		}
+    		$exams[] = array(
+    				'idexam' =>$ex->getId(),
+    				'downloads' => $downlow,
+    				'rank' => $rank,
+    				'comment' =>$ex->getComment(),
+    				'course' => $cors,
+    				'course_connected' => $ccors,
+    				'degree'=> $ex->getDegree()->getName(),
+    				'semester'=> $ex->getSemester()->getName(),
+    				'lecturer'=> $lect,
+    				'type'=> $ex->getType()->getName(),
+    				'sub_type'=> $ex->getSubType()->getName(),
+    				'semester'=> $ex->getSemester()->getName(),
+    				'autor'=> $ex->getAutor(),
+    				'files' => $files,
+    				'uni' => $ex->getUniversity()->getName(),
+    		);
+    	}
+    	 
+    	// define a custom month sort
+    	function cmp($a, $b)
+    	{
+    		if ($a['rank'] == $b['rank']) {
+    			return 0;
+    		}
+    		return ($a['rank'] < $b['rank']) ? -1 : 1;
+    	}
+    	 
+    	usort($exams, "cmp");
+    	 
+    		
+    	$this->_helper->json($exams);
+    	 
+    	exit();
+    
     
     
     }

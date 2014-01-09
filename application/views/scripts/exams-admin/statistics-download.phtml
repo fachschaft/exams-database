@@ -44,6 +44,7 @@ $(document).ready(function () {
 	param = {
 			active_time : $("#upload_time").val(),
 			active_degree : $("#upload_degree").val(),
+			ranking_type : $("#ranking_type").val(),
 			active_page : 1,
 			active_elements : 30
 		};
@@ -65,6 +66,13 @@ $(document).ready(function () {
 		  param.active_elements = 30;
 		  updateRanking();	  
 	  });
+	  $("#ranking_type").change(function() { 
+		  param.active_degree = $("#upload_degree").val();
+		  param.ranking_type = $("#ranking_type").val();
+		  param.active_page = 1;
+		  param.active_elements = 30;
+		  updateRanking();
+	  });	  
 });
 
 function generateParams() {
@@ -87,6 +95,7 @@ function generateParams() {
 }
 
 function updateRanking() {
+	if (param.ranking_type == 'exam') {
 	  $.getJSON("/exams-admin/statistics-ajax-download-ranking",
 				""+generateParams(),
 		        function(data){
@@ -104,7 +113,7 @@ function updateRanking() {
 						</tr>");
 				// set the default item if not set
 				if(data.length == 0) {
-					setElmentsEditOn(-1,"no data");
+					appendRankingElement("no data");
 				}
 		          $.each(data, function(i,item){
 		        	  //setElmentsEditOn(i,item);
@@ -113,6 +122,29 @@ function updateRanking() {
 		        	  appendRankingElement(item);
 		          });
 		        });
+	} else {
+		  $.getJSON("/exams-admin/statistics-ajax-download-ranking-course",
+					""+generateParams(),
+			        function(data){
+					$( "#download_ranking" ).html("<table id=\"gradient-style\">\
+							<tr>\
+								<th>Rank</th>\
+								<th>Down.</th>\
+								<th>ID</th>\
+								<th>Course</th>\
+							</tr>");
+					// set the default item if not set
+					if(data.length == 0) {
+						appendRankingCoursElement("no data");
+					}
+			          $.each(data, function(i,item){
+			        	  //setElmentsEditOn(i,item);
+			        	  //$( "#download_ranking" ).html("");
+			        	  
+			        	  appendRankingCoursElement(item);
+			          });
+			        });
+	}
 }
 
 function appendRankingElement(item) {
@@ -182,6 +214,33 @@ function appendRankingElement(item) {
 	<div id="exam-files">\
 	    '+files+'  \
 	</div>\
+</td>\
+</tr>');
+}
+
+function appendRankingCoursElement(item) {
+	$( "#gradient-style" ).append(
+	'<tr> \
+	<td> \
+	<div id="exam-rank"> \
+	'+item['rank']+' \
+	</div> \
+</td> \
+<td>\
+	<div id="exam-downloads">\
+	'+item['downloads']+'\
+	</div>\
+</td>\
+<td>\
+	<div id="exam-id">\
+	'+item['idcourse']+'\
+	</div>\
+</td>\
+<td>\
+	<div id="exam-course">\
+		<a href=\"/exams-admin/statistics-download-course?course='+item['idcourse']+'\">'+item['name']+'</a>\
+	</div>\
+</td>\
 </tr>');
 }
 
@@ -236,6 +295,12 @@ function previousPage() {
   		<img id="upload_img_pie_group" src="/exams-admin/statistics-graph-upload-total-pie-groups">
   		<img id="upload_img_pie_degree" src="/exams-admin/statistics-graph-upload-total-pie-degrees">
   	</div>-->
+  	<div>
+	  <select name="ranking_type" id="ranking_type">
+		<option value="course">by Course</option>
+		<option value="exam">by Exam</option>
+	  </select>
+	</div>
   	<div id="download_ranking_pages" style="float: right;"><a href="#" onclick="javascript:previousPage()">Previous Page</a> - <a href="#" onclick="javascript:nextPage()">Next Page</a></div>
   	<div id="download_ranking_elements">Elements: 30</div>  
   	<span style="float: clar;"></span>
