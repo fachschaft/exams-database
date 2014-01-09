@@ -142,6 +142,10 @@ function previousPage() {
 	updateRanking();
 	}
 }
+function setMaxelements(max) {
+	param.active_elements = max;
+	updateRanking();
+}
 </script>
 
 <div id="view-content">
@@ -162,7 +166,7 @@ function previousPage() {
   	</div>
   	
   	  	<div id="download_ranking_pages" style="float: right;"><a href="#" onclick="javascript:previousPage()">Previous Page</a> - <a href="#" onclick="javascript:nextPage()">Next Page</a></div>
-  	<div id="download_ranking_elements">Elements: 30</div>  
+  	<div id="download_ranking_elements">Elements: <a href="#" onclick="javascript:setMaxelements(30);">30</a> <a href="#" onclick="javascript:setMaxelements(60);">60</a> <a href="#" onclick="javascript:setMaxelements(90);">90</a></div>
   	<span style="float: clar;"></span>
   	<div id="download_ranking">
     <table id="gradient-style">
