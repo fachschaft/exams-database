@@ -429,7 +429,7 @@ class Application_Model_Statistics {
 	
 	}
 	
-	public function getCoursDownloadsRankingYear($year = -1, $course = -1) {
+	public function getCoursDownloadsRankingYear($year = -1, $course = -1, $group = false) {
 	
 		// this should not happen!
 		if($year == -1) {
@@ -469,6 +469,64 @@ class Application_Model_Statistics {
 				JOIN exam_download_statistic_day ON exam.idexam = exam_download_statistic_day.exam_idexam
 				".$where."
 				".$group."
+				ORDER BY downl DESC;")
+					->fetchAll()
+					;
+	
+		$res_array = array();
+	
+		$rank = 1;
+		foreach ($res as $row2) {
+			$res_array[] = array('downloads' => intval($row2['downl']), 'idcourse' => intval($row2['idcourse']), 'idexam' => intval($row2['idexam']), 'cours_name' => $row2['cname'], 'rank' => $rank);
+			$rank++;
+		}
+	
+		return $res_array;
+	
+	}
+	
+	
+	public function getCoursDownloadsRankingGroupsYear($year = -1, $degree = -1, $group = false) {
+	
+		// this should not happen!
+		if($year == -1) {
+			throw new Exception('Loaded year statistic with a wrong year('.$year.')');
+		}
+	
+		$dbTable = new Application_Model_DbTable_Exam();
+	
+	
+		// dummy, so we can add abetrary where statements starting with add
+		$where = " WHERE 1=1 ";
+	
+		if($degree != -1 && $group == false) {
+			$where .= " and degree_iddegree = " . $degree;
+	
+		} elseif($degree != -1 && $group == true) {
+			$where = " JOIN `degree` ON degree.iddegree = exam.degree_iddegree JOIN degree_group ON degree_group.iddegree_group =  degree.degree_group_iddegree_group WHERE degree_group.iddegree_group = ".$degree." ";
+		}
+	
+	
+	
+		if(isset($year)) {
+			$where .= " and YEAR(date) = " . $year;
+		}
+	
+		$res = $dbTable
+		->getDefaultAdapter()
+		->query("SELECT
+				sum(exam_download_statistic_day.downloads) as downl,
+				idcourse,
+				idexam,
+				course.name as cname,
+				YEAR(date) as year
+	
+				FROM course
+				JOIN exam_has_course ON course.idcourse = exam_has_course.course_idcourse
+				JOIN exam ON exam.idexam = exam_has_course.exam_idexam
+				JOIN exam_download_statistic_day ON exam.idexam = exam_download_statistic_day.exam_idexam
+				".$where."
+				GROUP BY year, idcourse
 				ORDER BY downl DESC;")
 					->fetchAll()
 					;

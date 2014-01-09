@@ -170,6 +170,17 @@ function appendRankingElement(item) {
 </td>\
 </tr>');
 }
+
+function nextPage() {
+	param.active_page += 1;
+	updateRanking();
+}
+function previousPage() {
+	if(param.active_page > 1) {
+	param.active_page -= 1;
+	updateRanking();
+	}
+}
 </script>
 
 <div id="view-content">

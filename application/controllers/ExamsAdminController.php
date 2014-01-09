@@ -1877,7 +1877,7 @@ class ExamsAdminController extends Zend_Controller_Action
     	}
     	 
     
-    	$results = $stats->getCoursDownloadsRankingYear($year, $degree, $group);
+    	$results = $stats->getCoursDownloadsRankingGroupsYear($year, $degree, $group);
     	 
     
     	$results2 = array_slice($results, ($page-1) * $max_elements, $max_elements);
