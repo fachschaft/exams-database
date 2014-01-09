@@ -12,11 +12,11 @@
 
 class Application_Model_Statistics {
 	
-	public function getAllUsedYears() {
+	public function getEaxamDownlaodsAllUsedYears() {
 		$dbTable = new Application_Model_DbTable_Exam();
 		$res = $dbTable
 		->getDefaultAdapter()
-		->query("SELECT YEAR(`create_date`) as year FROM `exam` group by YEAR(`create_date`) ORDER BY YEAR(  `create_date` ) DESC ;")
+		->query("SELECT YEAR(`date`) as year FROM `exam_download_statistic_day` group by YEAR(`date`) ORDER BY YEAR(  `date` ) DESC ;")
 		->fetchAll()
 		;
 		
@@ -25,6 +25,23 @@ class Application_Model_Statistics {
 			$res_array[] = $row2['year'];
 		}
 		
+		return $res_array;
+	}
+	
+	
+	public function getEaxamAllUsedYears() {
+		$dbTable = new Application_Model_DbTable_Exam();
+		$res = $dbTable
+		->getDefaultAdapter()
+		->query("SELECT YEAR(`create_date`) as year FROM `exam` group by YEAR(`create_date`) ORDER BY YEAR(  `create_date` ) DESC ;")
+		->fetchAll()
+		;
+	
+		$res_array = array();
+		foreach ($res as $row2) {
+			$res_array[] = $row2['year'];
+		}
+	
 		return $res_array;
 	}
 	
@@ -245,6 +262,59 @@ class Application_Model_Statistics {
 		return $res_array;
 	}
 	
+	public function getCourseDownloadsDailyYear($year = -1, $course) {
+	
+		$dbTable = new Application_Model_DbTable_Exam();
+	
+	
+		// dummy, so we can add abetrary where statements starting with add
+		$where = " WHERE 1=1 ";
+	
+		if($course != -1) {
+			$where = "JOIN exam ON exam.idexam = exam_download_statistic_day.exam_idexam JOIN exam_has_course ON exam_has_course .exam_idexam = exam.idexam JOIN course ON exam_has_course .course_idcourse = course.idcourse WHERE idcourse = " . $course;
+		}
+	
+		if(isset($year)) {
+			$where .= " and YEAR(date) = " . $year;
+		}
+	
+		$res = $dbTable
+		->getDefaultAdapter()
+		->query("SELECT
+				sum(exam_download_statistic_day.downloads) as downl,
+				DATE_FORMAT(date, '%Y-%m-%d')  as order_date,
+				DATE_FORMAT(date, '%j') as days,
+				DATE_FORMAT(date, '%d') as day,
+				DATE_FORMAT(date, '%m') as month,
+				DATE_FORMAT(date, '%Y') as year
+	
+				FROM `exam_download_statistic_day`
+				".$where."
+				GROUP BY order_date
+				ORDER BY order_date;")
+					->fetchAll()
+					;
+	
+		$res_array = array();
+	
+		foreach ($res as $row2) {
+			$res_array[intval($row2['days'])] = intval($row2['downl']);
+				
+		}
+	
+		for ($i = 0; $i < 365; $i++) {
+			if(!isset($res_array[$i])) {
+				$res_array[$i] = 0;
+			}
+		}
+	
+	
+		ksort($res_array);
+	
+		return $res_array;
+	
+	}
+	
 	
 	public function getExamDownloadsDailyYear($year = -1, $degree = -1, $group = false) {
 		
@@ -358,6 +428,41 @@ class Application_Model_Statistics {
 		return $res_array;
 	
 	}
+	
+	public function getExamExamination($course, $year = -1) {
+		
+		$dbTable = new Application_Model_DbTable_Exam();
+		
+		$where = " WHERE 1=1 ";
+		
+		if($course != -1) {
+			$where .= " and idcourse = " . $course;
+		
+		}
+		
+		if($year != -1) {
+			$where .= " and YEAR(examination_date) = " . $year;
+		}
+		
+		$res = $dbTable
+		->getDefaultAdapter()
+		->query("SELECT comment,
+				DATE_FORMAT(examination_date, '%j') as days
+				FROM  `course_examination`
+				".$where."
+				;")
+						->fetchAll();
+		
+		$res_array = array();
+		
+		foreach ($res as $row2) {
+			$res_array[] = array('days' => $row2['days'], 'comment' => $row2['comment']);
+		}
+		
+		return $res_array;
+	
+	}
+	
 	
 	
 }

@@ -1023,7 +1023,7 @@ class ExamsAdminController extends Zend_Controller_Action
     	$stats = new Application_Model_Statistics();
     	
     	// define years
-    	$this->view->upload_years = $stats->getAllUsedYears();
+    	$this->view->upload_years = $stats->getEaxamAllUsedYears();
 
     	
     	$this->view->upload_degrees = $stats->getAllDegrees();
@@ -1042,7 +1042,7 @@ class ExamsAdminController extends Zend_Controller_Action
     	$stats = new Application_Model_Statistics();
     	 
     	// define years
-    	$this->view->upload_years = $stats->getAllUsedYears();
+    	$this->view->upload_years = $stats->getEaxamAllUsedYears();
     
     	 
     	$this->view->upload_degrees = $stats->getAllDegrees();
@@ -1547,7 +1547,7 @@ class ExamsAdminController extends Zend_Controller_Action
     	$stats = new Application_Model_Statistics();
     	 
     	// define years
-    	$this->view->upload_years = $stats->getAllUsedYears();
+    	$this->view->upload_years = $stats->getEaxamDownlaodsAllUsedYears();
     
     	 
     	$this->view->upload_degrees = $stats->getAllDegrees();
@@ -1556,6 +1556,158 @@ class ExamsAdminController extends Zend_Controller_Action
     	
     	 
     	 
+    }
+    
+    
+    public function statisticsDownloadCourseAction()
+    {
+    	$stats = new Application_Model_Statistics();
+    
+    	// define years
+    	$this->view->upload_years = $stats->getEaxamDownlaodsAllUsedYears(); 
+
+    	$request = $this->getRequest ();
+    	if (isset( $request->course )) {
+    		$course=$request->course;
+    	} else {
+    		throw new Exception("no course id given");
+    	}
+    	
+    	
+    	$this->view->course = $course;
+    
+    
+    }
+    
+    
+    public function statisticsGraphDownloadCourseAction()
+    {
+    	$stats = new Application_Model_Statistics();
+    
+    
+    	$path = '../library/jpgraph';
+    	set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+    
+    	require_once ('jpgraph/jpgraph.php');
+    	require_once ('jpgraph/jpgraph_scatter.php');
+    	require_once ('jpgraph/jpgraph_bar.php');
+    	require_once ('jpgraph/jpgraph_line.php');
+    	require_once ('jpgraph/jpgraph_plotline.php');
+    	
+    	$request = $this->getRequest ();
+    	if (isset ( $request->year )) {
+    		$year = $request->year;
+    	} else {
+    		throw new Exception();
+    	}
+    	
+    	$course = -1;
+    	
+    	if (isset ( $request->course )) {
+    		$course=$request->course;
+    	} else {
+    		throw new Exception("no course id given");
+    	}
+    	
+    	//$months = $gDateLocale->GetShortMonth();
+    	$results = $stats->getCourseDownloadsDailyYear($year, $course);
+    	
+    	//var_dump($results);
+    	//die();
+    	
+    	$days = array();
+    	$downloads = array();
+    	$total_downloads = 0;
+    	foreach ($results as $day=>$download)
+    	{
+    		//echo($day);
+    		$days[] = $day;
+    		$downloads[] = $download;
+    		$total_downloads += $download;
+    	}
+    	//die();
+    	
+    	$datay = $downloads;//array(3.5,3.7,3,4,6.2,6,3.5,8,14,8,11.1,13.7);
+    	$datax = $days;//array(20,22,12,13,17,20,16,19,30,31,40,43);
+    	$graph = new Graph(900,380);
+    	$graph->img->SetMargin(40,40,40,40);
+    	$graph->img->SetAntiAliasing();
+    	$graph->SetScale("textlin");
+    	$graph->SetShadow();
+    	
+    	//$graph->yaxis->SetTickPositions(array(0,50,100,150,200,250,300,350), array(25,75,125,175,275,325));
+    	//$graph->y2axis->SetTickPositions(array(30,40,50,60,70,80,90));
+
+    	$markings = array();
+    	for ($i = 0; $i < 365; $i++) {
+    		if($i%15 == 0 and $i%30 != 0) {
+    			$markings[] = $i;
+    		}
+    	}
+    	
+    	$months = $gDateLocale->GetShortMonth();
+    	
+    	$graph->xaxis->SetTickPositions($markings, NULL, $months);
+    	
+    	
+    	/*$data6y=array(50,58,60,58,53,58,57,60,58,58,57,50);
+    	 
+    	$lplot = new LinePlot($data6y);
+    	 
+    	$graph->Add($lplot);*/
+   	
+    	
+    	$title = ($year . " // Downloads // total: ". $total_downloads);
+    	
+    	
+    	$amc = new Application_Model_CourseMapper();
+    	$cor = $amc->find($course);
+    	
+    	$title .= "\nfor: " . $cor->getName();
+    
+    	
+    	$graph->title->Set($title);
+    	//$graph->title->SetFont(FF_FONT1,FS_BOLD);
+    	
+    	$band = new PlotBand(VERTICAL,BAND_RDIAG,"min","max",'khaki4');
+    	$band->ShowFrame(true);
+    	$band->SetOrder(DEPTH_BACK);
+    	$graph->Add($band);
+    	
+    	
+    	$b1plot = new BarPlot($datay);
+    	$gbplot = new GroupBarPlot(array($b1plot));
+    	$graph->Add($gbplot);
+    	
+    	
+    	$colorArray = array('orangered', 'darkolivegreen3', 'deepskyblue3', 'yellow2', 'purple2', 'lightpink2', 'goldenrod1');
+    	
+    	
+    	$exami = $stats->getExamExamination($course, $year);
+    	 	
+    	for ($i = 0; $i < count($exami); $i++) {
+    		$plotline = new PlotLine(VERTICAL,$exami[$i]['days']+0.5,$colorArray[$i]);
+    		$plotline->SetLineStyle('dashed');
+    		$plotline->SetLegend($exami[$i]['comment']);
+    		
+    		$i++;
+    		
+    	}
+    	 
+    	if(isset($plotline)) {
+    		$graph->AddLine($plotline);
+    	}
+    	
+
+    	for ($i = 0; $i < 52; $i++) {
+    		$plotline = new PlotLine(VERTICAL,($i * 7) -0.5, 'gray8');
+    		$graph->AddLine($plotline);
+    	}
+    	
+    	$graph->Stroke();
+    	
+    	exit();
+    
     }
     
     
@@ -1626,7 +1778,7 @@ class ExamsAdminController extends Zend_Controller_Action
     	foreach ($res as $ex) {
     		$cors = array();
     		foreach ($ex->getCourse() as $cor) {
-    			$cors[] = $cor->getName();
+    			$cors[] = array('name' => $cor->getName(), 'id' => $cor->getId() );
     		}
     		$ccors = array();
     		foreach ($ex->getCourseConnected() as $cor) {
@@ -1849,6 +2001,8 @@ class ExamsAdminController extends Zend_Controller_Action
     	require_once ('jpgraph/jpgraph_scatter.php');
     	require_once ('jpgraph/jpgraph_bar.php');
     	require_once ('jpgraph/jpgraph_line.php');
+    	require_once ('jpgraph/jpgraph_plotline.php');
+    	 
     	
     	$request = $this->getRequest ();
     	if (isset ( $request->year )) {
@@ -1892,7 +2046,7 @@ class ExamsAdminController extends Zend_Controller_Action
     	$graph = new Graph(900,380);
     	$graph->img->SetMargin(40,40,40,40);
     	$graph->img->SetAntiAliasing();
-    	$graph->SetScale("linlin");
+    	$graph->SetScale("textlin");
     	$graph->SetShadow();
     	
     	//$graph->yaxis->SetTickPositions(array(0,50,100,150,200,250,300,350), array(25,75,125,175,275,325));
@@ -1947,6 +2101,11 @@ class ExamsAdminController extends Zend_Controller_Action
     	$sp1->mark->SetType(MARK_FILLEDCIRCLE);
     	$sp1->mark->SetFillColor("navy");
     	$sp1->mark->SetWidth(0);*/
+    	for ($i = 0; $i < 52; $i++) {
+    		$plotline = new PlotLine(VERTICAL,($i * 7) -0.5, 'gray8');
+    		$graph->AddLine($plotline);
+    	}
+    	
     	
     	$graph->Add($gbplot);
     	$graph->Stroke();

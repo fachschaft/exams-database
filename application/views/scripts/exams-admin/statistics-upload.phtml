@@ -5,21 +5,21 @@ $(document).ready(function () {
 			active_degree : $("#upload_degree").val()
 		};
 
-	  $("#upload_img").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-types?" + generateParams());
-	  $("#upload_img_pie_group").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-groups?" + generateParams());
-	  $("#upload_img_pie_degree").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-degrees?" + generateParams());
+	  $("#upload_img").attr("src", "/exams-admin/statistics-graph-upload-total-types?" + generateParams());
+	  $("#upload_img_pie_group").attr("src", "/exams-admin/statistics-graph-upload-total-pie-groups?" + generateParams());
+	  $("#upload_img_pie_degree").attr("src", "/exams-admin/statistics-graph-upload-total-pie-degrees?" + generateParams());
 
 	  $("#upload_time").change(function() {
 		  param.active_time = $("#upload_time").val();
-		  $("#upload_img").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-types?" + generateParams());
-		  $("#upload_img_pie_group").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-groups?" + generateParams());
-		  $("#upload_img_pie_degree").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-degrees?" + generateParams());
+		  $("#upload_img").attr("src", "/exams-admin/statistics-graph-upload-total-types?" + generateParams());
+		  $("#upload_img_pie_group").attr("src", "/exams-admin/statistics-graph-upload-total-pie-groups?" + generateParams());
+		  $("#upload_img_pie_degree").attr("src", "/exams-admin/statistics-graph-upload-total-pie-degrees?" + generateParams());
 		  
 		  
 	  });
 	  $("#upload_degree").change(function() { 
 		  param.active_degree = $("#upload_degree").val();
-		  $("#upload_img").attr("src", "http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-types?" + generateParams());
+		  $("#upload_img").attr("src", "/exams-admin/statistics-graph-upload-total-types?" + generateParams());
 		  
 	  });
 	  function generateParams() {
@@ -74,11 +74,11 @@ $(document).ready(function () {
 	  </select>
   	</div>
   	<div>
-  		<img id="upload_img" src="http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-types">
+  		<img id="upload_img" src="/exams-admin/statistics-graph-upload-total-types">
   	</div>
   	<div>
-  		<img id="upload_img_pie_group" src="http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-groups">
-  		<img id="upload_img_pie_degree" src="http://testdb.fachschaft.tf/exams-admin/statistics-graph-upload-total-pie-degrees">
+  		<img id="upload_img_pie_group" src="/exams-admin/statistics-graph-upload-total-pie-groups">
+  		<img id="upload_img_pie_degree" src="/exams-admin/statistics-graph-upload-total-pie-degrees">
   	</div>
   	<div id="upload_data">
   	</div>
