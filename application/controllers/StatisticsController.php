@@ -5,8 +5,8 @@
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
- * @version		1.0
- * @since		1.0
+ * @version		1.1
+ * @since		1.1
  * @todo		-
  */
 
