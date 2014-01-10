@@ -1129,6 +1129,9 @@ class ExamsAdminController extends Zend_Controller_Action
     	$comment = "";
     	
     	if(isset($request->course) && isset($request->date)) {
+    		if($request->date == "") {
+    			throw new Exception("No date given");
+    		}
     		$course = $request->course;
     		$date = $request->date;
     		if(isset($request->comment)) {

@@ -155,7 +155,6 @@ function setMaxelements(max) {
 }
 
 function addExamination() {
-	alert("lol");
 	param.date = $("#datepicker").val();
 	param.comment = $("#comment").val();
 	$.getJSON("/exams-admin/statistics-course-add-date",
@@ -165,6 +164,8 @@ function addExamination() {
 				alert("submit error");
 			}
         });
+	$("#datepicker").val("");
+	$("#comment").val("");
 }
 </script>
 
