@@ -5,7 +5,9 @@ $(document).ready(function () {
 			course : <?php echo $this->course; ?>,
 			active_time : $("#upload_time").val(),
 			active_page : 1,
-			active_elements : 30
+			active_elements : 30,
+			date : $("#datepicker").val(),
+			comment : $("#comment").val()
 		};
 
 	updateRanking();
@@ -16,6 +18,9 @@ $(document).ready(function () {
 		  $("#upload_img").attr("src", "/exams-admin/statistics-graph-download-course?" + generateParams());
 		  updateRanking();
 	  });
+	/* assuming that text input datePicker would have id='datePicker' */
+	$( "#datepicker" ).datepicker({ dateFormat: 'dd.mm.yy' });
+
 });
 
 function generateParams() {
@@ -29,6 +34,8 @@ function generateParams() {
 	  params['course'] = param.course;
 	  params['page'] = param.active_page;
 	  params['elements'] = param.active_elements;
+	  params['date'] = param.date;
+	  params['comment'] = param.comment;
 	  return jQuery.param(params);
 }
 
@@ -146,6 +153,19 @@ function setMaxelements(max) {
 	param.active_elements = max;
 	updateRanking();
 }
+
+function addExamination() {
+	alert("lol");
+	param.date = $("#datepicker").val();
+	param.comment = $("#comment").val();
+	$.getJSON("/exams-admin/statistics-course-add-date",
+			"" +generateParams(),
+	    function(data){
+			if(data != "ok") {
+				alert("submit error");
+			}
+        });
+}
 </script>
 
 <div id="view-content">
@@ -161,13 +181,21 @@ function setMaxelements(max) {
 		<option value="ws14">WS 13/14</option>-->
 	  </select>
   	</div>
-  	<div>
+  	<div style="float: left;">
   		<img id="upload_img" src="">
   	</div>
+  	<div style="float: right;">
+  	Add course examination date:<br>
+  	<input type="text" id="datepicker" size="10"><br>
+  	Description:<br>
+  	<input type="text" id="comment"><br>
+  	<input type="button" value="add" onclick="javascript:addExamination()">
+  	</div>
+  	<div style="clear: both;"></div>
   	
   	  	<div id="download_ranking_pages" style="float: right;"><a href="#" onclick="javascript:previousPage()">Previous Page</a> - <a href="#" onclick="javascript:nextPage()">Next Page</a></div>
   	<div id="download_ranking_elements">Elements: <a href="#" onclick="javascript:setMaxelements(30);">30</a> <a href="#" onclick="javascript:setMaxelements(60);">60</a> <a href="#" onclick="javascript:setMaxelements(90);">90</a></div>
-  	<span style="float: clar;"></span>
+  	<div style="clear: both;"></div>
   	<div id="download_ranking">
     <table id="gradient-style">
 	

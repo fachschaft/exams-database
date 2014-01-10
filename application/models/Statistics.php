@@ -577,6 +577,14 @@ class Application_Model_Statistics {
 	
 	}
 	
+	public function addCourseExamination($course, $date, $comment="") {
+		$dbTable = new Application_Model_DbTable_Exam();
+		//'1',  '2013-12-24',  'lol'
+		
+		$dbTable->getAdapter()->query("INSERT INTO  `course_examination` (`idcourse` ,`examination_date`, `comment`)
+				VALUES ('".$course."',  '".$date."',  '".$comment."')");
+	}
+	
 	
 	
 }

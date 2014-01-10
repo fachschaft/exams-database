@@ -1116,6 +1116,41 @@ class ExamsAdminController extends Zend_Controller_Action
     	 
     }
     
+    
+    public function statisticsCourseAddDateAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    	
+    	$request = $this->getRequest();
+    	
+    	$course = "-1";
+    	$date = 0;
+    	$comment = "";
+    	
+    	if(isset($request->course) && isset($request->date)) {
+    		$course = $request->course;
+    		$date = $request->date;
+    		if(isset($request->comment)) {
+    			$comment = $request->comment;
+    		}
+    	} else {
+    		throw new Exception("No date given");
+    	}
+    	
+    	$dates = date("Y-m-d", strtotime($date));
+    	
+    	
+    	$ams = new Application_Model_Statistics();
+    	
+    	$ams->addCourseExamination($course, $dates, $comment);
+    	
+    	$result = 'ok';
+    	$this->_helper->json($result);
+    	exit();
+    	
+    }
+    
     public function statisticsGraphUploadTotal2Action()
     {
     	$path = '../library/jpgraph';
@@ -1719,20 +1754,14 @@ class ExamsAdminController extends Zend_Controller_Action
     	
     	
     	$exami = $stats->getExamExamination($course, $year);
-    	 	
+    	
     	for ($i = 0; $i < count($exami); $i++) {
     		$plotline = new PlotLine(VERTICAL,$exami[$i]['days']+0.5,$colorArray[$i]);
     		$plotline->SetLineStyle('dashed');
     		$plotline->SetLegend($exami[$i]['comment']);
-    		
-    		$i++;
-    		
+    		$graph->AddLine($plotline);   		
     	}
-    	 
-    	if(isset($plotline)) {
-    		$graph->AddLine($plotline);
-    	}
-    	
+
 
     	for ($i = 0; $i < 52; $i++) {
     		$plotline = new PlotLine(VERTICAL,($i * 7) -0.5, 'gray8');
