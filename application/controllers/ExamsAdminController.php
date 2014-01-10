@@ -158,10 +158,17 @@ class ExamsAdminController extends Zend_Controller_Action
     				
     			case "delete_files" :
     				$this->view->action = 'delete_files';
-    				$this->view->id = $id;
+    				if(!is_array($id)) {
+    					$this->view->id = array($id);
+    				} else {
+    					$this->view->id = $id;
+    				}
     				$this->view->edit_exam = $request->edit_exam;
     				break;
     			case "delete_files_do" :
+    				if(!is_array($id)) {
+    					$id = array($id);
+    				}
     				foreach ( $id as $i ) {
     					$documentMapper = new Application_Model_DocumentMapper();
     					$documentMapper->deleteDocument ( $i );
