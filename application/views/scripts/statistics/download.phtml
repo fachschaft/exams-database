@@ -122,7 +122,7 @@ function appendRankingElement(item) {
 
 	var files = "";
 	$.each(item['files'], function(i,item){
-		files += "<a href=\"/exams/download/id/"+item['id']+"\">"+item['name']+"</a><br>";
+		files += "<a href=\"/exams/download/nolog/true/admin/"+item['id']+"\">"+item['name']+"</a><br>";
 	});
 	
 

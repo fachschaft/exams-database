@@ -87,6 +87,10 @@ class ExamsController extends Zend_Controller_Action {
 				'admin' =>array(
 						'filter' 	=> array('Int'),
 						'validator' => array('Int')),
+				'nolog' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				
 				// Upload step 2
 				'exam' =>array(
 						'filter' 	=> array('Int'),
@@ -299,15 +303,22 @@ public function degreesAction() {
 		 }
 		if (isset ( $this->getRequest ()->admin )) {
 				$fileId = $this->getRequest ()->admin;
-		} 
+		}
+		
 		if (!isset ($fileId))
 			throw new Exception('No File ID set, something whent very wrong!');
 		
 		// check if the downloas was calld from an admin and set the reviews state of the document
 		$count = true;
-		if (isset ( $this->getRequest ()->admin )) {
+		// if the nolog flag is set, dont count this as a review
+		if (isset ($this->getRequest ()->admin) && !isset ( $this->getRequest ()->nolog)) {
 			$maper = new Application_Model_DocumentMapper();
 			$maper->updateReviewState($fileId);
+			$count = false;
+		}
+		
+		// if the nolog flag is set, dont count this download
+		if (isset ( $this->getRequest ()->nolog)) {
 			$count = false;
 		}
 		
