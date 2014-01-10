@@ -166,6 +166,9 @@ function addExamination() {
         });
 	$("#datepicker").val("");
 	$("#comment").val("");
+	param.date = $("#datepicker").val();
+	param.comment = $("#comment").val();
+	$("#upload_img").attr("src", "/statistics/graph-download-course?" + generateParams());
 }
 </script>
 
