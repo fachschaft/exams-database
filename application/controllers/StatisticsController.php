@@ -633,8 +633,51 @@ class StatisticsController extends Zend_Controller_Action
     		throw new Exception("no course id given");
     	}
     	
+    	$year = 'y'.date("Y");
+    	
+    	if (isset( $request->year )) {
+    		$year=$request->year;
+    	} else {
+    		if(count($this->view->upload_years) >= 1) {
+    			$year = 'y'.$this->view->upload_years[0];
+    		}
+    	}
+    	
+    	$this->view->year = $year;
+    	
     	
     	$this->view->course = $course;
+    
+    
+    }
+    
+    public function downloadExamAction()
+    {
+    	$stats = new Application_Model_Statistics();
+    
+    	// define years
+    	$this->view->upload_years = $stats->getEaxamDownlaodsAllUsedYears();
+    
+    	$request = $this->getRequest ();
+    	if (isset( $request->exam )) {
+    		$exam=$request->exam;
+    	} else {
+    		throw new Exception("no exam id given");
+    	}
+    	
+    	$year = 'y'.date("Y");
+    	 
+    	if (isset( $request->year )) {
+    		$year=$request->year;
+    	} else {
+    		if(count($this->view->upload_years) >= 1) {
+    			$year = 'y'.$this->view->upload_years[0];
+    		}
+    	}
+    	 
+    	$this->view->year = $year;
+    	 
+    	$this->view->exam = $exam;
     
     
     }
@@ -764,6 +807,127 @@ class StatisticsController extends Zend_Controller_Action
     
     }
     
+    
+    public function graphDownloadExamAction()
+    {
+    	$stats = new Application_Model_Statistics();
+    
+    
+    	$path = '../library/jpgraph';
+    	set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+    
+    	require_once ('jpgraph/jpgraph.php');
+    	require_once ('jpgraph/jpgraph_scatter.php');
+    	require_once ('jpgraph/jpgraph_bar.php');
+    	require_once ('jpgraph/jpgraph_line.php');
+    	require_once ('jpgraph/jpgraph_plotline.php');
+    	 
+    	$request = $this->getRequest ();
+    	if (isset ( $request->year )) {
+    		$year = $request->year;
+    	} else {
+    		throw new Exception();
+    	}
+    	 
+    	$exam = -1;
+    	 
+    	if (isset ( $request->exam )) {
+    		$exam=$request->exam;
+    	} else {
+    		throw new Exception("no course id given");
+    	}
+    	 
+    	//$months = $gDateLocale->GetShortMonth();
+    	$results = $stats->getExamDownloadsDailyYear2($year, $exam);
+
+    	$days = array();
+    	$downloads = array();
+    	$total_downloads = 0;
+    	foreach ($results as $day=>$download)
+    	{
+    		//echo($day);
+    		$days[] = $day;
+    		$downloads[] = $download;
+    		$total_downloads += $download;
+    	}
+    	//die();
+    	 
+    	$datay = $downloads;//array(3.5,3.7,3,4,6.2,6,3.5,8,14,8,11.1,13.7);
+    	$datax = $days;//array(20,22,12,13,17,20,16,19,30,31,40,43);
+    	$graph = new Graph(900,380);
+    	$graph->img->SetMargin(40,40,40,40);
+    	$graph->img->SetAntiAliasing();
+    	$graph->SetScale("textlin");
+    	$graph->SetShadow();
+    	 
+    	//$graph->yaxis->SetTickPositions(array(0,50,100,150,200,250,300,350), array(25,75,125,175,275,325));
+    	//$graph->y2axis->SetTickPositions(array(30,40,50,60,70,80,90));
+    
+    	$markings = array();
+    	for ($i = 0; $i < 365; $i++) {
+    		if($i%15 == 0 and $i%30 != 0) {
+    			$markings[] = $i;
+    		}
+    	}
+    	 
+    	$months = $gDateLocale->GetShortMonth();
+    	 
+    	$graph->xaxis->SetTickPositions($markings, NULL, $months);
+    	 
+    	 
+    	/*$data6y=array(50,58,60,58,53,58,57,60,58,58,57,50);
+    
+    	$lplot = new LinePlot($data6y);
+    
+    	$graph->Add($lplot);*/
+    
+    	 
+    	$title = ($year . " // Downloads // total: ". $total_downloads);
+    	 
+    	 
+    	$amc = new Application_Model_ExamMapper();
+    	$cor = $amc->find($exam);
+    	 
+    	$title .= "\nfor exam id: " . $cor->getId();
+    
+    	 
+    	$graph->title->Set($title);
+    	//$graph->title->SetFont(FF_FONT1,FS_BOLD);
+    	 
+    	$band = new PlotBand(VERTICAL,BAND_RDIAG,"min","max",'khaki4');
+    	$band->ShowFrame(true);
+    	$band->SetOrder(DEPTH_BACK);
+    	$graph->Add($band);
+    	 
+    	 
+    	$b1plot = new BarPlot($datay);
+    	$gbplot = new GroupBarPlot(array($b1plot));
+    	$graph->Add($gbplot);
+    	 
+    	 
+    	$colorArray = array('orangered', 'darkolivegreen3', 'deepskyblue3', 'yellow2', 'purple2', 'lightpink2', 'goldenrod1');
+    	 
+    	 
+    	$exami = $stats->getExamExaminationByExam($exam, $year);
+    	 
+    	for ($i = 0; $i < count($exami); $i++) {
+    		$plotline = new PlotLine(VERTICAL,$exami[$i]['days']+0.5,$colorArray[$i]);
+    		$plotline->SetLineStyle('dashed');
+    		$plotline->SetLegend($exami[$i]['comment']);
+    		$graph->AddLine($plotline);
+    	}
+    
+    
+    	for ($i = 0; $i < 52; $i++) {
+    		$plotline = new PlotLine(VERTICAL,($i * 7) -0.5, 'gray8');
+    		$graph->AddLine($plotline);
+    	}
+    	 
+    	$graph->Stroke();
+    	 
+    	exit();
+    
+    }
     
     public function ajaxDownloadRankingAction()
     {

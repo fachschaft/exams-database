@@ -374,6 +374,63 @@ class Application_Model_Statistics {
 	
 	}
 	
+	// returns the daily downloads for a single Exam
+	public function getExamDownloadsDailyYear2($year = -1, $exam = -1) {
+	
+		$dbTable = new Application_Model_DbTable_Exam();
+	
+	
+		// dummy, so we can add abetrary where statements starting with add
+		$where = " WHERE 1=1 ";
+	
+		if($exam != -1) {
+			$where .= " and exam_download_statistic_day.exam_idexam  = " . $exam;
+	
+		}
+	
+	
+	
+		if(isset($year)) {
+			$where .= " and YEAR(date) = " . $year;
+		}
+	
+		$res = $dbTable
+		->getDefaultAdapter()
+		->query("SELECT
+				sum(exam_download_statistic_day.downloads) as downl,
+				DATE_FORMAT(date, '%Y-%m-%d')  as order_date,
+				DATE_FORMAT(date, '%j') as days,
+				DATE_FORMAT(date, '%d') as day,
+				DATE_FORMAT(date, '%m') as month,
+				DATE_FORMAT(date, '%Y') as year
+	
+				FROM `exam_download_statistic_day`
+				".$where."
+				GROUP BY order_date
+				ORDER BY order_date;")
+					->fetchAll()
+					;
+	
+		$res_array = array();
+	
+		foreach ($res as $row2) {
+			$res_array[intval($row2['days'])] = intval($row2['downl']);
+				
+		}
+	
+		for ($i = 0; $i < 365; $i++) {
+			if(!isset($res_array[$i])) {
+				$res_array[$i] = 0;
+			}
+		}
+	
+	
+		ksort($res_array);
+	
+		return $res_array;
+	
+	}
+	
 	
 	
 	public function getExamDownloadsRankingYear($year = -1, $degree = -1, $group = false) {
@@ -573,6 +630,47 @@ class Application_Model_Statistics {
 			$res_array[] = array('days' => $row2['days'], 'comment' => $row2['comment']);
 		}
 		
+		return $res_array;
+	
+	}
+	
+	public function getExamExaminationByExam($exam = -1, $year = -1) {
+	
+		if($exam == -1) {
+			throw new Exception("no real exam id given");
+		}
+		
+		$dbTable = new Application_Model_DbTable_Exam();
+	
+		$where = " WHERE 1=1 ";
+	
+		if($exam != -1) {
+			$where .= " and exam.idexam = " . $exam;
+	
+		}
+	
+		if($year != -1) {
+			$where .= " and YEAR(examination_date) = " . $year;
+		}
+	
+		$res = $dbTable
+		->getDefaultAdapter()
+		->query("SELECT course_examination.comment as comment,
+				DATE_FORMAT(examination_date, '%j') as days
+				FROM  `course_examination`
+				JOIN course ON course.idcourse = course_examination.`idcourse`
+				JOIN exam_has_course ON exam_has_course.course_idcourse = course.idcourse
+				JOIN exam ON exam_has_course.exam_idexam = exam.idexam
+				".$where."
+				;")
+					->fetchAll();
+	
+		$res_array = array();
+	
+		foreach ($res as $row2) {
+			$res_array[] = array('days' => $row2['days'], 'comment' => $row2['comment']);
+		}
+	
 		return $res_array;
 	
 	}

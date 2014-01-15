@@ -3,12 +3,14 @@ var param;
 $(document).ready(function () {
 	param = {
 			course : <?php echo $this->course; ?>,
-			active_time : $("#upload_time").val(),
+			active_time : <?php echo '\'' . $this->year . '\''; ?>,
 			active_page : 1,
 			active_elements : 30,
 			date : $("#datepicker").val(),
 			comment : $("#comment").val()
 		};
+
+	$("#upload_time").val(param.active_time);
 
 	updateRanking();
 	$("#upload_img").attr("src", "/statistics/graph-download-course?" + generateParams());
@@ -71,7 +73,7 @@ function updateRanking() {
 function appendRankingElement(item) {
 	var course = "";
 	$.each(item['course'], function(i,item){
-		course += "- <a href=\"/statistics/download-course?course="+item['id']+"\">" + item['name'] + "</a><br>";
+		course += "- <a href=\"/statistics/download-course?course="+item['id']+"&year="+param.active_time+"\">" + item['name'] + "</a><br>";
 	});
 	$.each(item['course_connected'], function(i,item){
 		course += "- " + item + "*<br>";
@@ -103,7 +105,7 @@ function appendRankingElement(item) {
 </td>\
 <td>\
 	<div id="exam-id">\
-	'+item['idexam']+'\
+	<a href=\"/statistics/download-exam?exam='+item['idexam']+'&year='+param.active_time+'\">'+item['idexam']+'</a>\
 	</div>\
 </td>\
 <td>\

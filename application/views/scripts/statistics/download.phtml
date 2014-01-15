@@ -142,7 +142,7 @@ function appendRankingElement(item) {
 </td>\
 <td>\
 	<div id="exam-id">\
-	'+item['idexam']+'\
+	<a href=\"/statistics/download-exam?exam='+item['idexam']+'&year='+param.active_time+'\">'+item['idexam']+'</a>\
 	</div>\
 </td>\
 <td>\
@@ -198,7 +198,7 @@ function appendRankingCoursElement(item) {
 </td>\
 <td>\
 	<div id="exam-course">\
-		<a href=\"/statistics/download-course?course='+item['idcourse']+'\">'+item['name']+'</a>\
+		<a href=\"/statistics/download-course?course='+item['idcourse']+'&year='+param.active_time+'\">'+item['name']+'</a>\
 	</div>\
 </td>\
 </tr>');
