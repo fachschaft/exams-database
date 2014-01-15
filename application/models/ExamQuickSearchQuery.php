@@ -51,10 +51,15 @@ class Application_Model_ExamQuickSearchQuery {
 		
 		// also a special char in the search should match to the name e.G. ü = &uuml;
 		$filter = new Zend_Filter_HtmlEntities();
-		$term = utf8_decode ($term);
+		$term = html_entity_decode(utf8_decode ($term));
+		
+		//var_dump(html_entity_decode($term));
+		//die();
 		
 		// append all the lists
 		$filter_array = array_merge($this->_corseList, $this->_lecturerList);
+		//var_dump($filter_array);
+		
 		
 		if (strlen(html_entity_decode($term, ENT_QUOTES, 'ISO-8859-15')) >= 2) {
 			$filter = function($elements) use ($term)
