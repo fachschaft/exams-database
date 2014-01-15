@@ -618,7 +618,9 @@ class Application_Model_Statistics {
 		$res = $dbTable
 		->getDefaultAdapter()
 		->query("SELECT comment,
-				DATE_FORMAT(examination_date, '%j') as days
+				DATE_FORMAT(examination_date, '%j') as days,
+				examination_date,
+				idcourse_examination as id
 				FROM  `course_examination`
 				".$where."
 				;")
@@ -627,7 +629,7 @@ class Application_Model_Statistics {
 		$res_array = array();
 		
 		foreach ($res as $row2) {
-			$res_array[] = array('days' => $row2['days'], 'comment' => $row2['comment']);
+			$res_array[] = array('id' => $row2['id'], 'days' => $row2['days'], 'comment' => $row2['comment'], 'examination_date' => $row2['examination_date']);
 		}
 		
 		return $res_array;
@@ -674,15 +676,5 @@ class Application_Model_Statistics {
 		return $res_array;
 	
 	}
-	
-	public function addCourseExamination($course, $date, $comment="") {
-		$dbTable = new Application_Model_DbTable_Exam();
-		//'1',  '2013-12-24',  'lol'
-		
-		$dbTable->getAdapter()->query("INSERT INTO  `course_examination` (`idcourse` ,`examination_date`, `comment`)
-				VALUES ('".$course."',  '".$date."',  '".$comment."')");
-	}
-	
-	
 	
 }

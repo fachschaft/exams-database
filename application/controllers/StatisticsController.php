@@ -115,11 +115,19 @@ class StatisticsController extends Zend_Controller_Action
     	$date = 0;
     	$comment = "";
     	
-    	if(isset($request->course) && isset($request->date)) {
+    	if(isset($request->exam)) {
+	    	$em = new Application_Model_ExamMapper();
+	    	$res = $em->find($request->exam);
+	    	$course = $res->getCourse()[0]->getId();
+    	}
+    	    	
+    	if((isset($request->course) || $course != -1) && isset($request->date)) {
     		if($request->date == "") {
     			throw new Exception("No date given");
     		}
-    		$course = $request->course;
+    		if($course == -1) {
+    			$course = $request->course;
+    		}
     		$date = $request->date;
     		if(isset($request->comment)) {
     			$comment = $request->comment;
@@ -131,7 +139,7 @@ class StatisticsController extends Zend_Controller_Action
     	$dates = date("Y-m-d", strtotime($date));
     	
     	
-    	$ams = new Application_Model_Statistics();
+    	$ams = new Application_Model_CourseExaminationMapper();
     	
     	$ams->addCourseExamination($course, $dates, $comment);
     	
@@ -139,6 +147,24 @@ class StatisticsController extends Zend_Controller_Action
     	$this->_helper->json($result);
     	exit();
     	
+    }
+    
+    public function courseDeleteDateAction()
+    {
+    	$request = $this->getRequest();
+    	
+    	if(!isset($request->id)) {
+    		$this->_helper->json("failed - no id given!");
+    		exit();
+    	}
+    		
+    	$id = $request->id;
+    	
+    	$ams = new Application_Model_CourseExaminationMapper();
+    	$ams->deleteCourseExamination($id);
+    		
+    	$this->_helper->json("ok");
+    	exit();
     }
     
     public function graphUploadTotal2Action()
@@ -647,8 +673,10 @@ class StatisticsController extends Zend_Controller_Action
     	
     	
     	$this->view->course = $course;
-    
-    
+    	
+    	$resExami = $stats->getExamExamination($course, substr($year, 1));
+    	$this->view->examination_dates = $resExami;
+
     }
     
     public function downloadExamAction()
@@ -678,6 +706,49 @@ class StatisticsController extends Zend_Controller_Action
     	$this->view->year = $year;
     	 
     	$this->view->exam = $exam;
+    	
+    	$em = new Application_Model_ExamMapper();    	
+    	$res = $em->find($exam);
+    	
+    	$resExami = $stats->getExamExamination($res->getCourse()[0]->getId(), substr($year, 1));
+    	$this->view->examination_dates = $resExami;
+    
+    
+    }
+    
+    public function ajaxDownloadExamAction()
+    {
+    	$stats = new Application_Model_Statistics();
+    
+    	// define years
+    	$this->view->upload_years = $stats->getEaxamDownlaodsAllUsedYears();
+    
+    	$request = $this->getRequest ();
+    	if (isset( $request->exam )) {
+    		$exam=$request->exam;
+    		$em = new Application_Model_ExamMapper();
+    		$res = $em->find($exam);
+    		$course = $res->getCourse()[0]->getId();
+    	} elseif (isset( $request->course )) {
+    		$course = $request->course;
+    	} else {
+    		throw new Exception("no exam id given");
+    	}
+    	 
+    	$year = date("Y");
+    
+    	if (isset( $request->year )) {
+    		$year=$request->year;
+    	}
+    	 
+    	
+    	 
+    	$resExami = $stats->getExamExamination($course, $year);
+   	
+    	$this->_helper->json($resExami);
+    	
+    	exit();
+    	
     
     
     }

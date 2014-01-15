@@ -13,17 +13,23 @@ $(document).ready(function () {
 	$("#upload_time").val(param.active_time);
 
 	updateRanking();
-	$("#upload_img").attr("src", "/statistics/graph-download-exam?" + generateParams());
+	updateGraph();
+	updateExamination();
 
 	  $("#upload_time").change(function() {
 		  param.active_time = $("#upload_time").val();
-		  $("#upload_img").attr("src", "/statistics/graph-download-exam?" + generateParams());
+		  updateGraph();
 		  updateRanking();
 	  });
 	/* assuming that text input datePicker would have id='datePicker' */
 	$( "#datepicker" ).datepicker({ dateFormat: 'dd.mm.yy' });
 
 });
+
+
+function updateGraph() {
+	$("#upload_img").attr("src", "/statistics/graph-download-exam?" + generateParams());
+}
 
 function generateParams() {
 	  var params = { };
@@ -39,34 +45,54 @@ function generateParams() {
 	  return jQuery.param(params);
 }
 
-function updateRanking() {
-	  $.getJSON("/statistics/ajax-download-ranking-single-exam",
+function updateExamination() {
+	  $.getJSON("/statistics/ajax-download-exam",
 				""+generateParams(),
 		        function(data){
-				$( "#download_ranking" ).html("<table id=\"gradient-style\">\
-						<tr>\
-							<th>Rank</th>\
-							<th>Down.</th>\
-							<th>ID</th>\
-							<th>Course</th>\
-							<th>Semester</th>\
-							<th>Lecturer</th>\
-							<th>Type</th>\
-							<th>Comment</th>\
-							<th>Files</th>\
-						</tr>");
-				// set the default item if not set
+				$( "#examination_dates" ).html("");
 				if(data.length == 0) {
-					appendRankingElement("no data");
+					//appendRankingElement("no data");
 				}
-		          $.each(data, function(i,item){
-		        	  //setElmentsEditOn(i,item);
-		        	  //$( "#download_ranking" ).html("");
-		        	  
-		        	  appendRankingElement(item);
+		          $.each(data, function(i,item){		        	  
+		        	  appendExaminationElement(item);
 		          });
 		        });
 }
+
+function appendExaminationElement(item) {
+	$( "#examination_dates" ).append('\
+	<li id=\"examination_date_'+item['id']+'\">'+item['examination_date']+' - '+item['comment']+' <a href=\"#\" onclick=\"javascript:delteExamination('+item['id']+')\">(X)</a></li>');
+}
+
+function updateRanking() {
+	$.getJSON("/statistics/ajax-download-ranking-single-exam",
+			""+generateParams(),
+	        function(data){
+			$( "#download_ranking" ).html("<table id=\"gradient-style\">\
+					<tr>\
+						<th>Rank</th>\
+						<th>Down.</th>\
+						<th>ID</th>\
+						<th>Course</th>\
+						<th>Semester</th>\
+						<th>Lecturer</th>\
+						<th>Type</th>\
+						<th>Comment</th>\
+						<th>Files</th>\
+					</tr>");
+			// set the default item if not set
+			if(data.length == 0) {
+				appendRankingElement("no data");
+			}
+	          $.each(data, function(i,item){
+	        	  //setElmentsEditOn(i,item);
+	        	  //$( "#download_ranking" ).html("");
+	        	  
+	        	  appendRankingElement(item);
+	          });
+	        });
+}
+
 
 function appendRankingElement(item) {
 	var course = "";
@@ -162,13 +188,28 @@ function addExamination() {
 	    function(data){
 			if(data != "ok") {
 				alert("submit error");
+			} else {
+				updateExamination();
+				updateGraph();
 			}
         });
 	$("#datepicker").val("");
 	$("#comment").val("");
 	param.date = $("#datepicker").val();
 	param.comment = $("#comment").val();
-	$("#upload_img").attr("src", "/statistics/graph-download-exam?" + generateParams());
+}
+
+function delteExamination(id) {
+	$.getJSON("/statistics/course-delete-date",
+			"id=" +id,
+	    function(data){
+			if(data != "ok") {
+				alert("submit error");
+			} else {
+				updateGraph();
+				updateExamination();
+			}
+        });
 }
 </script>
 
@@ -194,9 +235,13 @@ function addExamination() {
   	Description:<br>
   	<input type="text" id="comment"><br>
   	<input type="button" value="add" onclick="javascript:addExamination()"><br>
-  	<!-- <ul>
-  		<li> sssss <input type="button"></li>
-  	</ul>-->
+  	<ul id="examination_dates">
+  			<?php /*foreach($this->examination_dates as $d)
+			{
+				echo ("<li id=\"examination_date_".$d['id']."\">".$d['examination_date']." - ".$d['comment']." <a href=\"#\" onclick=\"javascript:delteExamination(".$d['id'].")\">(X)</a></li>");
+			}*/
+			?>
+  	</ul>
   	</div>
   	<div style="clear: both;"></div>
   	
