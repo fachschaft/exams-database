@@ -1276,6 +1276,111 @@ class StatisticsController extends Zend_Controller_Action
     
     }
     
+    public function ajaxDownloadRankingSingleExamAction()
+    {
+    
+    	//if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    	//	throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	$stats = new Application_Model_Statistics();
+    
+    	$request = $this->getRequest ();
+    	if (isset ( $request->year )) {
+    		$year = $request->year;
+    	} else {
+    		$year = date("Y");
+    	}
+    	 
+    	$exam = -1;
+    
+    	if (isset ( $request->exam )) {
+    		$exam=$request->exam;
+    	}
+    
+    
+    	 
+    	if($exam == -1) {
+    		$this->_helper->json(array());
+    		exit();
+    	}
+    
+    	$em = new Application_Model_ExamMapper();
+    	$exams = array();
+    
+    	$res = $em->find($exam);
+    	
+    	
+    	$results = $stats->getCoursDownloadsRankingYear($year, $res->getCourse()[0]->getId());
+    	
+
+    
+    	foreach (array($res) as $ex) {
+    		$cors = array();
+    		foreach ($ex->getCourse() as $cor) {
+    			$cors[] = array('name' => $cor->getName(), 'id' => $cor->getId() );
+    		}
+    		$ccors = array();
+    		foreach ($ex->getCourseConnected() as $cor) {
+    			$ccors[] = $cor->getName();
+    		}
+    		$lect = array();
+    		foreach ($ex->getLecturer() as $cor) {
+    			$lect[] = $cor->getName() . ", " . $cor->getDegree() . " " . $cor->getFirstName();
+    		}
+    		$files = array();
+    		foreach ($ex->getDocuments() as $cor) {
+    			//$files[] = array('name' => $cor->getDisplayName().".".$cor->getExtention(), 'id'=>$cor->getId());
+    			$files[] = array('name' => ".".$cor->getExtention(), 'id'=>$cor->getId());
+    
+    		}
+    
+    		$rank = -1;
+    		$downlow = -1;
+    		foreach ($results as $element) {
+    			if($element['idexam'] == $ex->getId()) {
+    				$rank = $element['rank'];
+    				$downlow = $element['downloads'];
+    			}
+    		}
+    		$exams[] = array(
+    				'idexam' =>$ex->getId(),
+    				'downloads' => $downlow,
+    				'rank' => $rank,
+    				'comment' =>$ex->getComment(),
+    				'course' => $cors,
+    				'course_connected' => $ccors,
+    				'degree'=> $ex->getDegree()->getName(),
+    				'semester'=> $ex->getSemester()->getName(),
+    				'lecturer'=> $lect,
+    				'type'=> $ex->getType()->getName(),
+    				'sub_type'=> $ex->getSubType()->getName(),
+    				'semester'=> $ex->getSemester()->getName(),
+    				'autor'=> $ex->getAutor(),
+    				'files' => $files,
+    				'uni' => $ex->getUniversity()->getName(),
+    		);
+    	}
+    
+    	// define a custom month sort
+    	function cmp($a, $b)
+    	{
+    		if ($a['rank'] == $b['rank']) {
+    			return 0;
+    		}
+    		return ($a['rank'] < $b['rank']) ? -1 : 1;
+    	}
+    
+    	usort($exams, "cmp");
+    
+    
+    	$this->_helper->json($exams);
+    
+    	exit();
+    
+    
+    
+    }
+    
     public function graphDownloadAction()
     {
     	$stats = new Application_Model_Statistics();
