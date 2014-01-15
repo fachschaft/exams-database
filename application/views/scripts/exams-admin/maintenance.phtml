@@ -55,6 +55,16 @@
             true) ?>">Generate md5 sums (if missing)</a></li>
 		</ul>
 		
+				<ul>
+	<li><a href="<?php echo $this->url(
+            array('controller'=>'exams-admin',
+                  'action'=>'maintenance',
+                  'do'=>'sendTestMail',
+                  ),
+            'default',
+            true) ?>">Send a test email to the "notification.toMail" from the config file</a></li>
+		</ul>
+		
 		
 		
 	

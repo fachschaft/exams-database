@@ -1054,6 +1054,14 @@ class ExamsAdminController extends Zend_Controller_Action
     				} else { echo "Sorry, not allowed!";
     				}
     				break;
+    			case "sendTestMail" :
+    				if($this->_authManager->isAllowed(null, 'maintenance_send_test_mail')) {
+    					$noti = new Application_Model_Notification();
+    					$noti->sendNotification("Test Mail from your Database", "This is a Test Mail.\nGenerated at: " . date('Y-m-d H:i:s')."\n\nHave a nice day!");
+    					echo ("E-Mail was sent.");
+    				} else { echo "Sorry, not allowed!";
+    				}
+    				break;
     		}
     	}
     } 
