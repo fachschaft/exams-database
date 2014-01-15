@@ -25,6 +25,7 @@ class Application_Form_DegreeGroups extends Application_Form_ExamTemplate
         $this->_elementSelect->setRequired(true);
         //$this->_elementSelect->setLabel('Groups');
         $this->_elementSelect->setDecorators($this->_decoratorDivWithoutLabel);
+        $this->_elementSelect->setAttrib('onclick', 'document.getElementById(\'submit\').click()');
         
         $this->setMultiOptions();
         

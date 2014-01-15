@@ -30,6 +30,7 @@ class Application_Form_ExamDegrees extends Application_Form_ExamTemplate
                              ->setRequired(true)
                              ->setLabel('Degree')
         					 ->setDecorators($this->_decoratorDiv);
+        $this->_elementSelect->setAttrib('onclick', 'document.getElementById(\'submit\').click()');
         $this->addElement($this->_elementSelect);
         
         // Add the submit button
