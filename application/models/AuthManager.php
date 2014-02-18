@@ -183,7 +183,6 @@ class Application_Model_AuthManager {
 		$this->_acl->addRole(new Zend_Acl_Role('guest'));
 		$this->_acl->addRole(new Zend_Acl_Role('user'), 'guest');
 		$this->_acl->addRole(new Zend_Acl_Role('admin'), array('guest', 'user'));
-<<<<<<< HEAD
 		$this->_acl->addRole(new Zend_Acl_Role('superadmin'), array('guest', 'user', 'admin'));
 
 		$this->_acl->allow('guest', null, array('search', 'quick_search', 'upload', 'report', 'view_login_form'));
@@ -228,51 +227,3 @@ class Application_Model_AuthManager {
 	
 
 }
-
-=======
-		$this->_acl->addRole(new Zend_Acl_Role('superadmin'), array('guest', 'user', 'admin'));
-
-		$this->_acl->allow('guest', null, array('search', 'quick_search', 'upload', 'report', 'view_login_form'));
-		
-		$this->_acl->allow('user', null, array('download'));
-		
-		/*
-		 * view_log = read the logs
-		 * approve_exam = approve, disapprove, remove_report
-		 * modify_exam = delte, edit, edit files
-		 */
-		$this->_acl->allow('admin', null, array('view_admin_interface', 'view_log', 'approve_exam', 'modify_exam', 
-												'add_degree_groups', 'modify_degree_groups', 'add_degree', 'modify_degree',
-												'add_lecturer', 'modify_lecturer', 'add_course', 'modify_course'));
-		
-		$this->_acl->allow('superadmin', null, array('maintenance_quicksearch_new_index', 'maintenance_quickseach_rebuild_index',
-													 'maintenance_quicksearch_delete_index', 'maintenance_quicksearch_exec_garbage',
-													 'maintenance_quicksearch_file_count',
-													 'maintenance_check_inconsistency', 'maintenance_determine_mime_types',
-													 'maintenance_check_files_exist_and_readable', 'maintenance_check_files_extention',
-													 'maintenance_check_damaged_files', 'maintenance_generate_missing_md5sums'));
-		
-	}
-	
-	public function isAllowed($res, $right)
-	{
-		return $this->_acl->isAllowed($this->mapIdentityToRole($this->getIdentity(), $this->getUsedAuthAdapter()), $res, $right);
-	}
-
-	
-	public function mapIdentityToRole($identity, $adapter)
-	{		
-		if($adapter == NULL) { return 'guest'; }
-		
-		$privMap = new Application_Model_UserPrivilegeMappingMapper();
-		
-		$role = $privMap->getRole($adapter, $identity);
-		
-		return $role;
-	}
-	
-	
-
-}
-
->>>>>>> origin
