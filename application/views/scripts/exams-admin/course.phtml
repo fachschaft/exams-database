@@ -166,14 +166,16 @@
   </script>
 
 <p id="feedback">
-<span>You've selected Course:</span> <span id="select-result">none</span>
+<span>You've selected Course:</span> <span id="select-result" style="font-weight:bold;">none</span>
 </p>
 
 	<div id="tabsX">
   <ul>
-    <li id="tabs-1Selector"><a href="#tabs-1">Select Element</a></li>
-    <li id="tabs-2Selector"><a href="#tabs-2">Edit Element</a></li>
-    <li id="tabs-3Selector"><a href="#tabs-3">Add Element</a></li>
+    <li id="tabs-1Selector"><a href="#tabs-1">Select course</a></li>
+    <li id="tabs-2Selector"><a href="#tabs-2">Edit connected course</a></li>
+    <li id="tabs-3Selector"><a href="#tabs-3">Edit assigned degree</a></li>
+    <li id="tabs-4Selector"><a href="#tabs-4">Edit course</a></li>
+    <li id="tabs-5Selector"><a href="#tabs-5">Add new course</a></li>
   </ul>
   <div id="tabs-1">
   	Select Course:<br>
@@ -184,19 +186,40 @@
 </p>
   </div>
   <div id="tabs-2">
-  	Search availabe course:<br>
+  <div style="float: left;">Search availabe course:<br>
   	<input type="text" id="_couse_edit" />
-  	<div style="clear:both; overflow: auto;">
+  	</div>
+  	<!--<div style="clear:both; overflow: auto;">-->
+  	<div style="float: right;">Connected courses</div>
+  	<div style="clear: both;"><br></div>
   	<ol id="selectable_edit" style="float: left;">
 	</ol>
 	<ol id="selectable_edit_on" style="float: right;">
 		<li class="ui-widget-content" id="-1"><i>your items here</i></li>
 	</ol>
-	</div>
-
+	<div style="clear: both;"></div>
   </div>
-  <div id="tabs-3">
-    Add here
+    <div id="tabs-3">
+  <div style="float: left;">Search availabe course:<br>
+  	<input type="text" id="_degree_edit" />
+  	</div>
+  	<!--<div style="clear:both; overflow: auto;">-->
+  	<div style="float: right;">Connected courses</div>
+  	<div style="clear: both;"><br></div>
+  	<ol id="selectable_edit_degree" style="float: left;">
+	</ol>
+	<ol id="selectable_edit_degree_on" style="float: right;">
+		<li class="ui-widget-content" id="-1"><i>your items here</i></li>
+	</ol>
+	<div style="clear: both;"></div>
+  </div>
+  <div id="tabs-4">
+    Edit name and connected degrees<br>
+    Course name: <input type="text" id="_couse_edit_name" /><br>
+    <br>
+  </div>
+    <div id="tabs-5">
+    Add new course here:
   </div>
 </div>
 
