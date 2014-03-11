@@ -99,6 +99,7 @@ class Application_Model_ExamSearch {
 		$query = html_entity_decode($query);
 		$index = Zend_Search_Lucene::open ( $this->_indexpath );
 		$hits = $index->find ($query);
+		$foundIds = array();
 
 		foreach ( $hits as $hit ) {
 			$foundIds[] = $hit->examid;
