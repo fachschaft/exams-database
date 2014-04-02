@@ -271,7 +271,6 @@ class Application_Model_ExamFileManager
 	
 	public function storeUploadedFiles($files, $examId)
 	{
-		echo "called storeuploaded";
 		//Check if the file has been deleted and throw an exception if it was
 		$exams = new Application_Model_ExamMapper();
 		$res = $exams->find($examId);
@@ -329,6 +328,19 @@ class Application_Model_ExamFileManager
 			unlink($tmp_filename);
 			throw new Exception($destination_filename . ' destination file already exists.', 500);
 		}
+	}
+	
+	
+	public function storeTmpFile($text, $revision, $filename_prefix, $filename_postfix) {
+		$new_file_name = $this->getFreeFilename($this->_fileTempPath);
+		$file_name = $this->_fileTempPath . "/" . $filename_prefix . "_r" . $revision . "_" . substr($new_file_name, 0, 5). $filename_postfix;
+		$ret = file_put_contents($file_name, $text);
+		
+		if(!$ret) {
+			throw new Exception($file_name . ': was not written to disk.', 500);
+		}
+		
+		return $file_name;
 	}
 	
 	public function resetAllMimeTypesInDatabese()

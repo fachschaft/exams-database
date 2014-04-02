@@ -1,5 +1,25 @@
 <div id="view-content">
-	    <?
-			echo $this->form;
-		?>
+	    <? echo $this->form; ?>
+</div>
+<div id="view-sindbar">
+<h2>Active Pads</h2>
+<h4>Your help is needed!</h4>
+<ul>
+<?php
+	foreach ($this->pads as $pad) {
+		//var_dump($pad->getExamObject()->getCourse());
+		$course_name = "";
+		$first = true;
+		foreach ($pad->getExamObject()->getCourse() as $course) {
+			if($first) {
+				$first = false;
+				$course_name .=  $course;
+			} else {
+				$course_name .=  " / " . $course;
+			}
+		}
+		echo '<li><a href="'.$pad->getEtherpad_link().'" target="_blank">'.$course_name.'</a> ('.$pad->getOnlineUser().')<br>'.$pad->getExamObject()->Type. ' / ' .$pad->getExamObject()->SubType.'</li>';
+	} 
+?>
+</ul>
 </div>

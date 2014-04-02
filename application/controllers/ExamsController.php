@@ -125,6 +125,13 @@ class ExamsController extends Zend_Controller_Action {
 				'files' =>array(
 						'filter' 	=> array('Int'),
 						'validator' => array('Int')),	
+						
+						
+				// pad finish submission
+						
+				'padid' =>array(
+						'filter' 	=> array('StripTags', 'StringTrim'),
+						'validator' => array()),
 		));
 
 		$this->_filterManager->setFilterAndValidator();
@@ -508,6 +515,28 @@ public function degreesAction() {
 		}
 		$this->view->form = $form;
 	}
+	
+	public function uploadPadAction() {
+		#die("hello");
+		
+		$padIdentifier = $this->getRequest()->padid;
+		
+		$pm = new Application_Model_PadMapper();
+		
+		$padId = $pm->getPadIdByIdentifier($padIdentifier);
+		
+		if($padId != -1) {
+			$revision = $pm->getPadRevision($padId);
+			$text = $pm->getPadContent($padId);
+			$lastEdited = $pm->getLastEdited($padId);
+			
+			$pm->uploadPad($padId, $revision, $lastEdited, $text);
+			
+		} else {
+			throw new Exception('Sorry, there is no Pad with this identifier!');
+		}
+		
+	}
 
     public function quickSearchAction()
     { 	
@@ -529,7 +558,14 @@ public function degreesAction() {
     			//var_dump($form->getErrors());
     		}
     	}
+    	
     	$this->view->form = $form;
+    	
+    	$pm = new Application_Model_PadMapper();
+    	$pads = $pm->fetchActivePads();
+    	 
+    	$this->view->pads = $pads;
+    	 
     	
     	// draw the form first, so ists possible to use the back key from your browser to modify the search
     	if($found) {
@@ -547,6 +583,7 @@ public function degreesAction() {
     	$eqsq = new Application_Model_ExamQuickSearchQuery();
     	
     	$results = $eqsq->getResults($this->_getParam('term'));
+    	
     	$this->_helper->json(array_values($results));
     	
     	

@@ -1007,7 +1007,7 @@ class ExamsAdminController extends Zend_Controller_Action
     
 
     public function maintenanceAction()
-    {
+    { 	
     	$request = $this->getRequest ();
     	if (isset ( $request->do )) {
     		$do = $request->do;
