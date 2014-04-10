@@ -9,36 +9,229 @@
   #selectable_edit .ui-selecting { background: #FECA40; }
   #selectable_edit .ui-selected { background: #F39814; color: white; }
   #selectable_edit { list-style-type: none; margin: 0; padding: 0; width: 45%; }
-  #selectable_edit li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; }
+  #selectable_edit li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; cursor:move; }
   
   #selectable_edit_on .ui-selecting { background: #FECA40; }
   #selectable_edit_on .ui-selected { background: #F39814; color: white; }
   #selectable_edit_on { list-style-type: none; margin: 0; padding: 0; width: 45%; }
-  #selectable_edit_on li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; }
+  #selectable_edit_on li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; cursor:move; }
+  
+  #selectable_edit_degree .ui-selecting { background: #FECA40; }
+  #selectable_edit_degree .ui-selected { background: #F39814; color: white; }
+  #selectable_edit_degree { list-style-type: none; margin: 0; padding: 0; width: 45%; }
+  #selectable_edit_degree li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; cursor:move; }
+  
+  #selectable_edit_degree_on .ui-selecting { background: #FECA40; }
+  #selectable_edit_degree_on .ui-selected { background: #F39814; color: white; }
+  #selectable_edit_degree_on { list-style-type: none; margin: 0; padding: 0; width: 45%; }
+  #selectable_edit_degree_on li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; cursor:move; }
+  
+  #selectable_edit_lecturer .ui-selecting { background: #FECA40; }
+  #selectable_edit_lecturer .ui-selected { background: #F39814; color: white; }
+  #selectable_edit_lecturer { list-style-type: none; margin: 0; padding: 0; width: 45%; }
+  #selectable_edit_lecturer li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; cursor:move; }
+  
+  #selectable_edit_lecturer_on .ui-selecting { background: #FECA40; }
+  #selectable_edit_lecturer_on .ui-selected { background: #F39814; color: white; }
+  #selectable_edit_lecturer_on { list-style-type: none; margin: 0; padding: 0; width: 45%; }
+  #selectable_edit_lecturer_on li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; cursor:move; }
   </style>
   
   <script>
 
+
+  //def a global var for holing the selected course id
+  var couse_id = -1;
   
   $(function() {
+
+	  /* SELECT */
+
+	  function selectCourse(cid) {
+          var result = $("#select-result").empty();
+          //couse_id = $( ".ui-selected").attr("id");
+          couse_id = cid;
+
+          // get all connected courses and move on
+          // maybe move on and display some waiting symbol for the user
+          $.getJSON("/exams-admin/ajax-connected-course",
+					"id="+cid,
+			        function(data){
+					$( "#selectable_edit_on" ).html("");
+					// set the default item if not set
+					if(data.length == 0) {
+						setElmentsEditOn(-1,"your items here");
+					}
+			          $.each(data, function(i,item){
+			        	  setElmentsEditOn(i,item);
+			          });
+			        });
+
+          $.getJSON("/exams-admin/ajax-degree-assigned",
+					"id="+cid,
+			        function(data){
+					$( "#selectable_edit_degree_on" ).html("");
+					// set the default item if not set
+					if(data.length == 0) {
+						setElmentsEditDegreeOn(-1,"your items here");
+					}
+			          $.each(data, function(i,item){
+			        	  setElmentsEditDegreeOn(i,item);
+			          });
+			        });
+
+          $.getJSON("/exams-admin/ajax-single-course",
+					"id="+cid,
+			        function(data){
+          			$("#_couse_edit_name").val(data.name);
+          			$("#_couse_edit_short").val(data.name_short);
+          			result.append(data.name);
+          			enableTabs(); 
+          			$( "#tabsX [href='#tabs-5']").trigger( "click" );
+			        });
+      }
+
+		// the general select of the course, the course_id will be used in all the other tabs for the edit 
+	    $( "#selectable" ).selectable({
+	        stop: function() { selectCourse($( ".ui-selected").attr("id")); }
+	    });
+
+	    
+	    //ajax request for filtering the selectabes
+	    
+	    //select
+	    var old_course_value = "";
+	    $(document).ready(function () {
+	  	  $( "#_course" ).keyup(function() {
+	  		  if(old_course_value != $( "#_course" ).val()) {
+	  			  old_course_value = $( "#_course" ).val();
+	  				
+	  				$.getJSON("/exams-admin/ajax-course-select",
+	  						"term="+$( "#_course" ).val(),
+	  				        function(data){
+	  						$( "#selectable" ).html("");
+	  				          $.each(data, function(i,item){
+	  				        	  setElments(i,item);
+	  				          });
+	  				        });
+	  			  }
+	  		});
+	    });
+
+	    /* SELECT END */
+	  
+
+		/* CONNECTED COURSE */
+	  
 	  // the list of elements for course to course connecting (filter able)
 	  $( "#selectable_edit" ).sortable({
 	        connectWith: "#selectable_edit_on",
 	        remove: function(event, ui) {
 	            $(ui.item).clone().appendTo(event.target);
 	        },
-	        dropOnEmpty: false
+	        receive: function( event, ui ) {
+		        if(ui.item[0].getAttribute("id") > 0 && couse_id > 0) {
+			        $.get("/exams-admin/ajax-course-connected-delete",
+			        		"course_id="+couse_id+"&connected_id="+ui.item[0].getAttribute("id"),
+					        function(data) {
+								if(data != "OK") {
+									alert("an error occurred, reload the page!");
+								} else {
+									$("#feedback_course").html("deleted").effect("highlight", { color: "#ff0000" }, 800).effect("fade", 200, function() {$("#feedback_course").html("")});
+									ui.item.effect("highlight", { color: "#ff0000" }, 800);
+								}
+		
+					});
+		        }
+	        	
+	        },
+	        update: function( event, ui ) {
+		        elements = $("#selectable_edit").sortable( "toArray" );
+
+		        // remove the default element in the on list if we move it there (fix the element)
+		        $.each($("#selectable_edit_on > li[id='-2']"), function(i,item){
+	        	   	item.remove();
+		        }
+		        );
+
+			      //remove the default element
+		        if(elements.length > 1) {
+			        $.each($("#selectable_edit > li[id='-2']"), function(i,item){
+		        	   	item.remove();
+			        }
+			        );
+			    }
+		        if(elements.length <= 0) {
+		        	setElmentsEditOn(-1,"your items here");
+			    }
+
+				var count = 0;
+				/*
+				$.each($("#selectable_edit > li"), function(i,item){
+					console.log(ui.item.attr("id"));
+					console.log(item);
+					if(ui.item.attr("id") == parseInt(item.id)) {
+						alert("found");
+            			count = count + 1;
+            			items.push(item);
+            		}
+				});*/
+        		$.each(elements, function(i,item){
+            			if(ui.item.attr("id") == item) {
+                			count = count + 1;
+                		}
+	        		}
+        		
+	        	);
+        		if(count >= 2) {
+        			ui.item.addClass(".transfered_item");
+            		
+            		$.each($("#selectable_edit > li"), function(i){
+
+            			if(ui.item.attr("id") == $(this).attr("id") &&
+            					!$(this).hasClass('.transfered_item')) {
+            				$(this).remove();
+            			}
+            		});
+
+            		ui.item.removeClass(".transfered_item");
+        		}
+		    },
+	        dropOnEmpty: false,
 	    });
 
 	  // the list of elements which connected to a course, this one will be saved
 	  $( "#selectable_edit_on" ).sortable({
 	        connectWith: "#selectable_edit",
+	        receive: function( event, ui ) {
+		        if(ui.item[0].getAttribute("id") > 0 && couse_id > 0) {
+			        $.get("/exams-admin/ajax-course-connected-add",
+			        		"course_id="+couse_id+"&connected_id="+ui.item[0].getAttribute("id"),
+					        function(data) {
+								if(data != "OK") {
+									alert("an error occurred, reload the page!");
+								} else {
+									$("#feedback_course").html("added").effect("highlight", { color: "#00FF00" }, 800).effect("fade", 200, function() {$("#feedback_course").html("")});
+									ui.item.effect("highlight", { color: "#00ff00" }, 800);
+								}
+		
+					});
+		        }
+	        	
+	        },	        
 	        update: function( event, ui ) {
 		        elements = $("#selectable_edit_on").sortable( "toArray" );
-		        //remove the default element
+
+		        $.each($("#selectable_edit > li[id='-1']"), function(i,item){
+	        	   	item.remove();
+		        }
+		        );
 		        
+		        //remove the default element
+
+       
 		        if(elements.length > 1) {
-			        $.each($("#selectable_edit_on").find($('#-1')), function(i,item){
+			        $.each($("#selectable_edit_on > li[id='-1']"), function(i,item){
 		        	   	item.remove();
 			        }
 			        );
@@ -63,83 +256,318 @@
 	        dropOnEmpty: false,
 	    });
 
-
-	  // def a global var for holing the selected course id
-	  var couse_id = -1;
 	  
-	// the general select of the course, the course_id will be used in all the other tabs for the edit 
-    $( "#selectable" ).selectable({
-        stop: function() {
-            var result = $( "#select-result" ).empty();
-            couse_id = $( ".ui-selected").attr("id");
-
-            // get all connected courses and move on
-            // maybe move on and display some waiting symbol for the user
-
-            $.getJSON("/exams-admin/ajax-connected-course",
-					"id="+couse_id,
-			        function(data){
-					$( "#selectable_edit_on" ).html("");
-					// set the default item if not set
-					if(data.length == 0) {
-						setElmentsEditOn(-1,"your items here");
-					}
-			          $.each(data, function(i,item){
-			        	  setElmentsEditOn(i,item);
-			          });
-			        });
-            
-
-            
-            result.append($( ".ui-selected").text());
-              $( "#tabsX [href='#tabs-2']").trigger( "click" );
-        }
-    });
-  });
-
-  //ajax request for filtering the selectabes
+	  // edit
+	  var old_course_edit_value = "";
+	  $(document).ready(function () {
+		  $( "#_couse_edit" ).keyup(function() {
+			  if(old_course_edit_value != $( "#_couse_edit" ).val()) {
+				  old_course_edit_value = $( "#_couse_edit" ).val();
+					
+					$.getJSON("/exams-admin/ajax-course-select",
+							"term="+$( "#_couse_edit" ).val(),
+					        function(data){
+							$( "#selectable_edit" ).html("");
+					          $.each(data, function(i,item){
+					        	  setElmentsEdit(i,item);
+					          });
+					          if(data.length == 0) {
+					        	  setElmentsEdit(-2,"delete your items here");
+						          }
+					        });
+				  }
+			});
+	  });
   
-  //select
-  var old_course_value = "";
+
+  /* CONNECTED COURSE END */
+
+
+
+
+	  
+  /* DEGREE */
+
+  //degree
+  $( "#selectable_edit_degree" ).sortable({
+      connectWith: "#selectable_edit_degree_on",
+      remove: function(event, ui) {
+          $(ui.item).clone().appendTo(event.target);
+      },
+      receive: function( event, ui ) {
+	        if(ui.item[0].getAttribute("id") > 0 && couse_id > 0) {
+		        $.get("/exams-admin/ajax-degree-assigned-delete",
+		        		"course_id="+couse_id+"&connected_id="+ui.item[0].getAttribute("id"),
+				        function(data) {
+							if(data != "OK") {
+								alert("an error occurred, reload the page!");
+							} else {
+								$("#feedback_degree").html("deleted").effect("highlight", { color: "#ff0000" }, 800).effect("fade", 200, function() {$("#feedback_degree").html("")});
+								ui.item.effect("highlight", { color: "#ff0000" }, 800);
+							}
+	
+				});
+	        }
+    	
+    },
+    update: function( event, ui ) {
+        elements = $("#selectable_edit_degree").sortable( "toArray" );
+
+        // remove the default element in the on list if we move it there (fix the element)
+        $.each($("#selectable_edit_degree_on > li[id='-2']"), function(i,item){
+    	   	item.remove();
+        }
+        );
+
+	      //remove the default element
+        if(elements.length > 1) {
+	        $.each($("#selectable_edit_degree > li[id='-2']"), function(i,item){
+        	   	item.remove();
+	        }
+	        );
+	    }
+        if(elements.length <= 0) {
+        	setElmentsEditOn(-1,"your items here");
+	    }
+
+		var count = 0;
+		$.each(elements, function(i,item){
+    			if(ui.item.attr("id") == item) {
+        			count = count + 1;
+        		}
+    		}
+		
+    	);
+		if(count >= 2) {
+			ui.item.addClass(".transfered_item");
+    		
+    		$.each($("#selectable_edit_degree > li"), function(i){
+
+    			if(ui.item.attr("id") == $(this).attr("id") &&
+    					!$(this).hasClass('.transfered_item')) {
+    				$(this).remove();
+    			}
+    		});
+
+    		ui.item.removeClass(".transfered_item");
+		}
+    },
+      dropOnEmpty: false
+  });
+
+  //the list of elements which connected to a degree, this one will be saved
+  $( "#selectable_edit_degree_on" ).sortable({
+        connectWith: "#selectable_edit_degree",
+        receive: function( event, ui ) {
+	        if(ui.item[0].getAttribute("id") > 0 && couse_id > 0) {
+		        $.get("/exams-admin/ajax-degree-assigned-add",
+		        		"course_id="+couse_id+"&connected_id="+ui.item[0].getAttribute("id"),
+				        function(data) {
+							if(data != "OK") {
+								alert("an error occurred, reload the page!");
+							} else {
+								$("#feedback_degree").html("added").effect("highlight", { color: "#00FF00" }, 800).effect("fade", 200, function() {$("#feedback_degree").html("")});
+								ui.item.effect("highlight", { color: "#00ff00" }, 800);
+							}
+	
+				});
+	        }
+        	
+        },
+        update: function( event, ui ) {
+	        elements = $("#selectable_edit_degree_on").sortable( "toArray" );
+	        //remove the default element
+	        
+	        if(elements.length > 1) {
+		        $.each($("#selectable_edit_degree_on > li[id='-1']"), function(i,item){
+	        	   	item.remove();
+		        }
+		        );
+		    }
+	        if(elements.length <= 0) {
+	        	setElmentsEditDegreeOn(-1,"your items here");
+		    }
+
+			var count = 0;
+    		$.each(elements, function(i,item) {
+        			if(ui.item.attr("id") == item) {
+            			count = count + 1;
+            		}
+        		}
+    		
+        	);
+        	
+    		if(count >= 2) {
+				ui.item.remove();
+    		}
+	    },
+        dropOnEmpty: false,
+    });
+
+  //edit degree
+  var old_course_edit_gedree_value = "";
   $(document).ready(function () {
-	  $( "#_course" ).keyup(function() {
-		  if(old_course_value != $( "#_course" ).val()) {
-			  old_course_value = $( "#_course" ).val();
+	  $( "#_degree_edit" ).keyup(function() {
+		  if(old_course_edit_gedree_value != $( "#_degree_edit" ).val()) {
+			  old_course_edit_gedree_value = $( "#_degree_edit" ).val();
 				
-				$.getJSON("/exams-admin/ajax-course",
-						"term="+$( "#_course" ).val(),
+				$.getJSON("/exams-admin/ajax-degree-select",
+						"term="+$( "#_degree_edit" ).val(),
 				        function(data){
-						$( "#selectable" ).html("");
+						$( "#selectable_edit_degree" ).html("");
 				          $.each(data, function(i,item){
-				        	  setElments(i,item);
+				        	  setElmentsEditDegree(i,item);
 				          });
+				          if(data.length == 0) {
+				        	  setElmentsEditDegree(-2,"delete your items here");
+					          }
 				        });
 			  }
 		});
   });
-  // edit
-  var old_course_edit_value = "";
-  $(document).ready(function () {
-	  $( "#_couse_edit" ).keyup(function() {
-		  if(old_course_edit_value != $( "#_couse_edit" ).val()) {
-			  old_course_edit_value = $( "#_couse_edit" ).val();
-				
-				$.getJSON("/exams-admin/ajax-course",
-						"term="+$( "#_couse_edit" ).val(),
-				        function(data){
-						$( "#selectable_edit" ).html("");
-				          $.each(data, function(i,item){
-				        	  setElmentsEdit(i,item);
-				          });
-				        });
-			  }
-		});
+  
+
+  /* DEGREE END */
+
+
+  /* EDIT */
+
+  function processEdit() {
+	  $.get("/exams-admin/ajax-course-update",
+				"id="+couse_id+"&name="+$( "#_couse_edit_name" ).val()+"&short="+$( "#_couse_edit_short" ).val(),
+		        function(data) {
+					if(data != "OK") {
+						alert("an error occurred");
+					} else {
+						$("#select-result").empty();
+						$("#select-result").append($( "#_couse_edit_name" ).val());
+						$( "#save_course" ).effect("highlight", { color: "#00ff00" }, 800);
+						
+						//$( "#tabsX [href='#tabs-3']").trigger( "click" );
+					}
+						
+		        });
+  }
+  
+  $( "#save_course" ).click(function() {
+	  $.get("/exams-admin/ajax-course-update",
+				"id="+couse_id+"&name="+$( "#_couse_edit_name" ).val()+"&short="+$( "#_couse_edit_short" ).val(),
+		        function(data) {
+					if(data != "OK") {
+						alert("an error occurred");
+					} else {
+						$("#select-result").empty();
+						$("#select-result").append($( "#_couse_edit_name" ).val());
+						$( "#save_course" ).effect("highlight", { color: "#00ff00" }, 800);
+						
+						//$( "#tabsX [href='#tabs-3']").trigger( "click" );
+					}
+						
+		        });
+  });
+  $( "#save_course_forward" ).click(function() {
+	  $.get("/exams-admin/ajax-course-update",
+				"id="+couse_id+"&name="+$( "#_couse_edit_name" ).val()+"&short="+$( "#_couse_edit_short" ).val(),
+		        function(data) {
+					if(data != "OK") {
+						alert("an error occurred");
+					} else {
+						$("#select-result").empty();
+						$("#select-result").append($( "#_couse_edit_name" ).val());
+						$( "#save_course_forward" ).effect("highlight", { color: "#00ff00" }, 800);
+						
+						$( "#tabsX [href='#tabs-3']").trigger( "click" );
+					}
+						
+		        });
+  });
+
+  $('#delete_course').click(function() {
+	  if(couse_id != -1) {
+	  	$("#_prompt_confirm_details").html($( "#_couse_edit_name" ).val());
+      	$("#dialog-confirm-delete").dialog("open");
+	  } else {
+		  alert("nothing to delete!");
+	  }
+  });
+
+  $("#dialog-confirm-delete").dialog({
+      autoOpen: false,
+      modal: true,
+      buttons: {
+    	  "Cancel": function() {
+              $(this).dialog("close");
+          },
+          "Delete": function() {
+        	  $.get("/exams-admin/ajax-course-delete",
+        				"id="+couse_id,
+        		        function(data) {
+        					if(data != "OK") {
+        						alert("an error occurred");
+        					} else {
+        						$("#select-result").html("none");
+        						$("#_couse_edit_name").val("");
+        						$("#_couse_edit_short").val("");
+        						
+	       						 $.each($("#selectable > li"), function(i){
+	      				        	  if($(this).attr("id") == couse_id) {
+		      				        	  $(this).remove();
+	      				        	  }
+	      				          });
+								
+		       					couse_id = -1;
+        						$("#dialog-confirm-delete").dialog("close");
+        						disableTabs();
+        						$( "#tabsX [href='#tabs-1']").trigger( "click" );
+        					}
+        						
+        		        });
+              
+          }          
+      }
+  });
+  
+  
+  /* EDIT END */
+
+  /* ADD */
+
+  // add_course
+  // _couse_new_name
+  $( "#add_course" ).click(function() {
+	  $.get("/exams-admin/ajax-course-add",
+				"name="+$( "#_couse_new_name" ).val(),
+		        function(data) {
+					if(data.substring(0, 2) == "OK") {
+						arr = data.split('-');
+
+						couse_id = arr[1];
+
+						$( "#add_course" ).effect("highlight", { color: "#00ff00" }, 800);
+						
+						selectCourse(couse_id);
+
+						$("#_couse_new_name").val("");						
+						
+					} else {
+						
+						alert("an error occurred");
+					}
+						
+		        });
+  });
+
+  
+  
+  /* ADD END */
+
+
   });
 
   
   //adding a new selectable element
   function setElments(key, value) {
-	  $( "#selectable" ).append('<li class="ui-widget-content" id="'+key+'">'+value+'</li>');
+	  $( "#selectable" ).append('<li class="ui-widget-content" id="'+key+'">'+value+ ' | '+key+'</li>');
   }
 
   function setElmentsEdit(key, value) {
@@ -147,6 +575,14 @@
   }
   function setElmentsEditOn(key, value) {
 	  $( "#selectable_edit_on" ).append('<li class="ui-widget-content" id="'+key+'">'+value+'</li>');
+  }
+
+  function setElmentsEditDegree(key, value) {
+	  $( "#selectable_edit_degree" ).append('<li class="ui-widget-content" id="'+key+'">'+value+'</li>');
+  }
+
+  function setElmentsEditDegreeOn(key, value) {
+	  $( "#selectable_edit_degree_on" ).append('<li class="ui-widget-content" id="'+key+'">'+value+'</li>');
   }
 
 
@@ -158,12 +594,31 @@
 	    });
 	    return result;
 	}
+
+  // disable tabs if none course is selected
+  function disableTabs() {
+  	$( "#tabsX" ).tabs( { disabled: [2,3,4] } );
+  }
+
+  function enableTabs() {
+  	$( "#tabsX" ).tabs('enable', 2);
+  	$( "#tabsX" ).tabs('enable', 3);
+  	$( "#tabsX" ).tabs('enable', 4);
+  }
   
   $(function() {
 	    $( "#tabsX" ).tabs();
+	    disableTabs();
 	  });
+
+
   
   </script>
+  
+  
+<div id="dialog-confirm-delete">
+        <p id="_prompt_confirm">confirm deletion of course: <span id="_prompt_confirm_details"></span></p>
+</div>
 
 <p id="feedback">
 <span>You've selected Course:</span> <span id="select-result" style="font-weight:bold;">none</span>
@@ -172,54 +627,86 @@
 	<div id="tabsX">
   <ul>
     <li id="tabs-1Selector"><a href="#tabs-1">Select course</a></li>
-    <li id="tabs-2Selector"><a href="#tabs-2">Edit connected course</a></li>
+    <li id="tabs-5Selector"><a href="#tabs-6">New course</a></li>
+    <li id="tabs-4Selector"><a href="#tabs-5">Edit course</a></li>
     <li id="tabs-3Selector"><a href="#tabs-3">Edit assigned degree</a></li>
-    <li id="tabs-4Selector"><a href="#tabs-4">Edit course</a></li>
-    <li id="tabs-5Selector"><a href="#tabs-5">Add new course</a></li>
+    <li id="tabs-2Selector"><a href="#tabs-2">Edit connected course</a></li>
+    <!--<li id="tabs-5Selector"><a href="#tabs-4">Edit assigned lecturer</a></li>-->
   </ul>
   <div id="tabs-1">
   	Select Course:<br>
     <?php  echo $this->autoElmenet; ?>
-     <p>
-<ol id="selectable">
-</ol>
+<p>
+	<ol id="selectable">
+	</ol>
 </p>
   </div>
   <div id="tabs-2">
-  <div style="float: left;">Search availabe course:<br>
+  <div style="width: 100%;">
+ <div style="float: left; width: 33.33%; text-align: left;">
+ 	Search availabe course:<br>
   	<input type="text" id="_couse_edit" />
-  	</div>
-  	<!--<div style="clear:both; overflow: auto;">-->
-  	<div style="float: right;">Connected courses</div>
-  	<div style="clear: both;"><br></div>
+ </div>
+ <div style="float: left; width: 33.33%; text-align: center; min-height:1px;"><span style="display: none;" id="feedback_course"></span></div>
+ <div style="float: left; width: 33.34%; text-align: right;">
+ Connected courses
+ </div>
+ <br style="clear: left;" />
+</div>
   	<ol id="selectable_edit" style="float: left;">
+  		<li class="ui-widget-content" id="-2"><i>delete your items here</i></li>
 	</ol>
 	<ol id="selectable_edit_on" style="float: right;">
 		<li class="ui-widget-content" id="-1"><i>your items here</i></li>
 	</ol>
 	<div style="clear: both;"></div>
   </div>
-    <div id="tabs-3">
-  <div style="float: left;">Search availabe course:<br>
+  <div id="tabs-3">
+   <div style="float: left; width: 33.33%; text-align: left;">
+ 	Search availabe degrees:<br>
   	<input type="text" id="_degree_edit" />
-  	</div>
-  	<!--<div style="clear:both; overflow: auto;">-->
-  	<div style="float: right;">Connected courses</div>
-  	<div style="clear: both;"><br></div>
+ </div>
+ <div style="float: left; width: 33.33%; text-align: center; min-height:1px;"><span style="display: none;" id="feedback_degree"></span></div>
+ <div style="float: left; width: 33.34%; text-align: right;">
+ assinged degrees
+ </div>
+ <br style="clear: left;" />
   	<ol id="selectable_edit_degree" style="float: left;">
+  		<li class="ui-widget-content" id="-2"><i>delete your items here</i></li>
 	</ol>
 	<ol id="selectable_edit_degree_on" style="float: right;">
 		<li class="ui-widget-content" id="-1"><i>your items here</i></li>
 	</ol>
 	<div style="clear: both;"></div>
   </div>
-  <div id="tabs-4">
+  <!--<div id="tabs-4">
+  <div style="float: left;">Search availabe lecturers:<br>
+  	<input type="text" id="_lecturer_edit" />
+  	</div>
+  	<!--<div style="clear:both; overflow: auto;">-->
+  	<!--<div style="float: right;">assinged lecturer</div>
+  	<div style="clear: both;"><br></div>
+  	<ol id="selectable_edit_lecturer" style="float: left;">
+	</ol>
+	<ol id="selectable_edit_lecturer_on" style="float: right;">
+		<li class="ui-widget-content" id="-1"><i>your items here</i></li>
+	</ol>
+	<div style="clear: both;"></div>
+  </div>-->
+  <div id="tabs-5">
     Edit name and connected degrees<br>
     Course name: <input type="text" id="_couse_edit_name" /><br>
+    Course short name: <input type="text" id="_couse_edit_short" /><br>
+    <input id="save_course" type="button" value="save"> <input id="save_course_forward" type="button" value="save & forward">
+    <br>
+    <br>
+    <input id="delete_course" type="button" value="delete course">
     <br>
   </div>
-    <div id="tabs-5">
-    Add new course here:
+    <div id="tabs-6">
+    Add new course<br>
+    Course name: <input type="text" id="_couse_new_name" /><br>
+    <input id="add_course" type="button" value="add">
   </div>
 </div>
 

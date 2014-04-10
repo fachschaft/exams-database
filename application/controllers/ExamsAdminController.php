@@ -979,17 +979,17 @@ class ExamsAdminController extends Zend_Controller_Action
     	$this->view->autoElmenet = $autoElement;
     	 
     }
-    
-    public function ajaxCourseAction()
+       
+    public function ajaxCourseSelectAction()
     {
     	if(!$this->_authManager->isAllowed(null, 'modify_course'))
     		throw new Custom_Exception_PermissionDenied("Permission Denied");
-    	 
+    
     	$eqsq = new Application_Model_ExamQuickSearchQuery();
-    	 
+    
     	$results = $eqsq->getCourse($this->_getParam('term'));
     	$this->_helper->json($results);
-    	 
+    
     }
     
     public function ajaxConnectedCourseAction()
@@ -1004,8 +1004,207 @@ class ExamsAdminController extends Zend_Controller_Action
     
     }
     
+    public function ajaxCourseUpdateAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    	 
+    	$request = $this->getRequest();
+    	 
+    	 
+    	if(isset($request->id) && isset($request->name)) {
+    		$cm = new Application_Model_CourseMapper();
+    		$n = new Application_Model_Course();
+    		$n->setId($request->id);
+    		$n->setName($request->name);
+    		$n->setNameShort($request->short);
+    		$cm->updateName($n);
+    		echo("OK");
+    	} else {
+    		echo("ERR");
+    	}
+    	exit();
+    }
     
-
+    public function ajaxCourseAddAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    	 
+    	$request = $this->getRequest();
+    	 
+    	if(isset($request->name)) {
+    		$cm = new Application_Model_CourseMapper();
+    		$n = new Application_Model_Course();
+    		$n->setName($request->name);
+    		$new_id = $cm->add($n);
+    
+    		echo("OK-" . $new_id);
+    	} else {
+    		echo("ERR");
+    	}
+    	exit();
+    
+    
+    }
+    
+    public function ajaxCourseDeleteAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	$request = $this->getRequest();
+    
+    	if(isset($request->id)) {
+    		$cm = new Application_Model_CourseMapper();
+    		$n = new Application_Model_Course();
+    		$n->setId($request->id);
+    		$cm->delete($n);
+    
+    		echo("OK");
+    	} else {
+    		echo("ERR");
+    	}
+    	exit();
+    
+    
+    }
+    
+    public function ajaxCourseConnectedAddAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    	
+    	$request = $this->getRequest();
+    	
+    	if(isset($request->course_id) && isset($request->connected_id)) {
+    		// add the connected_id to the connected course list
+    		$cm = new Application_Model_CourseMapper();
+    		
+    		$cm->addConnectedCourse($request->course_id, $request->connected_id);
+    		
+    		echo("OK");
+    	} else {
+    		echo("ERR");
+    	}
+    	exit();
+    
+    
+    }
+    
+    public function ajaxCourseConnectedDeleteAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    	 
+    	$request = $this->getRequest();
+    	 
+    	if(isset($request->course_id) && isset($request->connected_id)) {
+    		// delete the connected_id from the connected course list
+    		$cm = new Application_Model_CourseMapper();
+    		$cm->deleteConnectedCourse($request->course_id, $request->connected_id);
+    		echo("OK");
+    	} else {
+    		echo("ERR");
+    	}
+    	exit();
+    
+    
+    }
+    
+    public function ajaxSingleCourseAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	 
+    	$cm = new Application_Model_CourseMapper();
+    	$results = $cm->find($this->_getParam('id'));
+    	 
+    	$results2 = array();
+    	 
+    	$results2['id'] = $results->getId();
+    	$results2['name'] = $results->getName();
+    	$results2['name_short'] = $results->getNameShort();
+    	
+    	 
+    	$this->_helper->json($results2);
+    
+    }
+    
+    public function ajaxDegreeAssignedAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	
+    	$dm = new Application_Model_DegreeMapper();
+    	$results = $dm->fetchByCourse($this->_getParam('id'));
+    	
+    	//var_dump($results);
+    	
+    	$results2 = array();
+    	
+    	foreach ($results as $res2) {
+    		$results2[$res2->getId()] = $res2->getName();
+    	}
+    	
+    	$this->_helper->json($results2);
+    
+    }
+    
+    public function ajaxDegreeAssignedAddAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	 
+    	$request = $this->getRequest();
+    	 
+    	if(isset($request->course_id) && isset($request->connected_id)) {
+    		
+    		$cm = new Application_Model_CourseMapper();
+    		$cm->addConnectedDegree($request->course_id, $request->connected_id);
+    		echo("OK");
+    	} else {
+    		echo("ERR");
+    	}
+    	exit();
+    
+    }
+    
+    public function ajaxDegreeAssignedDeleteAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	 
+    	$request = $this->getRequest();
+    	 
+    	if(isset($request->course_id) && isset($request->connected_id)) {
+    		
+    		$cm = new Application_Model_CourseMapper();
+    		$cm->deleteConnectedDegrees($request->course_id, $request->connected_id);
+    		echo("OK");
+    	} else {
+    		echo("ERR");
+    	}
+    	exit();
+    
+    }
+    
+    public function ajaxDegreeSelectAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	$eqsq = new Application_Model_ExamQuickSearchQuery();
+    
+    	$results = $eqsq->getDegree($this->_getParam('term'));
+    	$this->_helper->json($results);
+    
+    }
+    
     public function maintenanceAction()
     {
     	$request = $this->getRequest ();

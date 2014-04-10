@@ -13,11 +13,26 @@
 class Application_Model_Course
 {
     protected $_name;
+    protected $_nameShort;
     protected $_id;
     protected $_degrees;
     protected $_connectedCourse;
     
     /**
+	 * @return the $_nameShort
+	 */
+	public function getNameShort() {
+		return $this->_nameShort;
+	}
+
+	/**
+	 * @param field_type $_nameShort
+	 */
+	public function setNameShort($_nameShort) {
+		$this->_nameShort = $_nameShort;
+	}
+
+	/**
 	 * @return the $_connectedCourse
 	 */
 	public function getConnectedCourse() {

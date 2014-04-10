@@ -16,6 +16,8 @@ class Application_Model_ExamQuickSearchQuery {
 	private $_corseList = array();
 	private $_corseListIds = array();
 	private $_lecturerList = array();
+	private $_degreeListName = array();
+	private $_degreeListObjects = array();
 
 	public function __construct() {
 		$courses = new Application_Model_CourseMapper();
@@ -25,6 +27,15 @@ class Application_Model_ExamQuickSearchQuery {
 			array_push($this->_corseList, $item->getName());
 			array_push($this->_corseListIds, $item);
 		}
+		
+		$degrees = new Application_Model_DegreeMapper();
+		$degreeList = $degrees->fetchAll();
+		
+		foreach ($degreeList as $i=>$item) {
+			array_push($this->_degreeListName, $item->getName());
+			array_push($this->_degreeListObjects, $item);
+		}
+		
 		
 		$lecturer = new Application_Model_LecturerMapper();
 		$list2 =  $lecturer->fetchAll();
@@ -90,13 +101,13 @@ class Application_Model_ExamQuickSearchQuery {
 		$filter = new Zend_Filter_HtmlEntities();
 		$term = utf8_decode ($term);
 	
-		// append all the lists
+		// append all the lists - not only the id, a full corse object is stored in _corseListeIds
 		$filter_array = $this->_corseListIds;
-	
+			
 		if (strlen(html_entity_decode($term, ENT_QUOTES, 'ISO-8859-15')) >= 2) {
 			$filter = function($elements) use ($term)
 			{
-				if(stristr($elements,$term))
+				if(stristr($elements->getName() . " " . $elements->getId(),$term))
 					return true;
 				return false;
 			};
@@ -107,6 +118,39 @@ class Application_Model_ExamQuickSearchQuery {
 				$res_arr[$res->getId()] = $res->getName();
 			}
 				
+			//return array_unique($res_arr);
+			return  $res_arr;
+		}
+	
+		return array();
+	}
+	
+	public function getDegree($term) {
+	
+		// ToDo: Build a nice matching function, e.G. informatik III should match to informatik 3 ... maybe do a weighting on the search items
+	
+	
+		// also a special char in the search should match to the name e.G. ü = &uuml;
+		$filter = new Zend_Filter_HtmlEntities();
+		$term = utf8_decode ($term);
+	
+		// append all the lists
+		$filter_array = $this->_degreeListObjects;
+	
+		if (strlen(html_entity_decode($term, ENT_QUOTES, 'ISO-8859-15')) >= 2) {
+			$filter = function($elements) use ($term)
+			{
+				if(stristr($elements->getName(),$term))
+					return true;
+				return false;
+			};
+	
+			$res_arr = array();
+			foreach (array_filter($filter_array,$filter) as $res) {
+				//array_push($res_arr, '"'.html_entity_decode($res).'"');
+				$res_arr[$res->getId()] = $res->getName();
+			}
+	
 			return array_unique($res_arr);
 			//return  $res_arr;
 		}

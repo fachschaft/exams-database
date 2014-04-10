@@ -108,10 +108,78 @@ class Application_Model_CourseMapper
     	
     	// addign degree connections
     	$degHasCou = new Application_Model_DbTable_DegreeHasCourse();
-    	foreach($course->degrees as $degree)
-    	{
-    		$degHasCou->insert(array('degree_iddegree'=>$degree->id, 'course_idcourse'=>$new_course_id));
+    	if(count($course->degrees)) {
+	    	foreach($course->degrees as $degree)
+	    	{
+	    		$degHasCou->insert(array('degree_iddegree'=>$degree->id, 'course_idcourse'=>$new_course_id));
+	    	}
     	}
+    	
+    	return $new_course_id;
+    }
+    
+    public function addConnectedCourse($course_id, $connected_id)
+    {
+    	$course = $this->find($course_id);
+    	
+    	$connected = $course->getConnectedCourse(); 
+    	
+    	$connected[] = $this->find($connected_id);
+    	
+    	$course->setConnectedCourse($connected);
+    	
+    	//var_dump($course);  	
+    	$this->update($course);
+    }
+    
+    public function deleteConnectedCourse($course_id, $connected_id)
+    {
+    	$course = $this->find($course_id);
+    	
+    	$connected = $course->getConnectedCourse();
+    	 
+    	for ($i = 0; $i < count($connected); $i++) {
+    		if($connected[$i]->getId() == $connected_id) {
+    			unset($connected[$i]);
+    		}
+    	}
+    	
+    	$course->setConnectedCourse($connected);
+    	
+    	$this->update($course);
+    }
+    
+    public function addConnectedDegree($course_id, $connected_id)
+    {
+    	$course = $this->find($course_id);
+    	 
+    	$connected = $course->getDegrees();
+    	
+    	$dm = new Application_Model_DegreeMapper();
+    	
+    	$connected[] = $dm->find($connected_id);
+    	 
+    	$course->setDegrees($connected);
+    	 
+    	//var_dump($course);
+    	$this->update($course);
+    }
+    
+    public function deleteConnectedDegrees($course_id, $connected_id)
+    {
+    	$course = $this->find($course_id);
+    	 
+    	$connected = $course->getDegrees();
+    
+    	for ($i = 0; $i < count($connected); $i++) {
+    		if($connected[$i]->getId() == $connected_id) {
+    			unset($connected[$i]);
+    		}
+    	}
+    	 
+    	$course->setDegrees($connected);
+    	 
+    	$this->update($course);
     }
     
     public function find($id)
@@ -147,7 +215,7 @@ class Application_Model_CourseMapper
     		$connected[] = new Application_Model_Course(array('id'=>$rowCon->idcourse, 'name'=>$rowCon->name));
     	}
     	
-    	return new Application_Model_Course(array('id'=>$res->idcourse, 'name'=>$res->name, 'degrees'=>$degrees, 'connectedCourse'=>$connected));
+    	return new Application_Model_Course(array('id'=>$res->idcourse, 'name'=>$res->name, 'nameShort' =>$res->name_short, 'degrees'=>$degrees, 'connectedCourse'=>$connected));
     	
     }
     
@@ -199,6 +267,15 @@ class Application_Model_CourseMapper
 		
 		$this->getDbTable()->update(array('name'=>$course->name), 'idcourse = '.$course->id);
     	
+    }
+    
+    public function updateName(Application_Model_Course $course)
+    {   
+    	$filter = new Zend_Filter_HtmlEntities();
+    	$this->getDbTable()->update(array('name'=>$filter->filter($course->name),
+    			'name_unescaped' => Custom_Formatter_EscapeSpecialChars::escape($filter->filter($course->name)),
+    			'name_short' => Custom_Formatter_EscapeSpecialChars::escape($course->getNameShort()))
+    			, 'idcourse = '.$course->id);
     }
     
     /**

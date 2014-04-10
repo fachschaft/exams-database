@@ -50,6 +50,24 @@ class Application_Model_DegreeMapper
         return $entries;
     }
     
+    public function fetchByCourse($courseId)
+    {
+    	$groups = new Application_Model_DbTable_DegreeGroup();
+    	$result = $groups->getAdapter()->query ("SELECT degree.iddegree, degree.name, degree.order FROM `degree` JOIN degree_has_course ON degree.iddegree = degree_has_course.degree_iddegree JOIN course ON course.idcourse = degree_has_course.course_idcourse
+    	WHERE  `idcourse` =".$courseId . " ORDER BY degree.order");
+    	
+    	$degrees = array();
+    	
+    	foreach ($result as $res) {
+    		$n = new Application_Model_Degree();
+    		$n->setId($res['iddegree']);
+    		$n->setName($res['name']);
+    		$degrees[] = $n; 
+    	}
+
+    	return $degrees;
+    }
+    
     public function fetchAll()
     {
         $groups = new Application_Model_DbTable_Degree();
