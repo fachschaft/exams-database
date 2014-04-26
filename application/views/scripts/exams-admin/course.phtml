@@ -6,6 +6,11 @@
   #selectable { list-style-type: none; margin: 0; padding: 0; width: 45%; }
   #selectable li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; }
   
+  #selectable_all .ui-selecting { background: #FECA40; }
+  #selectable_all .ui-selected { background: #F39814; color: white; }
+  #selectable_all { list-style-type: none; margin: 0; padding: 0; width: 45%; }
+  #selectable_all li { margin: 3px; padding: 0.4em; font-size: 1em; height: 18px; }
+  
   #selectable_edit .ui-selecting { background: #FECA40; }
   #selectable_edit .ui-selected { background: #F39814; color: white; }
   #selectable_edit { list-style-type: none; margin: 0; padding: 0; width: 45%; }
@@ -43,7 +48,7 @@
   //def a global var for holing the selected course id
   var couse_id = -1;
   
-  $(function() {
+  
 
 	  /* SELECT */
 
@@ -65,6 +70,7 @@
 			          $.each(data, function(i,item){
 			        	  setElmentsEditOn(i,item);
 			          });
+			          fillLists('#selectable_edit', '#selectable_edit_on');
 			        });
 
           $.getJSON("/exams-admin/ajax-degree-assigned",
@@ -78,6 +84,7 @@
 			          $.each(data, function(i,item){
 			        	  setElmentsEditDegreeOn(i,item);
 			          });
+			          fillLists('#selectable_edit_degree', '#selectable_edit_degree_on');
 			        });
 
           $.getJSON("/exams-admin/ajax-single-course",
@@ -91,10 +98,76 @@
 			        });
       }
 
+
+      function updateSelectable() {
+    	  $.getJSON("/exams-admin/ajax-course-select",
+					"term="+$( "#_course" ).val(),
+			        function(data){
+		        	c = 0;
+		        	$.each(data, function(i,item){
+						c = c+1;
+				        	});
+		        	if(c >= 1) {
+					$( "#selectable" ).html("");
+			          $.each(data, function(i,item){
+			        	  setElments(i,item);
+			          });
+		        	}
+			        });
+      }
+
+
+      function showAll(element) {
+    	  $('#_course').val('');
+    	  $.getJSON("/exams-admin/ajax-course-select-all",
+    				"",
+    		        function(data){
+    				$( "#selectable" ).html("");
+    		          $.each(data, function(i,item){
+    		        	  setElments(i,item['name']);
+    		          });
+    		          $('#selectable li').dblclick(function() {
+    		        	  selectCourse($(this).attr("id"));
+    			      	  });
+    		        });
+      }
+
+      function showAll2(element) {
+    	  $('#_couse_edit').val('');
+    	  $.getJSON("/exams-admin/ajax-course-select-all",
+    				"",
+    		        function(data){
+    				$( '#selectable_edit' ).html("");
+    		          $.each(data, function(i,item){
+    		        	  setElmentsEdit(i,item['name']);
+    		          });
+    		          fillLists('#selectable_edit', '#selectable_edit_on');
+    		        });
+      }
+
+      function showAll3(element) {
+    	  $('#_degree_edit').val('');
+    	  $.getJSON("/exams-admin/ajax-degree-select-all",
+    				"",
+    		        function(data){
+    				$( '#selectable_edit_degree' ).html("");
+    		          $.each(data, function(i,item){
+    		        	  setElmentsEditDegree(i,item['name']);
+    		          });
+    		          fillLists('#selectable_edit_degree', '#selectable_edit_degree_on');
+    		        });
+      }      
+
+
+	  
+	  $(function() {
+      
+
 		// the general select of the course, the course_id will be used in all the other tabs for the edit 
 	    $( "#selectable" ).selectable({
 	        stop: function() { selectCourse($( ".ui-selected").attr("id")); }
 	    });
+	   
 
 	    
 	    //ajax request for filtering the selectabes
@@ -105,15 +178,8 @@
 	  	  $( "#_course" ).keyup(function() {
 	  		  if(old_course_value != $( "#_course" ).val()) {
 	  			  old_course_value = $( "#_course" ).val();
-	  				
-	  				$.getJSON("/exams-admin/ajax-course-select",
-	  						"term="+$( "#_course" ).val(),
-	  				        function(data){
-	  						$( "#selectable" ).html("");
-	  				          $.each(data, function(i,item){
-	  				        	  setElments(i,item);
-	  				          });
-	  				        });
+
+		  			updateSelectable();  				
 	  			  }
 	  		});
 	    });
@@ -196,6 +262,7 @@
 
             		ui.item.removeClass(".transfered_item");
         		}
+        		fillLists('#selectable_edit', '#selectable_edit_on');
 		    },
 	        dropOnEmpty: false,
 	    });
@@ -252,6 +319,7 @@
         		if(count >= 2) {
     				ui.item.remove();
         		}
+        		fillLists('#selectable_edit', '#selectable_edit_on');
 		    },
 	        dropOnEmpty: false,
 	    });
@@ -274,6 +342,7 @@
 					          if(data.length == 0) {
 					        	  setElmentsEdit(-2,"delete your items here");
 						          }
+					          fillLists('#selectable_edit', '#selectable_edit_on');
 					        });
 				  }
 			});
@@ -351,6 +420,7 @@
 
     		ui.item.removeClass(".transfered_item");
 		}
+		fillLists('#selectable_edit_degree', '#selectable_edit_degree_on');
     },
       dropOnEmpty: false
   });
@@ -400,6 +470,7 @@
     		if(count >= 2) {
 				ui.item.remove();
     		}
+    		fillLists('#selectable_edit_degree', '#selectable_edit_degree_on');
 	    },
         dropOnEmpty: false,
     });
@@ -421,6 +492,7 @@
 				          if(data.length == 0) {
 				        	  setElmentsEditDegree(-2,"delete your items here");
 					          }
+				          fillLists('#selectable_edit_degree', '#selectable_edit_degree_on');
 				        });
 			  }
 		});
@@ -562,6 +634,20 @@
   /* ADD END */
 
 
+  function test1() {
+  $('#selectable_edit_on li').dblclick(function() {
+	    var litem = $(this).clone();
+	    litem.appendTo($('#selectable_edit'));
+	    $(this).remove();
+	  });
+  }
+
+  /*$( "#selectable_edit_on" ).dblclick(function() {
+	  console.log($(this).html());
+	  alert( "Handler for .dblclick() called." );
+  });*/
+
+
   });
 
   
@@ -583,6 +669,10 @@
 
   function setElmentsEditDegreeOn(key, value) {
 	  $( "#selectable_edit_degree_on" ).append('<li class="ui-widget-content" id="'+key+'">'+value+'</li>');
+  }
+
+  function setElmentsAll(key, value) {
+	  $( "#selectable_all" ).append('<li class="ui-widget-content" id="'+key+'">'+value+ ' | '+key+'</li>');
   }
 
 
@@ -611,7 +701,41 @@
 	    disableTabs();
 	  });
 
+  function fillLists(l1, l2) {
+	  $.each($(l2 + " > li[id='-2']"), 
+			  function(i,item){
+	  	   	item.remove();
+	      }
+	  );
 
+	  $.each($(l1 + " > li[id='-2']"), 
+			  function(i,item){
+	  	   	item.remove();
+	      }
+	  );
+
+	  elements1 = $(l1 + '> li').length;
+	  elements2 = $(l2 + '> li').length;
+	  
+
+	  if(elements1 < elements2) {
+		  for (var i=0;i<(elements2-elements1);i++)
+		  { 
+			  $(l1).append('<li class="ui-widget-content" id="-2"></li>');
+		  }
+		  
+	  }
+
+	  if(elements1 > elements2) {
+		  for (var i=0;i<(elements1-elements2);i++)
+		  { 
+			  $(l2).append('<li class="ui-widget-content" id="-2"></li>');
+		  }
+		  
+	  }
+	  
+	  //alert(elements1);
+  }
   
   </script>
   
@@ -635,7 +759,7 @@
   </ul>
   <div id="tabs-1">
   	Select Course:<br>
-    <?php  echo $this->autoElmenet; ?>
+    <input type="text" name="_course" id="_course" value=""> <a href="#" onclick="javascript:showAll('#selectable');">show all</a>
 <p>
 	<ol id="selectable">
 	</ol>
@@ -645,7 +769,7 @@
   <div style="width: 100%;">
  <div style="float: left; width: 33.33%; text-align: left;">
  	Search availabe course:<br>
-  	<input type="text" id="_couse_edit" />
+  	<input type="text" id="_couse_edit" /> <a href="#" onclick="javascript:showAll2('#selectable_edit');">show all</a>
  </div>
  <div style="float: left; width: 33.33%; text-align: center; min-height:1px;"><span style="display: none;" id="feedback_course"></span></div>
  <div style="float: left; width: 33.34%; text-align: right;">
@@ -664,7 +788,7 @@
   <div id="tabs-3">
    <div style="float: left; width: 33.33%; text-align: left;">
  	Search availabe degrees:<br>
-  	<input type="text" id="_degree_edit" />
+  	<input type="text" id="_degree_edit" /> <a href="#" onclick="javascript:showAll3('#selectable');">show all</a>
  </div>
  <div style="float: left; width: 33.33%; text-align: center; min-height:1px;"><span style="display: none;" id="feedback_degree"></span></div>
  <div style="float: left; width: 33.34%; text-align: right;">
@@ -679,20 +803,6 @@
 	</ol>
 	<div style="clear: both;"></div>
   </div>
-  <!--<div id="tabs-4">
-  <div style="float: left;">Search availabe lecturers:<br>
-  	<input type="text" id="_lecturer_edit" />
-  	</div>
-  	<!--<div style="clear:both; overflow: auto;">-->
-  	<!--<div style="float: right;">assinged lecturer</div>
-  	<div style="clear: both;"><br></div>
-  	<ol id="selectable_edit_lecturer" style="float: left;">
-	</ol>
-	<ol id="selectable_edit_lecturer_on" style="float: right;">
-		<li class="ui-widget-content" id="-1"><i>your items here</i></li>
-	</ol>
-	<div style="clear: both;"></div>
-  </div>-->
   <div id="tabs-5">
     Edit name and connected degrees<br>
     Course name: <input type="text" id="_couse_edit_name" /><br>
@@ -700,7 +810,7 @@
     <input id="save_course" type="button" value="save"> <input id="save_course_forward" type="button" value="save & forward">
     <br>
     <br>
-    <input id="delete_course" type="button" value="delete course">
+    <input id="delete_course" type="button" value="delete course" style="color:#ff0000;">
     <br>
   </div>
     <div id="tabs-6">

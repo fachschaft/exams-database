@@ -91,6 +91,7 @@ class Application_Model_CourseMapper
             $entry = new Application_Model_Course();
             $entry->setId($row['idcourse'])
                   ->setName($row['name']);
+            $entry->setOrder($row['order']);
             $entries[] = $entry;
         }
         

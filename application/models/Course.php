@@ -17,8 +17,23 @@ class Application_Model_Course
     protected $_id;
     protected $_degrees;
     protected $_connectedCourse;
+    protected $_order;
     
     /**
+	 * @return the $_order
+	 */
+	public function getOrder() {
+		return $this->_order;
+	}
+
+	/**
+	 * @param field_type $_order
+	 */
+	public function setOrder($_order) {
+		$this->_order = $_order;
+	}
+
+	/**
 	 * @return the $_nameShort
 	 */
 	public function getNameShort() {

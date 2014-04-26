@@ -970,14 +970,7 @@ class ExamsAdminController extends Zend_Controller_Action
     public function courseAction()
     {
     	if(!$this->_authManager->isAllowed(null, 'modify_course'))
-    		$this->_helper->Redirector->setGotoSimple ( 'index' );
-    	 
-    	$autoElement = new Zend_Form_Element_Text('_course');
-    	//$autoElement->setJQueryParam(
-    	//		'source', '/exams-admin/ajax-course');
-    	
-    	$this->view->autoElmenet = $autoElement;
-    	 
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );   	 
     }
        
     public function ajaxCourseSelectAction()
@@ -989,6 +982,24 @@ class ExamsAdminController extends Zend_Controller_Action
     
     	$results = $eqsq->getCourse($this->_getParam('term'));
     	$this->_helper->json($results);
+    
+    }
+    
+    public function ajaxCourseSelectAllAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	$cm = new Application_Model_CourseMapper();
+    	$results = $cm->fetchAll();
+    	
+    	$results2 = array();
+    	
+    	foreach ($results as $item) {
+    		$results2[$item->getId()] = array('name' => $item->getName(), 'id'=>$item->getId(), 'order'=>$item->getOrder());
+    	}
+    	
+    	$this->_helper->json($results2);
     
     }
     
@@ -1127,6 +1138,25 @@ class ExamsAdminController extends Zend_Controller_Action
     	$results2['name'] = $results->getName();
     	$results2['name_short'] = $results->getNameShort();
     	
+    	 
+    	$this->_helper->json($results2);
+    
+    }
+    
+    public function ajaxDegreeSelectAllAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	$dm = new Application_Model_DegreeMapper();
+    	
+    	$results = $dm->fetchAll();
+    	 
+    	$results2 = array();
+    	 
+    	foreach ($results as $item) {
+    		$results2[$item->getId()] = array('name' => $item->getName(), 'id'=>$item->getId(), 'order'=>$item->getOrder());
+    	}
     	 
     	$this->_helper->json($results2);
     

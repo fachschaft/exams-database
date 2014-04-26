@@ -81,6 +81,7 @@ class Application_Model_DegreeMapper
             $entry->setId($row->iddegree)
                   ->setGroup($groupMapper->find($row->degree_group_iddegree_group))
                   ->setName($row->name);
+            $entry->setOrder($row->order);
             $entries[] = $entry;
         }
         return $entries;

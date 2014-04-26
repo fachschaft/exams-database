@@ -15,6 +15,7 @@ class Application_Model_Degree
     protected $_degree_group;
     protected $_name;
     protected $_id;
+    protected $_order;
     
     public function __construct(array $options = null)
     {
@@ -23,7 +24,21 @@ class Application_Model_Degree
         }
     }
  
-    public function __set($name, $value)
+    /**
+	 * @return the $_order
+	 */
+	public function getOrder() {
+		return $this->_order;
+	}
+
+	/**
+	 * @param field_type $_order
+	 */
+	public function setOrder($_order) {
+		$this->_order = $_order;
+	}
+
+	public function __set($name, $value)
     {
         $method = 'set' . $name;
         if (('mapper' == $name) || !method_exists($this, $method)) {
