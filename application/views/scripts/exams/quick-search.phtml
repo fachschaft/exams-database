@@ -1,5 +1,37 @@
 <div id="view-content">
+		<div id="quickseach">
 	    <?
 			echo $this->form;
 		?>
+		</div>
+		<script type="text/javascript">
+		firstSelect = false;
+		colorBefor = document.getElementById("_query").style.color;
+		examples = new Array("Info*", "Info*", "1337", "Experimentalphysik", "Zengerle", "Becker");
+		function setDemo() {
+			item = Math.ceil(Math.random() * (examples.length -1));
+			document.getElementById("_query").value = examples[item];
+			document.getElementById("_query").style.color = "#7F7F7F";
+			document.getElementById("_query").onclick  = selectAll;
+		}
+		
+		function selectAll() { 
+			if(!firstSelect) {
+			document.getElementById("_query").focus();
+			document.getElementById("_query").select();
+			//document.getElementById("_query").value = "";
+			document.getElementById("_query").style.color = colorBefor;
+			firstSelect = true;
+			}
+		}
+		
+		// fix: error messages misplaying the search button
+		if(document.getElementsByClassName('errors').length != 0) {
+			document.getElementById('quickseach').appendChild(document.getElementsByClassName('errors')[0]);
+		}
+		
+		setDemo();
+		</script>
+		
+		<div style="font-size:18px; text-align: center;">Have also a look at the systematic <a href="/exams/groups">advanced Search!</a></div>
 </div>
