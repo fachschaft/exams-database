@@ -157,11 +157,10 @@ class ExamsUploadController extends Zend_Controller_Action {
 			$post = $this->getRequest ()->getParams ();
 		
 
-			// Note: SECURITY, we use _inputUnescaped for Validation!
-			// This only includes FILTERD and VALID defined parms from the init()
-			// Ensure all passed Strings are secure
+			// We use the unescaped values (i.e. getInputUnescaped) for validation here to ensure that the form
+			// returns the user input (and not the escaped input) if it is invalid
 			if ($form->isValid ( $this->_filterManager->getInputUnescaped () )) {
-				$post = $this->getRequest ()->getParams (); // for insert we use escaped strings
+				$post = $this->getRequest ()->getParams (); // for the insert we of course use escaped strings!!
 				if ($form->isValid ( $this->getRequest ()->getParams () )) {
 					$post = $this->getRequest ()->getParams ();
 					return $this->_helper->Redirector->setGotoSimple ( 'files', null, null, $post );
