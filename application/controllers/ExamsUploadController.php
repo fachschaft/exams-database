@@ -161,13 +161,39 @@ class ExamsUploadController extends Zend_Controller_Action {
 			// returns the user input (and not the escaped input) if it is invalid
 			if ($form->isValid ( $this->_filterManager->getInputUnescaped () )) {
 				$post = $this->getRequest ()->getParams (); // for the insert we of course use escaped strings!!
-				if ($form->isValid ( $this->getRequest ()->getParams () )) {
-					$post = $this->getRequest ()->getParams ();
-					return $this->_helper->Redirector->setGotoSimple ( 'files', null, null, $post );
-				}
+				// insert the new exam to into the database and mark the
+				// exam as not uploaded
+				$exam = new Application_Model_Exam ();
+				$examMapper = new Application_Model_ExamMapper ();
+				
+				$exam->setSemester(new Application_Model_Semester(array('id'=>$post['semester'])));
+				$exam->setType(new Application_Model_ExamType(array('id'=>$post['type'])));
+				$exam->setSubType(new Application_Model_ExamSubType(array('id'=>$post['subType'])));
+				$exam->setDegree ( new Application_Model_Degree(array('id'=>$post['degree'])) );
+				$exam->setWrittenDegree(new Application_Model_ExamDegree(array('id'=>$post['degree_exam'])));
+				$exam->setUniversity(new Application_Model_ExamUniversity(array('id'=>$post['university'])));
+				$exam->setComment($post['comment']);
+				$exam->setAutor($post['autor']);
+				$courses = array();
+				foreach ($post['course'] as $course) { $courses[] = new Application_Model_Course(array('id'=>$course)); }
+				$exam->setCourse($courses);
+				$lecturers = array();
+				foreach ($post['lecturer'] as $lecturer) { $lecturers[] = new Application_Model_Course(array('id'=>$lecturer)); }
+				$exam->setLecturer($lecturers);
+				
+				$examId = $examMapper->saveAsNewExam ( $exam );
+				$exam->setId ( $examId );
+				
+				$data = array ();
+				$data ['exam'] = $examId;
+				return $this->_helper->Redirector->setGotoSimple ( 'files', null, null, $data );
 			}
 		}
 		$this->view->form = $form;
+		
+	}
+	
+	public function filesAction() {
 		
 	}
 	
@@ -251,11 +277,6 @@ class ExamsUploadController extends Zend_Controller_Action {
 						$lecturers = array();
 						foreach ($post['lecturer'] as $lecturer) { $lecturers[] = new Application_Model_Course(array('id'=>$lecturer)); }
 						$exam->setLecturer($lecturers);
-						
-						// $exam->setOptions ( $post );
-						//$exam->setDegree ( null );
-						
-						//$exam->setDegreeId ( new Application_Model_Degree(array('id'=>$this->getRequest ()->degree)) );
 						
 						$examId = $examMapper->saveAsNewExam ( $exam );
 						$exam->setId ( $examId );
