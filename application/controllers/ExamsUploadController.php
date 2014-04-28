@@ -16,8 +16,9 @@ class ExamsUploadController extends Zend_Controller_Action {
 	
 	private $_filterManager;
 	
+	
 	public function init() {
-		
+
 		//Initialize the auth manager to enable acl
 		$this->_authManager = new Application_Model_AuthManager();
 		
@@ -80,12 +81,28 @@ class ExamsUploadController extends Zend_Controller_Action {
 
 		$this->_filterManager->setFilterAndValidator();
 		$this->_filterManager->applyFilterAndValidators($this->getRequest());
+		
+		// check if the current time has past the last semester
+		$semesterMapper = new Application_Model_SemesterMapper();
+		$semesterMapper->checkFuthereSemesterExists();
+
+	}
+	
+	//Index action is called after every form and forwards to the next form required
+	public function indexAction() {
+
+
+		$this->_helper->redirector ( 'degree' );
 	}
 	
 	
-	public function indexAction() {
+	public function degreeAction() {
 
-		$this->_helper->redirector ( 'upload' );
+		$form = new Application_Form_UploadDegrees ();
+		$form->setMethod('post');
+		$form->setAction('/exams-upload/data');
+		$this->view->form = $form;
+		
 	}
 	
 	public function uploadAction() {
@@ -96,9 +113,7 @@ class ExamsUploadController extends Zend_Controller_Action {
 		$step = 1;
 		
 		if (isset ( $this->getRequest ()->degree )) {
-			// check if the current time has past the last semester
-			$semesterMapper = new Application_Model_SemesterMapper();
-			$semesterMapper->checkFuthereSemesterExists();
+			
 			
 			$step = 2;
 			$form = new Application_Form_UploadDetail ();
