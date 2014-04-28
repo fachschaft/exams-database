@@ -21,45 +21,35 @@ class Application_Form_UploadFile extends Application_Form_ExamTemplate
 	
     public function init()
     {
-    
+    	$config = Zend_Registry::get('examDBConfig');
         $this->setMethod('post');
-        $this->setAction('/exams/upload');
-        
-        // go on with http://framework.zend.com/manual/de/zend.form.standardElements.html
-        
+        $this->setAction('/exams-upload/files');
+          
         $this->_file = new Zend_Form_Element_File('exam_file');
-        $config = Zend_Registry::get('examDBConfig');
+        
+        // Enable multifile upload for browsers that support HTML5
+        $this->_file->setAttrib('multiple', true)
+        			->setMultiFile($this->_config['default_upload_files_count']);
+        
         $this->_file->setLabel('Uplaod Exam File:')
                 ->addValidator('Count', false, array('min' => 1, 'max' => $config['max_upload_files']))
                 ->addValidator('Size', false, $config['max_file_size'])
-				//->setMaxFileSize($config['max_file_size'] * 3) //max FORM size (for all files) is 3 times the max file size given in the config 
                 ->addValidator('Extension', false, $config['allowed_extentions'])
                 ->setAttrib('enctype', 'multipart/form-data');     
         
         $this->addElement($this->_file, 'exam_file');
-        
-        
-        
-		
-		$this->setMultiFile($config['default_upload_files_count']);
-        
-        //
-        $this->addElement('hidden', 'step', array(
-            'value' => '3',
-        	'decorators' => $this->_decoratorHidden,
-        ));
 
         // Add the submit button
         $this->addElement('submit', 'submit', array(
             'ignore'   => true,
-            'label'    => 'Weiter',
+            'label'    => 'Upload abschliessen',
         	'decorators' => $this->_decoratorDivButton,
         ));
     }
     
     public function setExamId($id)
     {
-        $this->addElement('hidden', 'examId', array(
+        $this->addElement('hidden', 'exam', array(
             'value' => $id,
         	'decorators' => $this->_decoratorHidden,
         ));
