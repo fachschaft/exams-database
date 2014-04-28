@@ -44,6 +44,16 @@ class ExamsUploadController extends Zend_Controller_Action {
 				
 
 				// Upload step 2
+				'course' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				'lecturer' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				'semester' =>array(
+						'filter' 	=> array('Int'),
+						'validator' => array('Int')),
+				
 				'exam' =>array(
 						'filter' 	=> array('Int'),
 						'validator' => array('Int')),
@@ -90,8 +100,7 @@ class ExamsUploadController extends Zend_Controller_Action {
 	
 	//Index action is called after every form and forwards to the next form required
 	public function indexAction() {
-
-
+		
 		$this->_helper->redirector ( 'degree' );
 	}
 	
@@ -100,15 +109,73 @@ class ExamsUploadController extends Zend_Controller_Action {
 
 		$form = new Application_Form_UploadDegrees ();
 		$form->setMethod('post');
-		$form->setAction('/exams-upload/data');
+		$form->setAction('/exams-upload/degree');
+		if ($this->getRequest()->isPost()) 
+			if($form->isValid($this->getRequest()->getParams())) {
+				$post = $this->getRequest ()->getParams ();
+				return $this->_helper->Redirector->setGotoSimple('data', null, null, $post);
+				}
+		$this->view->form = $form;
+				
+	}
+	public function dataAction() {
+		// E.g. if the user for some reason has come here by a direct link, and therefore has no degree set, send him back to the beginning
+		if (! isset ( $this->getRequest ()->degree ))
+			$this->_helper->redirector ( 'index' );
+		$degreeid = $this->getRequest ()->degree;
+		$form = new Application_Form_UploadDetail ();
+		$form->setMethod ( 'post' );
+		$form->setAction ( '/exams-upload/data' );
+		$form->setDegree ( $degreeid );
+		
+		$degree = new Application_Model_Degree(array('id'=> $degreeid));
+		
+		// Prepare the entries for populating
+		$lecturers = new Application_Model_LecturerMapper();
+		$entries['lecturer'] = $lecturers->fetchByDegree($degree);
+		$courses = new Application_Model_CourseMapper();
+		$entries['course'] = $courses->fetchByDegree($degree);
+		$semesters = new Application_Model_SemesterMapper();
+		$entries['semester'] = $semesters->fetchAll();
+		$types = new Application_Model_ExamTypeMapper();
+		$entries['type'] = $types->fetchAll();
+		$courses = new Application_Model_ExamDegreeMapper();
+		$entries['degree_exam'] = $courses->fetchAll();
+		$types = new Application_Model_ExamSubTypeMapper();
+		$entries['subType'] = $types->fetchAll();
+		$courses = new Application_Model_ExamUniversityMapper();
+		$entries['university'] = $courses->fetchAll();
+		//populate.
+		foreach(array_keys($entries) as $key)
+		{
+			$this->populateFields($form, $key, $entries[$key]);
+		
+		}
+
+		if ($this->getRequest ()->isPost ()) {
+
+			$post = $this->getRequest ()->getParams ();
+		
+
+			// Note: SECURITY, we use _inputUnescaped for Validation!
+			// This only includes FILTERD and VALID defined parms from the init()
+			// Ensure all passed Strings are secure
+			if ($form->isValid ( $this->_filterManager->getInputUnescaped () )) {
+				$post = $this->getRequest ()->getParams (); // for insert we use escaped strings
+				if ($form->isValid ( $this->getRequest ()->getParams () )) {
+					$post = $this->getRequest ()->getParams ();
+					return $this->_helper->Redirector->setGotoSimple ( 'files', null, null, $post );
+				}
+			}
+		}
 		$this->view->form = $form;
 		
 	}
 	
 	public function uploadAction() {
+
 		if(!$this->_authManager->isAllowed(null, 'upload'))
 			throw new Custom_Exception_PermissionDenied("Permission Denied");
-		
 		$form = null;
 		$step = 1;
 		
@@ -116,10 +183,7 @@ class ExamsUploadController extends Zend_Controller_Action {
 			
 			
 			$step = 2;
-			$form = new Application_Form_UploadDetail ();
-			$form->setCourseOptions (new Application_Model_Degree(array('id'=>$this->getRequest ()->degree )));
-			$form->setLecturerOptions (new Application_Model_Degree(array('id'=>$this->getRequest ()->degree )));
-			$form->setDegree ( $this->getRequest ()->degree );
+
 		}
 		
 		if (isset ( $this->getRequest ()->exam )) {
@@ -263,4 +327,26 @@ class ExamsUploadController extends Zend_Controller_Action {
 	
 	// This empty action is required to output a html page thanking user for his upload
 	public function uploadfinalAction() {	}	
+	
+	private function parseEntries($entries)
+	{
+		$options = array();
+		foreach($entries as $entry)
+		{
+			$options[$entry->getId()] = $entry->getName();
+		}
+		$opt = array();
+		return $options;
+	}
+	
+	public function populateFields($form, $element, $entries, $setSize = false)
+	{
+		$opt = $this->parseEntries($entries);
+	
+
+		$element = $form->getElement($element);
+		$element->setMultiOptions($opt);
+		if ($setSize) $element->setAttrib('size', count($opt));
+	}
+	
 }
