@@ -213,12 +213,17 @@ class ExamsUploadController extends Zend_Controller_Action {
 		$dir = $config ['storagepath'];
 		$form->setExamId ( $this->getRequest ()->exam );
 		$form->setAction ( '/exams-upload/files/exam/' . $this->getRequest ()->exam );
-
+		
 			if ($form->isValid ( $this->getRequest ()->getParams () )) {
 
 				$post = $this->getRequest ()->getParams ();
 					
 				$exam = $examMapper->findUpload ( $post ['exam'] );
+				
+				// Make it so users cant call the direkt link to the upload form and then upload more files
+				// This is because this could cause a security hazard if users upload files after the exam has been aproved
+				if ($exam->status->id != Application_Model_ExamStatus::NothingUploaded)
+					throw new Zend_Exception ( "Sorry, you can't upload twice!" );
 
 					
 				if ($form->exam_file->receive ()) {
