@@ -223,7 +223,7 @@ class ExamsUploadController extends Zend_Controller_Action {
 				// Make it so users cant call the direkt link to the upload form and then upload more files
 				// This is because this could cause a security hazard if users upload files after the exam has been aproved
 				if ($exam->status->id != Application_Model_ExamStatus::NothingUploaded)
-					throw new Zend_Exception ( "Sorry, you can't upload twice!" );
+					throw new Zend_Exception ( "Sorry, you can't upload to an exam that already contains files!" );
 
 					
 				if ($form->exam_file->receive ()) {
