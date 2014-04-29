@@ -205,54 +205,21 @@ class ExamsUploadController extends Zend_Controller_Action {
 		$form = new Application_Form_UploadFile ();
 		$form->setExamId ( $this->getRequest ()->exam );
 		
-		// Set the amount of file upload fields
-		$this->view->files = $config['default_upload_files_count'];
-		
-		//If the user has requested more upload fields, 
-		// give her either three more or set to max files
-		if (isset ( $this->getRequest ()->files )) {
-			if ($this->getRequest ()->files + 3 > $config ['max_upload_files']) {
-				$this->view->files = $config ['max_upload_files'];
-			} else {
-				$this->view->files = $this->getRequest ()->files + 3;
-			}
-		}
 		$this->view->form = $form;
-		$examMapper = new Application_Model_ExamMapper ();
 		
-		if (! $this->getRequest ()->isPost ()) {
-
-			$exam = $examMapper->findUpload ( $this->getRequest ()->exam );
-
-			if ($exam->id != $this->getRequest ()->exam) {
-				throw new Zend_Exception ( "Sorry, no exam found." );
-				// the status id is save as key, so if stauts[1] isset exam, hase sthe status 1
-			} else if ($exam->status->id != Application_Model_ExamStatus::NothingUploaded) {
-
-				throw new Zend_Exception ( "Sorry, you can't upload twice!" );
-			}
-		}
-			
+		
+		$examMapper = new Application_Model_ExamMapper ();
 		$config = Zend_Registry::get ( 'examDBConfig' );
 		$dir = $config ['storagepath'];
 		$form->setExamId ( $this->getRequest ()->exam );
-		$form->setAction ( '/exams-upload/files/' . $this->getRequest ()->exam );
-
-		if (isset ( $this->getRequest ()->files )) {
-			$form->setAction ( '/exams-upload/files/' . $this->getRequest ()->exam . '/files/' . $this->getRequest ()->files );
-		}
-		$form->setMultiFile ( $this->getRequest ()->files );
-
-		if ($this->getRequest ()->isPost ()) {
+		$form->setAction ( '/exams-upload/files/exam/' . $this->getRequest ()->exam );
 
 			if ($form->isValid ( $this->getRequest ()->getParams () )) {
 
 				$post = $this->getRequest ()->getParams ();
 					
 				$exam = $examMapper->findUpload ( $post ['exam'] );
-				if ($exam->id != $post ['exam'] || $exam->status != Application_Model_ExamStatus::NothingUploaded) {
-					throw new Zend_Exception ( "Sorry, you can't upload twice!" );
-				}
+
 					
 				if ($form->exam_file->receive ()) {
 					$fileManger = new Application_Model_ExamFileManager ();
@@ -264,7 +231,6 @@ class ExamsUploadController extends Zend_Controller_Action {
 					$this->_helper->Redirector->setGotoSimple ( 'upload_final' );
 				} 
 			}
-		}
 		
 	}
 
