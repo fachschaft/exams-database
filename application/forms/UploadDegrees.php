@@ -5,7 +5,7 @@
  * @link		https://github.com/aritas1/exams-database/
  * @author		Daniel Leinfelder <mail@aritas.de>
  * @author		William Glover <william@aamu-uninen.de>
- * @version		1.0
+ * @version		1.1
  * @since		1.0
  * @todo		-
  */
@@ -14,27 +14,17 @@ class Application_Form_UploadDegrees extends Application_Form_ExamTemplate
 {
 
     protected $_elementSelect = null;
-    
-    public $_decoratorHidden = array(
-    		'ViewHelper',
-    		array(array('data' => 'HtmlTag'), array('class' => 'hidden_element')),
-    );
+   
 
     public function init()
-    {
-        $this->setMethod('post');
-         $this->setAction('/exams/upload');
- 
+    { 
         //
         $this->_elementSelect = new Zend_Form_Element_Select('degree');
         $this->_elementSelect->setAttrib('size', '4')
                              ->setRequired(true);
         $this->addElement($this->_elementSelect);
        
-        $this->addElement('hidden', 'step', array(
-            'value' => '1',
-        	'decorators' => $this->_decoratorHidden,
-        ));
+
         
         // Add the submit button
         $this->addElement('submit', 'submit', array(

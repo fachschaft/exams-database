@@ -20,54 +20,45 @@ class Application_Form_UploadDetail extends Application_Form_ExamTemplate
     protected $_elementDegree = null;
     protected $_elementExamSubType = null;
     protected $_elementUniversity = null;
-    
-    public $_decoratorHidden = array(
-    		'ViewHelper',
-    		array(array('data' => 'HtmlTag'), array('class' => 'hidden_element')),
-    );
+
 
     public function init()
     {
-        $this->setMethod('post');
-        $this->setAction('/exams/upload');
  
-        //
+        // Course selection box
         $this->_elementCourse = new Zend_Form_Element_Multiselect('course');
         $this->_elementCourse->setAttrib('size', '10')
                              ->setRequired(true)
-                             ->setLabel('Vorlesung');
-        //$this->setCourseOptions(array());
+                             ->setLabel('Vorlesung')
+        					 ->registerInArrayValidator(false);
         $this->addElement($this->_elementCourse);
         $this->_elementCourse->setDecorators($this->_decoratorDiv);
         
-        //
+        //Lecturer selection box
         $this->_elementLecturer = new Zend_Form_Element_Multiselect('lecturer');
         $this->_elementLecturer->setAttrib('size', '10')
                                ->setRequired(true)
                                ->setLabel('Dozent');
-        //$this->setLecturerOptions(array());
         $this->addElement($this->_elementLecturer);
         $this->_elementLecturer->setDecorators($this->_decoratorDiv);
         
-        //
+        //Semester selection box
         $this->_elementSemester = new Zend_Form_Element_Select('semester');
         $this->_elementSemester->setAttrib('size', '10')
                                ->setRequired(true)
                                ->setLabel('Semester');
-        $this->setSemesterOptions();
         $this->addElement($this->_elementSemester);
         $this->_elementSemester->setDecorators($this->_decoratorDiv);
         
-        //
+        //Exam type dropdown
         $this->_elementExamType = new Zend_Form_Element_Select('type');
         $this->_elementExamType->setAttrib('size', '5')
                                ->setRequired(true)
                                ->setLabel('Typ');
-        $this->setExamTypeOptions();
         $this->addElement($this->_elementExamType);
         $this->_elementExamType->setDecorators($this->_decoratorDiv);
         
-        //
+        //Exam author textbox
         $this->addElement('text', 'autor', array(
             'label'    => 'Autor',
             'required'   => false,
@@ -75,39 +66,32 @@ class Application_Form_UploadDetail extends Application_Form_ExamTemplate
             
         ));
         
-        //
+        //Degree dropdown
         $this->_elementDegree = new Zend_Form_Element_Select('degree_exam');
         $this->_elementDegree->setRequired(true)
                                ->setLabel('Degree');
-        $this->setExamDegreeOptions();
         $this->addElement($this->_elementDegree);
         $this->_elementDegree->setDecorators($this->_decoratorDiv);
         
-        //
+        //Exam subtype dropdown
         $this->_elementExamSubType = new Zend_Form_Element_Select('subType');
         $this->_elementExamSubType->setRequired(true)
                                ->setLabel('Solution Type');
-        $this->setExamSubType();
         $this->addElement($this->_elementExamSubType);
         $this->_elementExamSubType->setDecorators($this->_decoratorDiv);
         
-        //
+        //University dropdown
         $this->_elementUniversity = new Zend_Form_Element_Select('university');
         $this->_elementUniversity->setRequired(true)
                                ->setLabel('University');
-        $this->setExamUniversityOptions();
         $this->addElement($this->_elementUniversity);
         $this->_elementUniversity->setDecorators($this->_decoratorDiv);
         
+        //comments text box
         $this->addElement('textarea', 'comment', array(
             'label'    => 'Comment',
             'required'   => false,
         	'decorators' => $this->_decoratorDiv,
-        ));
-        
-        $this->addElement('hidden', 'step', array(
-            'value' => '2',
-        	'decorators' => $this->_decoratorHidden,
         ));
         
         // Add the submit button
@@ -118,7 +102,6 @@ class Application_Form_UploadDetail extends Application_Form_ExamTemplate
         ));
         
         
-        //$this->setMultiOptions();
     }
     
     public function setCourseOptions(Application_Model_Degree $degree)
@@ -148,10 +131,8 @@ class Application_Form_UploadDetail extends Application_Form_ExamTemplate
            $options[$group->getId()] = $group->getName();
         }
   
-        //$opt = array('-1'=>'- other -');
         foreach($options as $id => $o) { $opt[$id] = $o; }
         $this->_elementSemester->setMultiOptions($opt);
-        //$this->_elementSemester->setValue(array('-1'));
     }
     
     public function setExamTypeOptions()
@@ -165,10 +146,8 @@ class Application_Form_UploadDetail extends Application_Form_ExamTemplate
             $options[$group->getId()] = $group->getName();
         }
         
-        //$opt = array('-1'=>'- other -');
         foreach($options as $id => $o) { $opt[$id] = $o; }
         $this->_elementExamType->setMultiOptions($opt);
-        //$this->_elementExamType->setValue(array('-1'));
     }
     
     public function setExamSubType()
@@ -182,10 +161,8 @@ class Application_Form_UploadDetail extends Application_Form_ExamTemplate
             $options[$group->getId()] = $group->getName();
         }
         
-        //$opt = array('-1'=>'- all -');
         foreach($options as $id => $o) { $opt[$id] = $o; }
         $this->_elementExamSubType->setMultiOptions($opt);
-        //$this->_elementExamSubType->setValue(array('-1'));
     }
     
     public function setLecturerOptions(Application_Model_Degree $degree)
@@ -203,7 +180,6 @@ class Application_Form_UploadDetail extends Application_Form_ExamTemplate
         $opt = array();
         foreach($options as $id => $o) { $opt[$id] = $o; }
         if($opt != null) $this->_elementLecturer->setMultiOptions($opt);
-        //$this->_elementLecturer->setValue(array('-1'));
     }
     
     public function setExamDegreeOptions()
@@ -242,7 +218,7 @@ class Application_Form_UploadDetail extends Application_Form_ExamTemplate
     {
         $this->addElement('hidden', 'degree', array(
             'value' => $id,
-        	'decorators' => $this->_decoratorHidden,
+        	
         ));
     }
     
