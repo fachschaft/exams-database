@@ -74,6 +74,20 @@
 		</ul>
 	<ul>
 	<li><a href="<?php echo $this->url(
+            array('controller'=>'pad',
+                  'action'=>'index'),
+            'default',
+            true) ?>">Pads</a></li>
+		<ul>
+		<li><a href="<?php echo $this->url(
+            array('controller'=>'pad',
+                  'action'=>'overview'),
+            'default',
+            true) ?>">Pad overview</a></li>
+            </ul>
+		</ul>
+	<ul>
+	<li><a href="<?php echo $this->url(
             array('controller'=>'exams-admin',
                   'action'=>'maintenance'),
             'default',

@@ -203,7 +203,9 @@ class Application_Model_AuthManager {
 													 'maintenance_quicksearch_file_count',
 													 'maintenance_check_inconsistency', 'maintenance_determine_mime_types',
 													 'maintenance_check_files_exist_and_readable', 'maintenance_check_files_extention',
-													 'maintenance_check_damaged_files', 'maintenance_generate_missing_md5sums', 'maintenance_send_test_mail'));
+													 'maintenance_check_damaged_files', 'maintenance_generate_missing_md5sums', 'maintenance_send_test_mail',
+													 'pad_delete', 'pad_maintenance'
+		));
 		
 	}
 	

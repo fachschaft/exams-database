@@ -1,0 +1,16 @@
+<div id="view-content">
+
+<? if($this->action == 'delete_pad'): ?>
+Are you sure about deleting the pad with id: <?php echo $this->id; ?><br><br>
+	<a href="<?php echo $this->url(
+            array('controller'=>'pad',
+                  'action'=>'overview',
+                  'do'=>'delete_pad',
+                  'id'=>$this->id),
+            'default',
+            true) ?>">Yes, delete the Exam!</a><br>
+<? endif; ?>
+
+
+
+</div>

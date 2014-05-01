@@ -1,0 +1,165 @@
+<div id="view-content">		
+
+<h2>pad overview</h2>
+
+<table id="gradient-style">
+	
+	<tr>
+		<th>ID</th>
+		<th>Exam</th>
+		<th>Course</th>
+		<th>Semester</th>
+		<th>Lecturer</th>
+		<th>Type</th>
+		<th>Pad</th>
+		<th>created</th>
+		<th>user count</th>
+		<th>uploaded revision</th>
+		<th>uploaded lastEdited</th>
+		<th>lastEdited</th>
+		<th>lastCrawled</th>
+		<th>Options</th>
+	</tr>
+
+<?php foreach ($this->pads as $entry): ?>
+<tr>
+	<td>
+		<div id="exam-id">
+		<?php echo $entry->id ?>
+		</div>
+	</td>
+	<td>
+		<a href="<?php echo $this->url(
+            array('controller'=>'exams',
+                  'action'=>'search',
+                  'request'=>$entry->getExam()),
+            'default',
+            true) ?>"><?php echo $entry->getExam() ?></a>
+	</td>
+	<td>
+		<div id="exam-course">
+			<?php 
+			foreach($entry->getExamObject()->course as $course)
+			{
+				echo "- ".$course;
+				echo '<br>';
+			} 
+			foreach($entry->getExamObject()->CourseConnected as $course)
+			{
+				echo "- ".$course ."*";
+				echo '<br>';
+			}
+			?>
+		</div>
+	</td>
+	<td>
+		<div id="exam-semester">
+			<? 
+				echo $entry->getExamObject()->semester;
+			?>
+		</div>
+	</td>
+	<td>
+		<div id="exam-lecturer">    
+			<? foreach($entry->getExamObject()->Lecturer as $lecturer)
+			{
+				echo "- ".$lecturer;
+				echo '<br>';
+			} ?>
+		</div>
+	</td>
+	<td>
+	<div id="exam-infos">    
+	<?
+        echo $entry->getExamObject()->Type;
+        echo '<br>';
+		echo $entry->getExamObject()->SubType;
+		echo '<br>';
+		echo $entry->getExamObject()->university;
+		echo '<br>';
+	    echo $entry->getExamObject()->Autor;
+    ?>
+    </div>
+	</td>
+	
+	<td>
+	<div id="exam-pad-link">
+	
+	<?
+        echo '<a href="'.$entry->getEtherpad_link().'" target="_blank"> '.$entry->getEtherpad_identifier().' </a>';
+    ?>
+	    
+    </div>
+	</td>
+	
+	<td>
+	<div id="exam-created"> 
+	<?
+        echo strftime('%H:%M:%S %d.%m.%Y', $entry->getCreated());
+    ?>     
+    </div>
+	</td>
+	
+	<td>
+	<div id="exam-user_count">
+	<?
+        echo $entry->getOnlineUser();
+    ?>  
+	    
+    </div>
+	</td>
+	
+	<td>
+	<div id="exam-upload_revisin"> 
+	<?
+        echo $entry->getUploaded_revision();
+    ?>   
+    </div>
+	</td>
+	
+	<td>
+	<div id="exam-upload_last_edited">   
+	<?
+		if($entry->getUploaded_lastEdited() != 0)
+        echo strftime('%H:%M:%S %d.%m.%Y', $entry->getUploaded_lastEdited());
+    ?> 
+    </div>
+	</td>
+	
+	<td>
+	<div id="exam-lastEdited">  
+	<?
+        echo strftime('%H:%M:%S %d.%m.%Y', $entry->getLastEdited());
+    ?>  
+    </div>
+	</td>
+	
+	
+	<td>
+	<div id="exam-lastCrawled">    
+	<?
+        echo strftime('%H:%M:%S %d.%m.%Y', $entry->getLastCrawled());
+    ?>
+    </div>
+	</td>
+	<td>
+		<div id="exam-control">
+		<a href="<?php echo $this->url(
+            array('controller'=>'pad',
+                  'action'=>'ensure',
+                  'do'=>'delete_pad',
+                  'id'=>$entry->id),
+            'default',
+            true) ?>">delete pad</a><br>
+		<a href="<?php echo $this->url(
+            array('controller'=>'exams',
+                  'action'=>'upload-pad',
+                  'padid'=>$entry->getEtherpad_identifier()),
+            'default',
+            true) ?>">upload revision</a><br>
+		</div>
+	</td>
+	</tr>
+<?php endforeach ?>
+</table>
+</div>

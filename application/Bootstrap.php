@@ -41,6 +41,9 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         
         $notConfig = $this->getOption('notification');
         Zend_Registry::set('notification', $notConfig);
+        
+        $padConfig = $this->getOption('pad');
+        Zend_Registry::set('pad', $padConfig);
     }
     
     public function _initPlaintextHelper()

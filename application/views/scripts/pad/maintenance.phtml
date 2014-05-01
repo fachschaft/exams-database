@@ -1,0 +1,11 @@
+<div id="view-content">
+	<ul>
+	<li><a href="<?php echo $this->url(
+            array('controller'=>'pad',
+                  'action'=>'maintenance',
+                  'do'=>'cronFull',
+                  ),
+            'default',
+            true) ?>">execute full Cron run</a><br><I>All pads (known to the database) will be updated via api call</I></li>
+		</ul>	
+</div>
