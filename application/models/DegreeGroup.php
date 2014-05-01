@@ -14,8 +14,23 @@ class Application_Model_DegreeGroup
 {
     protected $_name;
     protected $_id;
+    protected $_order;
     
-    public function __construct(array $options = null)
+    /**
+	 * @return the $_order
+	 */
+	public function getOrder() {
+		return $this->_order;
+	}
+
+	/**
+	 * @param field_type $_order
+	 */
+	public function setOrder($_order) {
+		$this->_order = $_order;
+	}
+
+	public function __construct(array $options = null)
     {
         if (is_array($options)) {
             $this->setOptions($options);

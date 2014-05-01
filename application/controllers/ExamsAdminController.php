@@ -966,6 +966,12 @@ class ExamsAdminController extends Zend_Controller_Action
     	 	
     }
     
+    public function degreeAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		$this->_helper->Redirector->setGotoSimple ( 'index' );
+    }   
+    
     
     public function courseAction()
     {
@@ -1143,6 +1149,47 @@ class ExamsAdminController extends Zend_Controller_Action
     
     }
     
+    public function ajaxSingleDegreeAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_degree'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	
+    	$gm = new Application_Model_DegreeMapper();
+    
+    	$cm = new Application_Model_CourseMapper();
+    	$results = $gm->find($this->_getParam('id'));
+    
+    	$results2 = array();
+    
+    	$results2['id'] = $results->getId();
+    	$results2['name'] = $results->getName();
+    	
+    	$this->_helper->json($results2);
+    
+    }
+    
+    public function ajaxConnectedDegreeAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_degree'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	$dm = new Application_Model_DegreeMapper();
+    	$result = $dm->find($this->_getParam('id'));
+    	
+    	$dgm = new Application_Model_DegreeGroupMapper();
+    	
+    	
+    	$group = $dgm->find($result->getGroup()->getId());
+    	
+    	$result2 = array();
+    	$result2['id'] = $group->getId();
+    	$result2['name'] = $group->getName();
+    	
+    	$this->_helper->json($result2);
+    
+    }
+    
     public function ajaxDegreeSelectAllAction()
     {
     	if(!$this->_authManager->isAllowed(null, 'modify_course'))
@@ -1158,6 +1205,25 @@ class ExamsAdminController extends Zend_Controller_Action
     		$results2[$item->getId()] = array('name' => $item->getName(), 'id'=>$item->getId(), 'order'=>$item->getOrder());
     	}
     	 
+    	$this->_helper->json($results2);
+    
+    }
+    
+    public function ajaxDegreeGroupSelectAllAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_course'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	$dm = new Application_Model_DegreeGroupMapper();
+    	 
+    	$results = $dm->fetchAll();
+    
+    	$results2 = array();
+    
+    	foreach ($results as $item) {
+    		$results2[$item->getId()] = array('name' => $item->getName(), 'id'=>$item->getId(), 'order'=>$item->getOrder());
+    	}
+    
     	$this->_helper->json($results2);
     
     }
@@ -1179,6 +1245,26 @@ class ExamsAdminController extends Zend_Controller_Action
     		$results2[$res2->getId()] = $res2->getName();
     	}
     	
+    	$this->_helper->json($results2);
+    
+    }
+    
+    public function ajaxDegreeGroupAssignedAction()
+    {
+    	if(!$this->_authManager->isAllowed(null, 'modify_degree'))
+    		throw new Custom_Exception_PermissionDenied("Permission Denied");
+    
+    	 
+    	$dm = new Application_Model_DegreeMapper();
+    	$results = $dm->find($this->_getParam('id'));
+    	
+    	$dgm = new Application_Model_DegreeGroupMapper();
+    	
+    	$group = $dgm->find($results->getGroup()->getId());
+    	 
+    	$results2 = array(); 
+    	$results2[$group->getId()] = $group->getName();
+    	    	 
     	$this->_helper->json($results2);
     
     }
@@ -1234,6 +1320,15 @@ class ExamsAdminController extends Zend_Controller_Action
     	$this->_helper->json($results);
     
     }
+    
+    
+    
+    
+    /* DEGREE PAGE */
+    
+    
+    
+    /* END DEGREE PAGE */
     
     public function maintenanceAction()
     {
