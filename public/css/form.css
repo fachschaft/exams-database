@@ -1,0 +1,46 @@
+.zend_form div.element_form {
+	display: inline-block;
+	margin: 0 30px 0 0;
+	vertical-align: top;
+}
+
+
+.zend_form select {
+	font-size:15px;
+	margin: 0 0 0 0;
+}
+
+
+
+.zend_form input {
+	height: 28px;
+	padding-left: 7px;
+	margin-left: 0px;
+	outline: none;
+	background-image: url();
+	font-size: 15px;
+}
+
+.zend_form label {
+	margin-bottom: 1.5em;
+	letter-spacing: -0.05em;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 18px;
+	font-weight: normal;
+	color: #414141;
+	
+	margin: 30px 0 10px 0;
+	display: inline-block;
+}
+
+.zend_form #submit {
+	font-size:18px;
+	margin: 22px 0 0 0;
+	padding: 3px 10px 3px 10px;
+}
+
+.zend_form #login {
+	font-size:18px;
+	margin: 22px 0 0 0;
+	padding: 3px 10px 3px 10px;
+}

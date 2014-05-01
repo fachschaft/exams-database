@@ -1,0 +1,60 @@
+#quickseach {
+	text-align:center;
+	margin-bottom: 60px;
+}
+
+#quickseach .zend_form {
+	display: inline;
+}
+
+#quickseach .zend_form dd {
+	display: inline;
+}
+
+#quickseach .zend_form label {
+	font-size:30px;
+	padding: 15px;
+	display: inline-block;
+}
+
+#quickseach .zend_form input {
+	width:350px;
+	height:30px;
+	padding-left:7px;
+	margin-left:0px;
+	outline:none;
+	background-image: url();
+	font-size: 25px;
+}
+
+#quickseach #submit {
+	;position:absolute;
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent url(/images/system-search-4.png) no-repeat center top;
+	text-indent: -1000em;
+	cursor: pointer; /* hand-shaped cursor */
+	cursor: hand; /* for IE 5.x */
+	/*width:30px;
+	height:30px;
+	background:url(/images/system-search-4.png) left  no-repeat; 
+	color:#ffffff; 
+	font-weight:bold; 
+	border:none;*/
+}
+
+
+
+#quickseach .element_button {
+	display: inline;
+}
+
+#quickseach .errors {
+position:static;
+list-style-type: none;
+color: #FF0000;
+font-size: 20px;
+}
